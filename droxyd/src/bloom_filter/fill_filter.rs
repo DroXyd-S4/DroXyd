@@ -1,4 +1,7 @@
-pub fn fill_filter(filter: &mut Vec<i32>, hash_funcs: Vec<fn(i32) -> i32>, word: &str) -> ()
+pub fn fill_filter(filter: &mut Vec<i32>, hash_funcs: Vec<fn(&str) -> i32>, word: &str) -> ()
 {
-    // TODO
+    for func in hash_funcs
+    {
+        filter[func(word)] = 1;
+    }
 }
