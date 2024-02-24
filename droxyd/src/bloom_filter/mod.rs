@@ -1,2 +1,4 @@
-pub mod [nom_du_fichier1];
-pub mod [nom_du_fichier2];
+pub mod bloom_filter;
+pub mod fill_filter;
+pub mod hash_functions;
+pub mod is_present;

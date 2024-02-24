@@ -1,8 +1,8 @@
-pub fn is_present(filter: &mut Vec<i32>, hash_funcs: Vec<fn(&str) -> i32>, word: &str) -> bool
+pub fn is_present(filter: &mut Vec<u8>, hash_funcs: Vec<fn(&str) -> i64>, word: &str) -> bool
 {
     for func in hash_funcs
     {
-        if filter[func(word)] == 0
+        if filter[func(word) as usize] == 0
         {
             return false;
         }
