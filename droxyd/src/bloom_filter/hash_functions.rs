@@ -1,21 +1,11 @@
+pub fn left_rotate(byte: i32, n: i32) -> i32
+{
+    return (byte << n)|(n >> (32-n));
+}
+
 pub fn right_rotate(byte: i32, n: i32) -> i32
 {
-    let mut bits: i32 = byte;
-    let mut x = 0;
-    for _i in 0..n
-    {
-        x = bits % 2;
-        bits = bits >> 1;
-        if x == 1 || x == -1
-        {
-            bits = bits | -2147483648;
-        }
-        else
-        {
-            bits = bits & 0b01111111111111111111111111111111;
-        }
-    }
-    return bits;
+    return (byte >> n)|(byte << (32-n)) & 0xffffffffu32 as i32;
 }
 
 pub fn sha256(word: &str) -> String
@@ -156,19 +146,15 @@ pub fn sha256(word: &str) -> String
             let t1 = right_rotate(w[j-15], 7);
             let t2 = right_rotate(w[j-15], 18);
             let t3 = w[j-15] & 0b00011111111111111111111111111111;
-            //print!("sig0: {}, {}, {}", format!("{t1:b}"), format!("{t2:b}"), format!("{t3:b}"));
             let sig0 = t1 ^ t2 ^ t3;
-            //println!(" = {}", format!("{sig0:b}"));
+
             let t1 = right_rotate(w[j-2], 17);
             let t2 = right_rotate(w[j-2], 19);
             let t3 = w[j-2] & 0b00000000001111111111111111111111;
-            //print!("sig1: {}, {}, {}", format!("{t1:b}"), format!("{t2:b}"), format!("{t3:b}"));
             let sig1 = t1 ^ t2 ^ t3;
-            //println!(" = {}", format!("{sig1:b}"));
-            //print!("{}: {} + {} + {} + {} = ", j, format!("{w[j-16]:b}"), format!("{sig0:b}"), format!("{w[j-7]:b}"), format!("{sig1:b}"));
-            let sum: i32 = ((w[j-16] as i64) + (sig0 as i64) + (w[j-7] as i64) + (sig1 as i64)) as i32;
-            //println!("{}: res = {}", j, format!("{sum:b}"));
-            //println!();
+
+            let sum: i32 = ((w[j-16] as i64) + (sig0 as i64)
+                            + (w[j-7] as i64) + (sig1 as i64)) as i32;
             w.push(sum);
         }
 
@@ -216,11 +202,20 @@ pub fn sha256(word: &str) -> String
         hash_values[6] = ((hash_values[6] as i64) + (g as i64)) as i32;
         hash_values[7] = ((hash_values[7] as i64) + (h as i64)) as i32;
 
+        a = hash_values[0];
+        b = hash_values[1]; 
+        c = hash_values[2];
+        d = hash_values[3];
+        e = hash_values[4];
+        f = hash_values[5];
+        g = hash_values[6];
+        h = hash_values[7];
+
         // STEP 3 -> OK
         //
         // *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
         //
-        // STEP 4 : Computing the final key thanks to the data calculated before
+        // STEP 4 : Formatting output
     }
 
     let s1 = format!("{a:x}");
@@ -241,7 +236,6 @@ pub fn sha256(word: &str) -> String
     res.push_str(&s6);
     res.push_str(&s7);
     res.push_str(&s8);
-    //println!("{}", res);
 
     return res;
 
@@ -250,14 +244,202 @@ pub fn sha256(word: &str) -> String
     // *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 }
 
+pub fn md5(word: &str) -> String
+{
+    // *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+    //
+    // STEP 1:
+    // Encoding the input into an array of 32-bits
 
-
-    pub fn hash_2(word: &str) -> ()//i64 // pls find a good name
+    let mut count4 = 0;
+    let mut b32: Vec<i32> = vec![];
+    let mut temp: i32 = 0;
+    let mut b_num: i64 = 0;
+    for c in word.chars()
     {
-        // TODO
+        temp = temp << 8;
+        temp += c as i32;
+        count4 += 1;
+        if count4 % 4 == 0
+        {
+            count4 = 0;
+            b32.push(temp);
+            temp = 0;
+        }
+        b_num += 1;
+    }
+    if count4 == 0
+    {
+        temp = 1;
+        temp = temp << 31;
+        b32.push(temp);
+    }
+    if count4 == 1
+    {
+        temp = temp << 8;
+        temp += 8388608;
+        b32.push(temp);
+    }
+    if count4 == 2
+    {
+        temp = temp << 8;
+        temp += 32768;
+        b32.push(temp);
+    }
+    if count4 == 3
+    {
+        temp = temp << 8;
+        temp += 128;
+        b32.push(temp);
+    }
+    b_num *= 8;
+    let mut chunk_num = (b_num + 72) / 512; // 72 = 64 + 8
+                                            //    = big endian len + trailing 1
+    if (b_num + 72) % 512 != 0
+    {
+        chunk_num += 1;
     }
 
-    pub fn hash_3(word: &str) -> ()//i64 // pls find a good name
+    let mut filling_lines = (chunk_num * 512 - b_num - 72) / 8;
+    filling_lines -= filling_lines % 4;
+    filling_lines = filling_lines / 4;
+    for _i in 0..filling_lines
     {
-        // TODO
+        b32.push(0);
     }
+
+    let step1: i32 = (b_num >> 32) as i32;
+    let step2: i32 = b_num as i32;
+    b32.push(step1);
+    b32.push(step2);
+
+    // STEP 1 -> OK
+    //
+    // *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
+    //
+    // STEP 2 : Declaring constant arrays
+
+    // NE PAS TOUCHER PLS
+    let mut hash_values: Vec<i32> = vec![
+        0x67452301, 0xefcdab89u32 as i32, 0x98badcfeu32 as i32, 0x10325476
+    ];
+
+    let r: Vec<i32> = vec![
+        7, 12, 17, 22,  7, 12, 17, 22,  7, 12, 17, 22,  7, 12, 17, 22,
+        5,  9, 14, 20,  5,  9, 14, 20,  5,  9, 14, 20,  5,  9, 14, 20,
+        4, 11, 16, 23,  4, 11, 16, 23,  4, 11, 16, 23,  4, 11, 16, 23,
+        6, 10, 15, 21,  6, 10, 15, 21,  6, 10, 15, 21,  6, 10, 15, 21
+    ];
+
+    // NE PAS TOUCHER PLS
+    let constantes: Vec<i32> = vec![
+        0xd76aa478u32 as i32, 0xe8c7b756u32 as i32, 0x242070db, 0xc1bdceeeu32 as i32,
+        0xf57c0fafu32 as i32, 0x4787c62a, 0xa8304613u32 as i32, 0xfd469501u32 as i32,
+        0x698098d8, 0x8b44f7afu32 as i32, 0xffff5bb1u32 as i32, 0x895cd7beu32 as i32,
+        0x6b901122, 0xfd987193u32 as i32, 0xa679438eu32 as i32, 0x49b40821u32 as i32,
+        0xf61e2562u32 as i32, 0xc040b340u32 as i32, 0x265e5a51, 0xe9b6c7aau32 as i32,	
+        0xd62f105du32 as i32, 0x02441453, 0xd8a1e681u32 as i32, 0xe7d3fbc8u32 as i32,
+        0x21e1cde6, 0xc33707d6u32 as i32, 0xf4d50d87u32 as i32, 0x455a14edu32 as i32,
+        0xa9e3e905u32 as i32, 0xfcefa3f8u32 as i32, 0x676f02d9, 0x8d2a4c8au32 as i32,
+        0xfffa3942u32 as i32, 0x8771f681u32 as i32, 0x6d9d6122, 0xfde5380cu32 as i32,
+        0xa4beea44u32 as i32, 0x4bdecfa9, 0xf6bb4b60u32 as i32, 0xbebfbc70u32 as i32,
+        0x289b7ec6, 0xeaa127fau32 as i32, 0xd4ef3085u32 as i32, 0x04881d05u32 as i32,
+        0xd9d4d039u32 as i32, 0xe6db99e5u32 as i32, 0x1fa27cf8, 0xc4ac5665u32 as i32,
+        0xf4292244u32 as i32, 0x432aff97, 0xab9423a7u32 as i32, 0xfc93a039u32 as i32,
+        0x655b59c3, 0x8f0ccc92u32 as i32, 0xffeff47du32 as i32, 0x85845dd1u32 as i32,
+        0x6fa87e4f, 0xfe2ce6e0u32 as i32, 0xa3014314u32 as i32, 0x4e0811a1u32 as i32,
+        0xf7537e82u32 as i32, 0xbd3af235u32 as i32, 0x2ad7d2bb, 0xeb86d391u32 as i32
+    ];
+
+    let mut a: i32 = hash_values[0];
+    let mut b: i32 = hash_values[1];
+    let mut c: i32 = hash_values[2];
+    let mut d: i32 = hash_values[3];
+
+    // STEP 2 -> OK
+    //
+    // *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+    //
+    // STEP 3 : Doing calculus while iterating over the array (message splitted)
+
+    for i in 0..chunk_num
+    {
+        let w: Vec<i32> = b32[(i*16) as usize..((i+1)*16) as usize].to_vec();
+        for j in 0..64
+        {
+            let f: i32;
+            let g: i32;
+            if j < 16
+            {
+                f = (b & c)|((!b) & d);
+                g = j;
+            }
+            else if j < 32
+            {
+                f = (d & b)|((!d) & c);
+                g = (5*j + 1) % 16;
+            }
+            else if j < 48
+            {
+                f = b ^ c ^ d;
+                g = (3*j + 5) % 16;
+            }
+            else
+            {
+                f = c ^ (b|(!d));
+                g = (7*j) % 16;
+            }
+            let temp1 = d;
+            d = c;
+            c = b;
+            let temp2 = ((a as i64) + (f as i64) + 
+                         (constantes[j as usize] as i64) + (w[g as usize] as i64)) as i32;
+            b = ((left_rotate(temp2, r[j as usize]) as i64) + (b as i64)) as i32;
+            a = temp1;
+        }
+
+        // STEP 2 -> OK
+        //
+        // *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+        //
+        // STEP 3 : Update hash values
+
+        hash_values[0] = ((hash_values[0] as i64) + (a as i64)) as i32;
+        hash_values[1] = ((hash_values[1] as i64) + (b as i64)) as i32;
+        hash_values[2] = ((hash_values[2] as i64) + (c as i64)) as i32;
+        hash_values[3] = ((hash_values[3] as i64) + (d as i64)) as i32;
+
+        a = hash_values[0];
+        b = hash_values[1]; 
+        c = hash_values[2];
+        d = hash_values[3];
+
+        // STEP 3 -> OK
+        //
+        // *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+        //
+        // STEP 4 : Formatting output
+    }
+
+    let s1 = format!("{a:x}");
+    let s2 = format!("{b:x}");
+    let s3 = format!("{c:x}");
+    let s4 = format!("{d:x}");
+
+    let mut res = String::new();
+    res.push_str(&s1);
+    res.push_str(&s2);
+    res.push_str(&s3);
+    res.push_str(&s4);
+
+    return res;
+
+    // STEP 4 -> OK
+    //
+    // *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+}
+
+pub fn hash_3(word: &str) -> ()//i64 // pls find a good name
+{
+    // TODO
+}
