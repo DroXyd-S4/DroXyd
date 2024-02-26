@@ -438,8 +438,3 @@ pub fn md5(word: &str) -> String
     //
     // *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 }
-
-pub fn hash_3(word: &str) -> ()//i64 // pls find a good name
-{
-    // TODO
-}

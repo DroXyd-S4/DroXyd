@@ -4,7 +4,7 @@
 ### hash functions
 Contains all the hash functions that we will use for the algorithm.
 
-### fill filter
+### fill filter (In bloom_filter.rs)
 This function applies all hash functions in an array to a given word
 and add them to the bloom filter.
 
