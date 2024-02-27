@@ -1,8 +1,29 @@
-pub fn extraction(src: String) -> String {
-    String::new()
+pub fn get_paragraphs(src: &str) -> String {
+    let p_start: Vec<_> = src.match_indices("<p>").map(|(i, _)|i).collect();
+    if p_start.len() <= 0 { panic!("get_patagraphs: no paragraphs detected in text") }
+    let p_end: Vec<_> = src.match_indices("</p>").map(|(i, _)|i).collect();
+    if p_end.len() <= 0 || p_end.len() != p_start.len() { panic!("get_paragraphs: no end to paragraph") }
 
+    let mut para = String::new();
+    if p_start.len() == p_end.len() {
+        for i in 0..p_start.len() {
+            for p in src[p_start[i]+3..p_end[i]].chars() { para.push(p); }
+            para.push('\n');
+        }
+    }
+    
+    if p_end.len() <= 0 {
+        if p_start.len() == 1 {
+            if 
+        for i in 1..p_start.len() {
+            for p in src[p_start[i-1]+3..p_start[i]].chars() { para.push(p); }
+            para.push('\n');
+        }
+    }
 
+    para
 }
+
 
 pub fn get_lang(src: &str) -> String {
     let mut lang: String = String::new();
@@ -19,12 +40,12 @@ pub fn get_lang(src: &str) -> String {
 }
 
 /*pub fn is_valid_lang(src: &str) -> bool {
-    
-}*/
+
+  }*/
 
 
 pub fn get_urls(src: &str) -> (bool, Vec<String>) {
-    
+
     let href_indices: Vec<_> = src.match_indices("href").map(|(i, _)|i).collect();
     if href_indices.len() <= 0 { return (false, Vec::new()) }
     let mut urls_vec: Vec<String> = vec![String::new(); href_indices.len()];

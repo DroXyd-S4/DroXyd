@@ -3,6 +3,7 @@ mod processing;
 use crate::processing::extraction::get_lang;
 use crate::processing::extraction::get_urls;
 use crate::processing::extraction::valid_urls;
+use crate::processing::extraction::get_paragraphs;
 
 fn main() {
     println!(" -------------------- get_lang tests --------------------");
@@ -65,7 +66,15 @@ fn main() {
 		<li><a href=\"https://www.developpez.net/forums/blogs/\" title=\"\">Blogs</a></li>i";
     let urls = valid_urls(get_urls(src));
     dbg!(urls); 
+    
 
+    println!("\n -------------------- get_paragraphs tests --------------------");
+    let src = "<p>
+  Geckos are a group of usually small, usually nocturnal lizards. They are found on every continent except Antarctica.
+</p>
+<p>Some species live in houses where they hunt insects attracted by artificial light.</p>";
+    let para = get_paragraphs(&src);
+    for i in para.lines() { dbg!(i); };
 
 
 }
