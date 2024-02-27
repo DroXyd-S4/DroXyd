@@ -1,0 +1,1468 @@
+<!DOCTYPE html>
+<html lang="fr" prefix="og: http://ogp.me/ns#">
+<head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-KP5YVWZDRL"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-KP5YVWZDRL');
+</script>
+	<meta charset="iso-8859-1">
+	<title>Introduction au langage C</title>
+	<link rel="canonical" href="https://c.developpez.com/cours/bernard-cassagne/node74.php">
+	<meta name="generator" content="developpez-com">
+	<meta name="description" content="Introduction au langage C">
+	<script src="/template/scripts/jquery-3.4.1.js"></script>
+	<script src="/template/scripts/bootstrap/popper.js"></script>
+	<script src="/template/scripts/bootstrap/bootstrap.bundle.min.js"></script>
+	<script src="/template/scripts/bootstrap/bootstrap.js"></script>
+	<link rel="stylesheet" href="/template/css/bootstrap/bootstrap.css" />
+	<link rel="stylesheet" href="/template/css/bootstrap/bootstrap-social.css" />
+	<link rel="stylesheet" href="/template/fonts/fontawesome/css/all.min.css" />
+	<link rel="stylesheet" href="/template/fonts/fontawesome/css/fontawesome.min.css" />
+	<script async src="https://www.developpez.com/ws/pageview/url/c,cours,bernard-cassagne,node74.php/"></script>
+	<script async="async" src="https://www.googletagservices.com/tag/js/gpt.js"></script>
+	<script>
+		var googletag = googletag || {};
+		googletag.cmd = googletag.cmd || [];
+	</script>
+	<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+	<link rel="shortcut icon" type="image/x-icon" href="/template/favicon.ico" />
+	<link rel="image_src" href="https://www.developpez.com/facebook-icon.png" />
+	<link rel="stylesheet" type="text/css" href="/template/css/gabarit.css?1630596300" />
+	<link rel="stylesheet" type="text/css" media="print" href="/template/css/printer.css" />
+	<script src="/template/scripts/gabarit.js?1630596300"></script>
+	<link rel="stylesheet" type="text/css" media="screen" href="./hyperdoc.css?" />
+	<!--[if lt IE 9]>
+	<script src="/template/kit/html5_ie.js"></script>
+	<![endif]-->
+</head>
+<body>
+	<header>
+
+	<div id="gabarit_b1">
+		<div id="gabarit_connexion">
+	<form>
+		<div><span>Identifiant</span><input type="text" class="form_input form-control" id="formloginConnexion" /><span>Mot de passe</span><input type="password" class="form_input form-control" id="formpassConnexion"/><input type="button" value="Connexion" id="formbuttonConnexion" class="btn btn-primary" /><div id="loadingConnexion" class="spinner-border text-light" role="status"><span class="sr-only">Loading...</span></div></div><a id="mdpoublier" href="http://www.developpez.net/forums/login.php?do=lostpw">Mot de passe oubli  ?</a><a id="inscriptionConnexion" href="https://www.developpez.net/forums/inscription/" class="btn btn-primary">Je m'inscris ! (gratuit)</a>	
+	</form>
+</div>		<div id="gabarit-barreRecherche" style="display:none;"><form action="https://www.google.fr" target="_blank">
+  <div>
+    <input type="hidden" name="cx" value="partner-pub-8110924381468607:6449306375" />
+    <input type="hidden" name="ie" value="ISO-8859-1" />
+    <input type="text" name="q" size="12" />
+    <input type="submit" name="sa" value="Rechercher" />
+  </div>
+</form></div>
+<div id="gabarit-new-logo" role="gabarit-accueil">
+	<a href="https://www.developpez.com"><img src="/template/images/logo-dvp-h55.png" alt="logo dvp" width="48" height="55" /></a>
+	<a href="https://www.developpez.com"><span class="dvp"></span></a>
+	<span class="triangle"></span>
+</div>
+<div id="gabarit_recherche">
+	<div class="gabarit-btn-menu profil dn" role="gabarit-profil"></div>
+	<div class="gabarit-btn-menu profil dn" role="gabarit-connecter"><span></span><a id="gabaritRepereLogout" class="btn btn-primary"></a></div>
+	<div class="gabarit-btn-menu contacts" role="gabarit-contacts"></div>
+	<div class="gabarit-btn-menu recherche" role="gabarit-recherche"></div>
+</div>
+
+<div id="gabarit_superieur">
+	<nav>
+	<ul>
+		<li><a href="https://www.developpez.net/forums/" title="">Forums</a></li>
+		<li><a href="https://general.developpez.com/cours/" title="">Tutoriels</a></li>
+		<li><a href="https://general.developpez.com/faq/" title="">FAQ</a></li>
+		<li><a href="https://www.developpez.net/forums/blogs/" title="">Blogs</a></li>
+		<li><a href="https://chat.developpez.com/" title="">Chat</a></li>
+		<li><a href="https://www.developpez.com/newsletter/">Newsletter</a></li>
+		<li><a href="https://emploi.developpez.com/" title="">Emploi</a></li>
+		<li><a href="https://etudes.developpez.com/"> tudes</a></li>
+		<li><a href="https://droit.developpez.com/" title="">Droit</a></li>
+		<li><a href="https://club.developpez.com/">Club</a></li>
+	</ul>
+	</nav>
+</div>	</div>
+	<nav>
+
+<ul id="gabarit_menu" style="padding-left:56px;">
+	<li><a href="https://www.developpez.com" data-idrub="1" data-niv="1" style="padding:0;"><div id="gabarit_home"></div></a>
+			</li>
+	<li><a href="https://solutions-entreprise.developpez.com" data-idrub="86" data-niv="1">DI/DSI Solutions d&#039;entreprise<!----></a>
+			<ul class="gabarit_sousmenu">
+				<li><a href="https://solutions-entreprise.developpez.com" data-idrub="86" data-niv="2">DI/DSI Solutions d&#039;entreprise</a></li>
+				<li><a href="https://abbyy.developpez.com" data-idrub="147" data-niv="2">ABBYY</a></li>
+				<li><a href="https://big-data.developpez.com" data-idrub="126" data-niv="2">Big Data</a></li>
+				<li><a href="https://bpm.developpez.com" data-idrub="134" data-niv="2">BPM</a></li>
+				<li><a href="https://business-intelligence.developpez.com" data-idrub="61" data-niv="2">Business Intelligence</a></li>
+				<li><a href="https://data-science.developpez.com" data-idrub="151" data-niv="2">Data Science</a></li>
+				<li><a href="https://solutions-entreprise.developpez.com/erp-pgi/presentation-erp-pgi/" data-idrub="91" data-niv="2">ERP / PGI</a></li>
+				<li><a href="https://crm.developpez.com" data-idrub="92" data-niv="2">CRM</a></li>
+				<li><a href="https://sas.developpez.com" data-idrub="93" data-niv="2">SAS</a></li>
+				<li><a href="https://sap.developpez.com" data-idrub="106" data-niv="2">SAP</a></li>
+				<li><a href="https://www.developpez.net/forums/f1664/systemes/windows/windows-serveur/biztalk-server/" data-idrub="115" data-niv="2">Microsoft BizTalk Server</a></li>
+				<li><a href="https://talend.developpez.com" data-idrub="118" data-niv="2">Talend</a></li>
+				<li><a href="https://droit.developpez.com" data-idrub="132" data-niv="2">Droit informatique et entreprise</a></li>
+				<li><a href="https://onlyoffice.developpez.com" data-idrub="149" data-niv="2">OnlyOffice</a></li>
+			</ul></li>
+	<li><a href="https://cloud-computing.developpez.com" data-idrub="103" data-niv="1">Cloud<!----></a>
+			<ul class="gabarit_sousmenu">
+				<li><a href="https://cloud-computing.developpez.com" data-idrub="103" data-niv="2">Cloud Computing</a></li>
+				<li><a href="https://oracle.developpez.com" data-idrub="25" data-niv="2">Oracle</a></li>
+				<li><a href="https://windows-azure.developpez.com" data-idrub="107" data-niv="2">Azure</a></li>
+				<li><a href="https://ibmcloud.developpez.com" data-idrub="135" data-niv="2">IBM Cloud</a></li>
+			</ul></li>
+	<li><a href="https://intelligence-artificielle.developpez.com" data-idrub="143" data-niv="1">IA<!----></a>
+			<ul class="gabarit_sousmenu">
+				<li><a href="https://intelligence-artificielle.developpez.com" data-idrub="143" data-niv="2">Intelligence artificielle</a></li>
+			</ul></li>
+	<li><a href="https://alm.developpez.com" data-idrub="42" data-niv="1">ALM<!--<span class="gabarit_tooltip">Cycle de vie du logiciel</span>--></a>
+			<ul class="gabarit_sousmenu">
+				<li><a href="https://alm.developpez.com" data-idrub="42" data-niv="2">ALM</a></li>
+				<li><a href="https://agile.developpez.com" data-idrub="146" data-niv="2">Agile</a></li>
+				<li><a href="https://merise.developpez.com" data-idrub="43" data-niv="2">Merise</a></li>
+				<li><a href="https://uml.developpez.com" data-idrub="12" data-niv="2">UML</a></li>
+			</ul></li>
+	<li><a href="https://microsoft.developpez.com" data-idrub="150" data-niv="1">Microsoft<!----></a>
+			<ul class="gabarit_sousmenu">
+				<li><a href="https://microsoft.developpez.com" data-idrub="150" data-niv="2">Microsoft</a></li>
+				<li><a href="https://dotnet.developpez.com" data-idrub="20" data-niv="2">.NET</a></li>
+				<li><a href="https://office.developpez.com" data-idrub="54" data-niv="2">Microsoft Office</a></li>
+				<li><a href="https://visualstudio.developpez.com" data-idrub="84" data-niv="2">Visual Studio</a></li>
+				<li><a href="https://windows.developpez.com" data-idrub="17" data-niv="2">Windows</a></li>
+				<li><a href="https://dotnet.developpez.com/aspnet/" data-idrub="83" data-niv="2">ASP.NET</a></li>
+				<li><a href="https://typescript.developpez.com" data-idrub="127" data-niv="2">TypeScript</a></li>
+				<li><a href="https://dotnet.developpez.com/csharp/" data-idrub="81" data-niv="2">C#</a></li>
+				<li><a href="https://dotnet.developpez.com/vbnet/" data-idrub="82" data-niv="2">VB.NET</a></li>
+				<li><a href="https://windows-azure.developpez.com" data-idrub="107" data-niv="2">Azure</a></li>
+			</ul></li>
+	<li><a href="https://java.developpez.com" data-idrub="4" data-niv="1">Java<!--<span class="gabarit_tooltip">Plateforme et langage Java</span>--></a>
+			<ul class="gabarit_sousmenu">
+				<li><a href="https://java.developpez.com" data-idrub="4" data-niv="2">Java</a></li>
+				<li><a href="https://javaweb.developpez.com" data-idrub="97" data-niv="2">Java Web</a></li>
+				<li><a href="https://spring.developpez.com" data-idrub="87" data-niv="2">Spring</a></li>
+				<li><a href="https://android.developpez.com" data-idrub="95" data-niv="2">Android</a></li>
+				<li><a href="https://eclipse.developpez.com" data-idrub="55" data-niv="2">Eclipse</a></li>
+				<li><a href="https://netbeans.developpez.com" data-idrub="66" data-niv="2">NetBeans</a></li>
+			</ul></li>
+	<li><a href="https://web.developpez.com" data-idrub="8" data-niv="1">D v. Web<!--<span class="gabarit_tooltip">D veloppement Web et Webmarketing</span>--></a>
+			<ul class="gabarit_sousmenu">
+				<li><a href="https://web.developpez.com" data-idrub="8" data-niv="2">D veloppement et h bergement Web</a></li>
+				<li><a href="https://ajax.developpez.com" data-idrub="85" data-niv="2">AJAX</a></li>
+				<li><a href="https://apache.developpez.com" data-idrub="71" data-niv="2">Apache</a></li>
+				<li><a href="https://asp.developpez.com" data-idrub="10" data-niv="2">ASP</a></li>
+				<li><a href="https://css.developpez.com" data-idrub="51" data-niv="2">CSS</a></li>
+				<li><a href="https://dart.developpez.com" data-idrub="125" data-niv="2">Dart</a></li>
+				<li><a href="https://flash.developpez.com" data-idrub="41" data-niv="2">Flash / Flex</a></li>
+				<li><a href="https://javascript.developpez.com" data-idrub="45" data-niv="2">JavaScript</a></li>
+				<li><a href="https://nodejs.developpez.com" data-idrub="141" data-niv="2">NodeJS</a></li>
+				<li><a href="https://php.developpez.com" data-idrub="9" data-niv="2">PHP</a></li>
+				<li><a href="https://ruby.developpez.com" data-idrub="53" data-niv="2">Ruby &amp; Rails</a></li>
+				<li><a href="https://typescript.developpez.com" data-idrub="127" data-niv="2">TypeScript</a></li>
+				<li><a href="https://web-semantique.developpez.com" data-idrub="111" data-niv="2">Web s mantique</a></li>
+				<li><a href="https://webmarketing.developpez.com" data-idrub="80" data-niv="2">Webmarketing</a></li>
+				<li><a href="https://xhtml.developpez.com" data-idrub="50" data-niv="2">(X)HTML</a></li>
+			</ul></li>
+	<li><a href="https://edi.developpez.com" data-idrub="90" data-niv="1">EDI<!--<span class="gabarit_tooltip">Environnements de D veloppement Int gr </span>--></a>
+			<ul class="gabarit_sousmenu">
+				<li><a href="https://edi.developpez.com" data-idrub="90" data-niv="2">EDI</a></li>
+				<li><a href="https://4d.developpez.com" data-idrub="39" data-niv="2">4D</a></li>
+				<li><a href="https://delphi.developpez.com" data-idrub="2" data-niv="2">Delphi</a></li>
+				<li><a href="https://eclipse.developpez.com" data-idrub="55" data-niv="2">Eclipse</a></li>
+				<li><a href="https://jetbrains.developpez.com" data-idrub="144" data-niv="2">JetBrains</a></li>
+				<li><a href="https://labview.developpez.com" data-idrub="72" data-niv="2">LabVIEW</a></li>
+				<li><a href="https://netbeans.developpez.com" data-idrub="66" data-niv="2">NetBeans</a></li>
+				<li><a href="https://matlab.developpez.com" data-idrub="58" data-niv="2">MATLAB</a></li>
+				<li><a href="https://scilab.developpez.com" data-idrub="120" data-niv="2">Scilab</a></li>
+				<li><a href="https://visualstudio.developpez.com" data-idrub="84" data-niv="2">Visual Studio</a></li>
+				<li><a href="https://wind.developpez.com" data-idrub="74" data-niv="2">WinDev</a></li>
+				<li><a href="https://vb.developpez.com" data-idrub="5" data-niv="2">Visual Basic 6</a></li>
+				<li><a href="https://lazarus.developpez.com" data-idrub="96" data-niv="2">Lazarus</a></li>
+				<li><a href="https://qt-creator.developpez.com" data-idrub="109" data-niv="2">Qt Creator</a></li>
+			</ul></li>
+	<li><a href="https://programmation.developpez.com" data-idrub="119" data-niv="1" class="gabarit_selection">Programmation<!--<span class="gabarit_tooltip">Programmation et langages de programmation applicatifs</span>--></a>
+			<ul class="gabarit_sousmenu">
+				<li><a href="https://programmation.developpez.com" data-idrub="119" data-niv="2">Programmation</a></li>
+				<li><a href="https://algo.developpez.com" data-idrub="47" data-niv="2">D buter - Algorithmique</a></li>
+				<li><a href="https://jeux.developpez.com" data-idrub="38" data-niv="2">2D - 3D - Jeux</a></li>
+				<li><a href="https://asm.developpez.com" data-idrub="16" data-niv="2">Assembleur</a></li>
+				<li><a href="https://c.developpez.com" data-idrub="3" data-niv="2">C</a></li>
+				<li><a href="https://cpp.developpez.com" data-idrub="59" data-niv="2">C++</a></li>
+				<li><a href="https://dotnet.developpez.com/csharp/" data-idrub="81" data-niv="2">C#</a></li>
+				<li><a href="https://d.developpez.com" data-idrub="123" data-niv="2">D</a></li>
+				<li><a href="https://go.developpez.com" data-idrub="124" data-niv="2">Go</a></li>
+				<li><a href="https://kotlin.developpez.com" data-idrub="145" data-niv="2">Kotlin</a></li>
+				<li><a href="https://objective-c.developpez.com" data-idrub="117" data-niv="2">Objective C</a></li>
+				<li><a href="https://pascal.developpez.com" data-idrub="7" data-niv="2">Pascal</a></li>
+				<li><a href="https://perl.developpez.com" data-idrub="29" data-niv="2">Perl</a></li>
+				<li><a href="https://python.developpez.com" data-idrub="27" data-niv="2">Python</a></li>
+				<li><a href="https://rust.developpez.com" data-idrub="137" data-niv="2">Rust</a></li>
+				<li><a href="https://swift.developpez.com" data-idrub="128" data-niv="2">Swift</a></li>
+				<li><a href="https://qt.developpez.com" data-idrub="65" data-niv="2">Qt</a></li>
+				<li><a href="https://xml.developpez.com" data-idrub="11" data-niv="2">XML</a></li>
+				<li><a href="https://general.developpez.com/cours/" data-idrub="21" data-niv="2">Autres</a></li>
+			</ul></li>
+	<li><a href="https://sgbd.developpez.com" data-idrub="13" data-niv="1">SGBD<!--<span class="gabarit_tooltip">Syst mes de Gestion de Bases de Donn es</span>--></a>
+			<ul class="gabarit_sousmenu">
+				<li><a href="https://sgbd.developpez.com" data-idrub="13" data-niv="2">SGBD &amp; SQL</a></li>
+				<li><a href="https://4d.developpez.com" data-idrub="39" data-niv="2">4D</a></li>
+				<li><a href="https://access.developpez.com" data-idrub="19" data-niv="2">Access</a></li>
+				<li><a href="https://big-data.developpez.com" data-idrub="126" data-niv="2">Big Data</a></li>
+				<li><a href="https://data-science.developpez.com" data-idrub="151" data-niv="2">Data Science</a></li>
+				<li><a href="https://db2.developpez.com" data-idrub="36" data-niv="2">DB2</a></li>
+				<li><a href="https://firebird.developpez.com" data-idrub="73" data-niv="2">Firebird</a></li>
+				<li><a href="https://interbase.developpez.com" data-idrub="32" data-niv="2">InterBase</a></li>
+				<li><a href="https://mysql.developpez.com" data-idrub="31" data-niv="2">MySQL</a></li>
+				<li><a href="https://nosql.developpez.com" data-idrub="114" data-niv="2">NoSQL</a></li>
+				<li><a href="https://postgresql.developpez.com" data-idrub="33" data-niv="2">PostgreSQL</a></li>
+				<li><a href="https://oracle.developpez.com" data-idrub="25" data-niv="2">Oracle</a></li>
+				<li><a href="https://sybase.developpez.com" data-idrub="37" data-niv="2">Sybase</a></li>
+				<li><a href="https://sqlserver.developpez.com" data-idrub="34" data-niv="2">SQL-Server</a></li>
+				<li><a href="https://mongodb.developpez.com" data-idrub="148" data-niv="2">MongoDB</a></li>
+			</ul></li>
+	<li><a href="https://office.developpez.com" data-idrub="54" data-niv="1">Office<!--<span class="gabarit_tooltip">Bureautique pour l'entreprise</span>--></a>
+			<ul class="gabarit_sousmenu">
+				<li><a href="https://office.developpez.com" data-idrub="54" data-niv="2">Microsoft Office</a></li>
+				<li><a href="https://access.developpez.com" data-idrub="19" data-niv="2">Access</a></li>
+				<li><a href="https://excel.developpez.com" data-idrub="75" data-niv="2">Excel</a></li>
+				<li><a href="https://word.developpez.com" data-idrub="76" data-niv="2">Word</a></li>
+				<li><a href="https://outlook.developpez.com" data-idrub="77" data-niv="2">Outlook</a></li>
+				<li><a href="https://powerpoint.developpez.com" data-idrub="78" data-niv="2">PowerPoint</a></li>
+				<li><a href="https://sharepoint.developpez.com" data-idrub="79" data-niv="2">SharePoint</a></li>
+				<li><a href="https://project.developpez.com" data-idrub="99" data-niv="2">Microsoft Project</a></li>
+				<li><a href="https://openoffice-libreoffice.developpez.com" data-idrub="116" data-niv="2">OpenOffice &amp; LibreOffice</a></li>
+				<li><a href="https://onlyoffice.developpez.com" data-idrub="149" data-niv="2">OnlyOffice</a></li>
+			</ul></li>
+	<li><a href="https://mobiles.developpez.com" data-idrub="94" data-niv="1">Mobiles<!--<span class="gabarit_tooltip">Logiciels et mat riels mobiles</span>--></a>
+			<ul class="gabarit_sousmenu">
+				<li><a href="https://mobiles.developpez.com" data-idrub="94" data-niv="2">Mobiles</a></li>
+				<li><a href="https://android.developpez.com" data-idrub="95" data-niv="2">Android</a></li>
+				<li><a href="https://ios.developpez.com" data-idrub="101" data-niv="2">iOS</a></li>
+			</ul></li>
+	<li><a href="https://systeme.developpez.com" data-idrub="30" data-niv="1">Syst mes<!--<span class="gabarit_tooltip">Logiciels et mat riels syst mes</span>--></a>
+			<ul class="gabarit_sousmenu">
+				<li><a href="https://systeme.developpez.com" data-idrub="30" data-niv="2">Syst mes</a></li>
+				<li><a href="https://windows.developpez.com" data-idrub="17" data-niv="2">Windows</a></li>
+				<li><a href="https://linux.developpez.com" data-idrub="18" data-niv="2">Linux</a></li>
+				<li><a href="https://arduino.developpez.com" data-idrub="142" data-niv="2">Arduino</a></li>
+				<li><a href="https://securite.developpez.com" data-idrub="40" data-niv="2">S curit </a></li>
+				<li><a href="https://hardware.developpez.com" data-idrub="64" data-niv="2">Hardware</a></li>
+				<li><a href="https://hpc.developpez.com" data-idrub="139" data-niv="2">HPC</a></li>
+				<li><a href="https://mac.developpez.com" data-idrub="57" data-niv="2">Mac</a></li>
+				<li><a href="https://raspberry-pi.developpez.com" data-idrub="131" data-niv="2">Raspberry Pi</a></li>
+				<li><a href="https://reseau.developpez.com" data-idrub="70" data-niv="2">R seau</a></li>
+				<li><a href="https://green-it.developpez.com" data-idrub="104" data-niv="2">Green IT</a></li>
+				<li><a href="https://embarque.developpez.com" data-idrub="110" data-niv="2">Syst mes embarqu s</a></li>
+				<li><a href="https://virtualisation.developpez.com" data-idrub="108" data-niv="2">Virtualisation</a></li>
+			</ul></li>
+</ul>
+
+<ul id="gabarit_barre1"><li><a href="https://programmation.developpez.com">Programmation</a></li><li><a href="https://algo.developpez.com">Algorithmique</a></li><li><a href="https://jeux.developpez.com">2D-3D-Jeux</a></li><li><a href="https://asm.developpez.com">Assembleur</a></li><li class="gabarit_selection"><a href="https://c.developpez.com">C</a></li><li><a href="https://cpp.developpez.com">C++</a></li><li><a href="https://dotnet.developpez.com/csharp/">C#</a></li><li><a href="https://d.developpez.com">D</a></li><li><a href="https://go.developpez.com">Go</a></li><li><a href="https://kotlin.developpez.com">Kotlin</a></li><li><a href="https://objective-c.developpez.com">Objective C</a></li><li><a href="https://pascal.developpez.com">Pascal</a></li><li><a href="https://perl.developpez.com">Perl</a></li><li><a href="https://python.developpez.com">Python</a></li><li><a href="https://rust.developpez.com">Rust</a></li><li><a href="https://swift.developpez.com">Swift</a></li><li><a href="https://qt.developpez.com">Qt</a></li><li><a href="https://xml.developpez.com">XML</a></li><li><a href="https://general.developpez.com/cours/">Autres</a></li></ul>
+
+<div id="gabarit_barre2">
+	<a class="gabarit_social gabarit_facebook" href="http://www.facebook.com/pages/C/108584359174497" target="_blank" title="Retrouver Developpez sur Facebook"></a>
+	<a class="gabarit_social gabarit_twitter" href="http://twitter.com/C_Developpez" target="_blank" title="Retrouver Developpez sur Twitter"></a>
+	<a class="gabarit_social gabarit_rss" href="http://c.developpez.com/index/rss" target="_blank" title="Flux RSS"></a>
+	<ul>
+<li><a href="https://c.developpez.com/">Accueil C</a></li><li><a href="https://www.developpez.net/forums/f7/c-cpp/">Forums C</a></li><li><a href="https://c.developpez.com/faq/">FAQ C</a></li><li><a href="https://c.developpez.com/cours/">Tutoriels C</a></li><li><a href="https://c.developpez.com/livres/">Livres C</a></li><li><a href="https://c.developpez.com/telecharger/index/categorie/30/Outils-C-C">Compilateurs et outils C</a></li><li><a href="https://c.developpez.com/telecharger/index/categorie/149/Sources-C">Sources C</a></li><li><a href="https://c.developpez.com/telecharger/index/categorie/451/Bibliotheques-C">Biblioth ques C</a></li><li><a href="http://gtk.developpez.com/">GTK+</a></li>	</ul>
+</div>
+
+</nav>
+
+
+	</header>
+	<section>
+
+	<div id="gabarit_pubBB">
+		<div id="gabarit_pub0"></div><div id="yw3aa0u" class="dvpb0" style="display: inline-block; width: 728px; height: 90px"></div>
+	</div>
+
+	<div class="contenuPage">
+<div style="margin: 10px; text-align: justify">
+
+<!--Converted with LaTeX2HTML 98.1p1 release (March 2nd, 1998)
+originally by Nikos Drakos (nikos@cbl.leeds.ac.uk), CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+
+
+
+<!--Navigation Panel-->
+<A NAME="tex2html2172"
+ HREF="node75.php">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next_motif.gif"></A> 
+<A NAME="tex2html2168"
+ HREF="node69.php">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up_motif.gif"></A> 
+<A NAME="tex2html2162"
+ HREF="node73.php">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="previous_motif.gif"></A> 
+<A NAME="tex2html2170"
+ HREF="node1.php">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents_motif.gif"></A> 
+<A NAME="tex2html2171"
+ HREF="node176.php">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index_motif.gif"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html2173"
+ HREF="node75.php">R cr ation</A>
+<B> Up:</B> <A NAME="tex2html2169"
+ HREF="node69.php">Les entr es-sorties</A>
+<B> Previous:</B> <A NAME="tex2html2163"
+ HREF="node73.php">Lecture et  criture par</A>
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+<!--Table of Child-Links-->
+<A NAME="CHILD_LINKS"><strong>Sous-sections</strong></A>
+<UL>
+<LI><A NAME="tex2html2174"
+ HREF="node74.php#SECTION00751000000000000000"> criture formatt e&nbsp;: <TT>fprintf</TT></A>
+<UL>
+<LI><A NAME="tex2html2175"
+ HREF="node74.php#SECTION00751100000000000000">Utilisation</A>
+<LI><A NAME="tex2html2176"
+ HREF="node74.php#SECTION00751200000000000000">S mantique des param tres</A>
+<LI><A NAME="tex2html2177"
+ HREF="node74.php#SECTION00751300000000000000">Valeur rendue</A>
+<LI><A NAME="tex2html2178"
+ HREF="node74.php#SECTION00751400000000000000">Pr sentation</A>
+<LI><A NAME="tex2html2179"
+ HREF="node74.php#SECTION00751500000000000000">Les s quences d' chappement</A>
+</UL>
+<LI><A NAME="tex2html2180"
+ HREF="node74.php#SECTION00752000000000000000"> criture formatt e&nbsp;: <TT>printf</TT></A>
+<UL>
+<LI><A NAME="tex2html2181"
+ HREF="node74.php#SECTION00752100000000000000">Utilisation</A>
+<LI><A NAME="tex2html2182"
+ HREF="node74.php#SECTION00752200000000000000">Description</A>
+</UL>
+<LI><A NAME="tex2html2183"
+ HREF="node74.php#SECTION00753000000000000000"> criture formatt e dans une cha ne : <TT>sprintf</TT></A>
+<UL>
+<LI><A NAME="tex2html2184"
+ HREF="node74.php#SECTION00753100000000000000">Utilisation</A>
+<LI><A NAME="tex2html2185"
+ HREF="node74.php#SECTION00753200000000000000">Description</A>
+</UL>
+<LI><A NAME="tex2html2186"
+ HREF="node74.php#SECTION00754000000000000000">Exemples d'utilisation des formats</A>
+<LI><A NAME="tex2html2187"
+ HREF="node74.php#SECTION00755000000000000000">Entr es formatt es : <TT>fscanf</TT></A>
+<UL>
+<LI><A NAME="tex2html2188"
+ HREF="node74.php#SECTION00755100000000000000">Utilisation</A>
+<LI><A NAME="tex2html2189"
+ HREF="node74.php#SECTION00755200000000000000">S mantique des param tres</A>
+<LI><A NAME="tex2html2190"
+ HREF="node74.php#SECTION00755300000000000000">Valeur rendue</A>
+<LI><A NAME="tex2html2191"
+ HREF="node74.php#SECTION00755400000000000000">Description</A>
+<LI><A NAME="tex2html2192"
+ HREF="node74.php#SECTION00755500000000000000">Quelques d finitions</A>
+<LI><A NAME="tex2html2193"
+ HREF="node74.php#SECTION00755600000000000000">Les s quences d' chappement</A>
+<LI><A NAME="tex2html2194"
+ HREF="node74.php#SECTION00755700000000000000">Algorithme de <TT>fscanf</TT></A>
+<LI><A NAME="tex2html2195"
+ HREF="node74.php#SECTION00755800000000000000">Remarques sur la gestion des <I>espaces blancs</I></A>
+</UL>
+<LI><A NAME="tex2html2196"
+ HREF="node74.php#SECTION00756000000000000000">Entr es formatt es&nbsp;: <TT>scanf</TT></A>
+<UL>
+<LI><A NAME="tex2html2197"
+ HREF="node74.php#SECTION00756100000000000000">Utilisation</A>
+<LI><A NAME="tex2html2198"
+ HREF="node74.php#SECTION00756200000000000000">Description</A>
+</UL>
+<LI><A NAME="tex2html2199"
+ HREF="node74.php#SECTION00757000000000000000">Entr es formatt es depuis une cha ne : <TT>sscanf</TT></A>
+<UL>
+<LI><A NAME="tex2html2200"
+ HREF="node74.php#SECTION00757100000000000000">Utilisation</A>
+<LI><A NAME="tex2html2201"
+ HREF="node74.php#SECTION00757200000000000000">Description</A>
+</UL></UL>
+<!--End of Table of Child-Links-->
+<HR>
+
+<H1><A NAME="SECTION00750000000000000000">
+E/S formatt es sur fichiers</A>
+</H1>
+
+<P>
+
+<H2><A NAME="SECTION00751000000000000000">
+ criture formatt e&nbsp;: <TT>fprintf</TT></A>
+</H2>
+<A NAME="6746">&#160;</A>
+
+<P>
+
+<H3><A NAME="SECTION00751100000000000000">
+Utilisation</A>
+</H3>
+La fonction <TT>fprintf</TT> admet un nombre variable de param tres.
+Son utilisation est la suivante&nbsp;:
+
+<P>
+<TT>fprintf</TT> <TT>(</TT> <I>flot-de-donn es</I> <TT>,</TT> <I>format</I> <TT>,</TT> <I>param</I><SUB>1</SUB> <TT>,</TT> <I>param</I><SUB>2</SUB> <TT>,</TT> ... <TT>,</TT> <I>param</I><SUB><I>n</I></SUB> <TT>)</TT>
+
+<P>
+
+<H3><A NAME="SECTION00751200000000000000">
+S mantique des param tres</A>
+</H3>
+<DL COMPACT>
+<DT><FONT SIZE="-1">-</FONT>
+<DD><I>flot-de-donn es</I> est de type pointeur vers <TT>FILE</TT>.
+Il pointe vers le fichier sur lequel se fait l' criture.
+<DT><FONT SIZE="-1">-</FONT>
+<DD><I>format</I> est une cha ne de caract res qui sp cifie ce qui doit  tre  crit.
+<DT><FONT SIZE="-1">-</FONT>
+<DD><I>param</I><SUB><I>i</I></SUB> est une expression d livrant une valeur    crire.
+</DL>
+<P>
+
+<H3><A NAME="SECTION00751300000000000000">
+Valeur rendue</A>
+</H3>
+La fonction <TT>fprintf</TT> retourne le nombre de caract res  crits, ou une
+valeur n gative si il y a eu une erreur d'entr e-sortie.
+
+<P>
+
+<H3><A NAME="SECTION00751400000000000000">
+Pr sentation</A>
+</H3>
+La cha ne <I>format</I> contient des caract res ordinaires (c'est   dire
+diff rents du caract re <TT>%</TT>) qui doivent  tre copi s tels quels,
+et des s quences d' chappement (introduites par le caract re <TT>%</TT>),
+d crivant la mani re dont doivent  tre  crits
+les param tres <I>param</I><SUB>1</SUB>, <I>param</I><SUB>2</SUB>, ... <I>param</I><SUB><I>n</I></SUB>.
+<A NAME="6747">&#160;</A>
+
+<P>
+Si il y a moins de <I>param</I><SUB><I>i</I></SUB> que n'en r clame le <I>format</I>, le
+comportement n'est pas d fini.
+Si il y a davantage de <I>param</I><SUB><I>i</I></SUB> que n'en n cessite le <I>format</I>,
+les <I>param</I><SUB><I>i</I></SUB> en exc s sont  valu s, mais leur valeur est ignor e.
+
+<P>
+
+<H3><A NAME="SECTION00751500000000000000">
+Les s quences d' chappement</A>
+</H3>
+<A NAME="6748">&#160;</A>
+<A NAME="6749">&#160;</A>
+<A NAME="6750">&#160;</A>
+<A NAME="6751">&#160;</A>
+<A NAME="6752">&#160;</A>
+<A NAME="6753">&#160;</A>
+Une s quence d' chappement se compose des  l ments suivants&nbsp;:
+
+<P>
+<DL COMPACT>
+
+<P>
+<DT>1
+<DD>Un certain nombre ( ventuellement z ro) d'indicateurs
+pouvant  tre les caract res suivants&nbsp;:
+
+<P>
+<DL COMPACT>
+   <DT><TT>-</TT>
+<DD><I>param</I><SUB><I>i</I></SUB> sera cadr    gauche dans son champ
+   d'impression.
+
+<P>
+<DT><TT>+</TT>
+<DD>si <I>param</I><SUB><I>i</I></SUB> est un nombre sign , il sera
+   imprim  pr c d  du signe <TT>+</TT> ou <TT>-</TT>.
+
+<P>
+<DT><I>blanc</I>
+<DD>si <I>param</I><SUB><I>i</I></SUB> est un nombre sign  et 
+   si son premier caract re n'est pas un signe, on imprimera un blanc 
+   devant <I>param</I><SUB><I>i</I></SUB>.
+   Si on a   la fois l'indicateur <TT>+</TT> et l'indicateur <I>blanc</I>,
+   ce dernier sera ignor .
+
+<P>
+<DT><TT>#</TT>
+<DD>cet indicateur demande l'impression de
+   <I>param</I><SUB><I>i</I></SUB> sous une forme non standard.
+   Pour le format <TT>o</TT>, cet indicateur force la pr cision    tre
+   augment e de mani re   ce que <I>param</I><SUB><I>i</I></SUB> soit imprim  en commen ant
+   par un z ro.
+   Pour les formats <TT>x</TT> et <TT>X</TT>, cet indicateur a pour but de faire
+   pr c der <I>param</I><SUB><I>i</I></SUB> respectivement de <TT>0x</TT> ou <TT>0X</TT>, sauf si
+   <I>param</I><SUB><I>i</I></SUB> est nul.
+   Pour les formats <TT>e</TT>, <TT>E</TT>, <TT>f</TT>, <TT>g</TT> et <TT>G</TT>, cet
+   indicateur force <I>param</I><SUB><I>i</I></SUB>    tre imprim  avec un point d cimal,
+   m me si il n'y a aucun chiffre apr s.
+   Pour les formats <TT>g</TT> et <TT>G</TT>, cet indicateur emp che les z ros de la
+   fin d' tre enlev s.
+   Pour les autres formats, le comportement n'est pas d fini.
+
+<P>
+<DT><TT>0</TT>
+<DD>pour les formats <TT>d</TT>, <TT>i</TT>, <TT>o</TT>, <TT>u</TT>,
+   <TT>x</TT>, <TT>X</TT>, <TT>e</TT>, <TT>E</TT>, <TT>f</TT>, <TT>g</TT>, et <TT>G</TT> cet 
+   indicateur a pour effet de compl ter l' criture de <I>param</I><SUB><I>i</I></SUB> avec
+   des <TT>0</TT> en t te, de mani re   ce qu'il remplisse tout son champ
+   d'impression.
+   Si il y a   la fois les deux indicateurs <TT>0</TT> et <TT>-</TT>, l'indicateur
+   <TT>0</TT> sera ignor .
+   Pour les formats <TT>d</TT>, <TT>i</TT>, <TT>o</TT>, <TT>u</TT>, <TT>x</TT> et <TT>X</TT>,
+   si il y a une indication de pr cision, l'indicateur <TT>0</TT> est ignor .
+   Pour les autres formats, le comportement n'est pas d fini.
+
+<P>
+</DL>   
+
+<P>
+<DT>2
+<DD>Un nombre entier d cimal (optionnel) indiquant la taille
+minimum du champ d'impression, exprim e en caract res.
+Si <I>param</I><SUB><I>i</I></SUB> s' crit sur un nombre de caract res inf rieur   cette
+taille, <I>param</I><SUB><I>i</I></SUB> est compl t    droite ou   gauche (selon que l'on
+aura utilis  ou pas l'indicateur <TT>-</TT>), avec des blancs ou des <TT>0</TT>,
+comme il a  t  expliqu  plus haut.
+
+<P>
+<DT>3
+<DD>Une indication (optionnelle) de pr cision, qui donne&nbsp;:
+
+<P>
+<DL COMPACT>
+<DT><FONT SIZE="-1">-</FONT>
+<DD>le nombre minimum de chiffres pour les formats <TT>d</TT>, <TT>i</TT>,
+<TT>o</TT>, <TT>u</TT>, <TT>x</TT> et <TT>X</TT>.
+
+<P>
+<DT><FONT SIZE="-1">-</FONT>
+<DD>le nombre de chiffres apr s le point d cimal pour les formats <TT>e</TT>,
+   <TT>E</TT> et <TT>f</TT>.
+
+<P>
+<DT><FONT SIZE="-1">-</FONT>
+<DD>le nombre maximum de chiffres significatifs pour les formats <TT>g</TT> et
+   <TT>G</TT>
+
+<P>
+<DT><FONT SIZE="-1">-</FONT>
+<DD>le nombre maximum de caract res pour le format <TT>s</TT>.
+   </DL>
+<P>
+Cette indication de pr cision prend la forme d'un point (<code>.</code>) suivi
+d'un nombre d cimal optionnel. Si ce nombre est omis, la pr cision est prise
+ gale   0.
+
+<P>
+</DL>   
+
+<P>
+ 
+<BR><HR><P></P>
+<DIV ALIGN="CENTER">
+<B>Remarque</B>
+</DIV>
+Le nombre entier d cimal indiquant la taille maximum du champ
+d'impression et/ou le nombre entier d cimal indiquant la pr cision,
+peuvent  tre remplac es par le caract re <TT>*</TT>.
+Si le caract re <TT>*</TT> a  t  utilis  une seule fois dans le format,
+la valeur correspondante (taille du champ ou pr cision) sera prise  gale
+  <I>param</I><SUB><I>i</I>-1</SUB>.
+Si le caract re <TT>*</TT> a  t  utilis  deux fois, la taille du champ
+d'impression sera  gale   <I>param</I><SUB><I>i</I>-2</SUB>, et la pr cision sera
+ gale   <I>param</I><SUB><I>i</I>-1</SUB>.
+Si la taille maximum du champ d'impression a une valeur n gative, cela
+a la s mantique de l'indicateur <code>-</code> suivi de la valeur (positive) de la 
+taille du champ d'impression.
+Si la pr cision est n gative, cela a la s mantique d'une pr cision absente.
+<BR><HR>
+<BR>
+<P>
+<DL COMPACT>
+
+<P>
+<DT>4
+<DD>un caract re optionnel, qui peut  tre&nbsp;:
+
+<P>
+<DL COMPACT>
+
+<P>
+<DT><TT>h</TT>
+<DD>s'appliquant aux formats <TT>d</TT>, <TT>i</TT>, <TT>o</TT>, 
+   <TT>u</TT>, <TT>x</TT> ou <TT>X</TT>&nbsp;: <I>param</I><SUB><I>i</I></SUB> sera interpr t  comme un 
+   <TT>short int</TT> ou <TT>unsigned short int</TT>.
+
+<P>
+<DT><TT>h</TT>
+<DD>s'appliquant au format <TT>n</TT>&nbsp;: <I>param</I><SUB><I>i</I></SUB> sera
+   interpr t  comme un pointeur vers un <TT>short int</TT>.
+
+<P>
+<DT><TT>l</TT>
+<DD><A NAME="tex2html15"
+ HREF="footnode.php#foot6504"><SUP>5.2</SUP></A>.
+   s'appliquant aux formats <TT>d</TT>, <TT>i</TT>, <TT>o</TT>, <TT>u</TT>, <TT>x</TT> ou 
+   <TT>X</TT>&nbsp;: <I>param</I><SUB><I>i</I></SUB> sera interpr t  comme un <TT>long int</TT> ou un
+   <TT>unsigned long int</TT>.
+
+<P>
+<DT><TT>l</TT>
+<DD><A NAME="tex2html16"
+ HREF="footnode.php#foot6515"><SUP>5.3</SUP></A> s'appliquant au format
+   <TT>n</TT>&nbsp;: <I>param</I><SUB><I>i</I></SUB> sera
+   interpr t  comme un pointeur vers un <TT>long int</TT>.
+
+<P>
+<DT><TT>L</TT>
+<DD>s'appliquant aux formats <TT>e</TT>, <TT>E</TT>, <TT>f</TT>, 
+   <TT>g</TT> ou <TT>G</TT>&nbsp;: <I>param</I><SUB><I>i</I></SUB> sera interpr t  comme un
+   <TT>long double</TT>.
+   </DL>
+<P>
+ 
+<BR><HR><P></P>
+Si un <TT>h</TT>, <TT>l</TT> ou <TT>L</TT> s'applique   un autre format que ceux
+indiqu s ci-dessus, le comportement est ind termin .
+<BR><HR>
+<BR>
+<P>
+<DT>5
+<DD>un caract re qui peut prendre les valeurs
+suivantes&nbsp;:
+     
+<DL COMPACT>
+
+<P>
+<DT><TT>d</TT>, <TT>i</TT>
+<DD><I>param</I><SUB><I>i</I></SUB> sera interpr t  comme un
+<TT>int</TT>, et  crit sous forme d cimale sign e.
+
+<P>
+<DT><TT>u</TT>
+<DD><I>param</I><SUB><I>i</I></SUB> sera interpr t  comme un
+<TT>unsigned int</TT>, et  crit sous forme d cimale non sign e.
+
+<P>
+<DT><TT>o</TT>
+<DD><I>param</I><SUB><I>i</I></SUB> sera interpr t  comme un
+<TT>int</TT>, et  crit sous forme octale non sign e.
+
+<P>
+<DT><TT>x</TT>, <TT>X</TT>
+<DD><I>param</I><SUB><I>i</I></SUB> sera interpr t  comme un
+<TT>int</TT>, et  crit sous forme hexad cimale non sign e.
+La notation hexad cimale utilisera les lettres <TT>abcdef</TT> dans le cas du
+format <TT>x</TT>, et les lettres <TT>ABCDEF</TT> dans le cas du format <TT>X</TT>.
+
+<P>
+</DL>Dans les cas qui pr c dent, la pr cision indique le nombre minimum de
+chiffres avec lesquels  crire <I>param</I><SUB><I>i</I></SUB>.
+Si <I>param</I><SUB><I>i</I></SUB> s' crit avec moins de chiffres, il sera compl t 
+avec des z ros.
+La pr cision par d faut est 1. Une valeur nulle demand e avec une pr cision
+nulle, ne sera pas imprim e.
+
+<P>
+<DL COMPACT>
+
+<P>
+<DT><TT>c</TT>
+<DD><I>param</I><SUB><I>i</I></SUB> sera interpr t  comme un <TT>unsigned
+char</TT>.
+
+<P>
+<DT><TT>s</TT>
+<DD><I>param</I><SUB><I>i</I></SUB> sera interpr t  comme l'adresse
+d'un tableau de caract res (termin  ou non par un <I>null</I>).
+Les caract res du tableau seront imprim s jusqu'au premier des deux  v nements
+possibles&nbsp;:
+<DL COMPACT>
+<DT><FONT SIZE="-1">-</FONT>
+<DD>impression de <I>pr cision</I> caract res de <I>param</I><SUB><I>i</I></SUB>.
+<DT><FONT SIZE="-1">-</FONT>
+<DD>rencontre de <I>null</I> dans <I>param</I><SUB><I>i</I></SUB>.
+</DL>Dans le cas o  <I>param</I><SUB><I>i</I></SUB> n'est pas termin  par un <I>null</I>, le
+format d'impression doit comporter une indication de <I>pr cision</I>.
+
+<P>
+<DT><TT>p</TT>
+<DD><I>param</I><SUB><I>i</I></SUB> sera interpr t  comme un pointeur vers
+<TT>void</TT>. Le pointeur sera imprim  sous une forme d pendante de
+l'impl mentation.
+
+<P>
+<DT><TT>n</TT>
+<DD><I>param</I><SUB><I>i</I></SUB> sera interpr t  comme un pointeur vers
+un <TT>int</TT> auquel sera affect  le nombre de caract res  crits jusqu'alors
+par cette invocation de <TT>fprintf</TT>.
+
+<P>
+<DT><TT>e</TT>,<TT>E</TT>
+<DD><I>param</I><SUB><I>i</I></SUB> sera interpr t  comme un
+<TT>double</TT>  et  crit sous la forme&nbsp;:
+<BR>
+<TT>-</TT><SUB><I>option</I></SUB>  <I>pe</I>  <TT>.</TT>
+ <I>pf</I>  <TT>e</TT>
+ <I>signe</I>  <I>exposant</I>
+<BR>
+dans laquelle <I>pe</I> et <I>pf</I> sont respectivement partie enti re 
+et partie fractionnaire de la mantisse.
+La partie enti re est exprim e avec un seul chiffre, la partie fractionnaire
+est exprim e avec un nombre de chiffres  gal   la pr cision.
+La pr cision est prise  gale   6 par d faut.
+Si la pr cision est 0, le point d cimal n'appara t pas.
+L'exposant contient toujours au moins deux chiffres.
+Si <I>param</I><SUB><I>i</I></SUB> est nul, l'exposant sera nul.
+Dans le cas du format <TT>E</TT>, la lettre <TT>E</TT> est imprim e   la place
+de <TT>e</TT>.
+
+<P>
+<DT><TT>f</TT>
+<DD><I>param</I><SUB><I>i</I></SUB> sera interpr t  comme un <TT>double</TT>
+et  crit sous la forme&nbsp;:
+<BR>
+<TT>-</TT><SUB><I>option</I></SUB>  <I>pe</I>  <TT>.</TT>
+ <I>pf</I>
+<BR>
+dans laquelle <I>pe</I> et <I>pf</I> sont respectivement partie enti re 
+et partie fractionnaire de la mantisse.
+La partie fractionnaire est exprim e avec un nombre de chiffres  gal
+  la pr cision.
+La pr cision est prise  gale   6 par d faut.
+Si la pr cision est 0, le point d cimal n'appara t pas.
+
+<P>
+<DT><TT>g</TT>,<TT>G</TT>
+<DD><I>param</I><SUB><I>i</I></SUB> sera interpr t  comme un
+<TT>double</TT> et  crit sous le format <TT>f</TT>, ou le format <TT>e</TT>, selon
+sa valeur.
+Si <I>param</I><SUB><I>i</I></SUB> a un exposant inf rieur   -4 ou plus grand ou  gal   la
+pr cision, il sera imprim  sous le format <TT>e</TT>, sinon il sera imprim 
+sous le format <TT>f</TT>.
+D' ventuels z ros   la fin de la partie fractionnaire sont enlev s.
+Le point d cimal n'appara t que si il est suivi d'au moins un chiffre.
+Dans ce qui pr c de, l'utilisation du format <TT>G</TT> implique l'utilisation
+du format <TT>E</TT>   la place du format <TT>e</TT>.
+
+<P>
+<DT><TT>%</TT>
+<DD>Un caract re <TT>%</TT> est  crit.
+</DL></DL>
+<P>
+
+<H2><A NAME="SECTION00752000000000000000">
+ criture formatt e&nbsp;: <TT>printf</TT></A>
+</H2>
+<A NAME="6766">&#160;</A>
+Nous avons d j  vu <TT>printf</TT>, mais nous allons la d finir ici formellement.
+
+<P>
+
+<H3><A NAME="SECTION00752100000000000000">
+Utilisation</A>
+</H3>
+La fonction <TT>printf</TT> admet un nombre variable de param tres.
+Son utilisation est la suivante&nbsp;:
+
+<P>
+<TT>printf</TT> <TT>(</TT> <I>format</I> <TT>,</TT> <I>param</I><SUB>1</SUB> <TT>,</TT> <I>param</I><SUB>2</SUB> <TT>,</TT> ... <TT>,</TT> <I>param</I><SUB><I>n</I></SUB> <TT>)</TT>
+
+<P>
+
+<H3><A NAME="SECTION00752200000000000000">
+Description</A>
+</H3>
+Un appel <TT>printf(fmt, ...)</TT> est rigoureusement identique  
+<TT>fprintf(stdout,fmt,...)</TT>.
+
+<P>
+
+<H2><A NAME="SECTION00753000000000000000">
+ criture formatt e dans une cha ne : <TT>sprintf</TT></A>
+</H2>
+<A NAME="6768">&#160;</A>
+
+<P>
+
+<H3><A NAME="SECTION00753100000000000000">
+Utilisation</A>
+</H3>
+La fonction <TT>sprintf</TT> admet un nombre variable de param tres.
+Son utilisation est la suivante&nbsp;:
+
+<P>
+<TT>sprintf</TT> <TT>(</TT> <I>cha ne</I> <TT>,</TT> <I>format</I> <TT>,</TT> <I>param</I><SUB>1</SUB> <TT>,</TT> <I>param</I><SUB>2</SUB> <TT>,</TT> ... <TT>,</TT> <I>param</I><SUB><I>n</I></SUB> <TT>)</TT>
+
+<P>
+
+<H3><A NAME="SECTION00753200000000000000">
+Description</A>
+</H3>
+La fonction <TT>sprintf</TT> r alise le m me traitement que la fonction
+<TT>fprintf</TT>, avec la diff rence que les caract res  mis par <TT>sprintf</TT>
+ne sont pas  crits dans un fichier, mais dans le tableau de caract res
+<I>cha ne</I>. Un <I>null</I> est  crit dans <I>cha ne</I> en fin de traitement.
+
+<P>
+
+<H2><A NAME="SECTION00754000000000000000">
+Exemples d'utilisation des formats</A>
+</H2><PRE>
+              source C                       resultat
+
+printf("|%d|\n",1234);                       	|1234|
+printf("|%d|\n",-1234);                      	|-1234|
+printf("|%+d|\n",1234);                      	|+1234|
+printf("|%+d|\n",-1234);                     	|-1234|
+printf("|% d|\n",1234);                      	| 1234|
+printf("|% d|\n",-1234);                     	|-1234|
+printf("|%x|\n",0x56ab);                     	|56ab|
+printf("|%X|\n",0x56ab);                     	|56AB|
+printf("|%#x|\n",0x56ab);                    	|0x56ab|
+printf("|%#X|\n",0x56ab);                    	|0X56AB|
+printf("|%o|\n",1234);                       	|2322|
+printf("|%#o|\n",1234);                      	|02322|
+                                             	
+printf("|%10d|\n",1234);                     	|      1234|
+printf("|%10.6d|\n",1234);                   	|    001234|
+printf("|%.6d|\n",1234);                     	|001234|
+printf("|%*.6d|\n",10,1234);                 	|    001234|
+printf("|%*.*d|\n",10,6,1234);               	|    001234|
+                                             	
+printf("|%f|\n",1.234567890123456789e5);     	|123456.789012|
+printf("|%.4f|\n",1.234567890123456789e5);   	|123456.7890|
+printf("|%.20f|\n",1.234567890123456789e5);  	|123456.78901234567456413060|
+printf("|%20.4f|\n",1.234567890123456789e5); 	|         123456.7890|
+                                             	
+printf("|%e|\n",1.234567890123456789e5);     	|1.234568e+05|
+printf("|%.4e|\n",1.234567890123456789e5);   	|1.2346e+05|
+printf("|%.20e|\n",1.234567890123456789e5);  	|1.23456789012345674564e+05|
+printf("|%20.4e|\n",1.234567890123456789e5); 	|          1.2346e+05|
+                                             	
+printf("|%.4g|\n",1.234567890123456789e-5);  	|1.235e-05|
+printf("|%.4g|\n",1.234567890123456789e5);   	|1.235e+05|
+printf("|%.4g|\n",1.234567890123456789e-3);  	|0.001235|
+printf("|%.8g|\n",1.234567890123456789e5);   	|123456.79|
+</PRE>
+<P>
+
+<H2><A NAME="SECTION00755000000000000000">
+Entr es formatt es : <TT>fscanf</TT></A>
+</H2>
+<A NAME="8715">&#160;</A>
+
+<P>
+
+<H3><A NAME="SECTION00755100000000000000">
+Utilisation</A>
+</H3>
+
+<P>
+La fonction <TT>fscanf</TT> admet un nombre variable de param tres.
+Son utilisation est la suivante&nbsp;:
+
+<P>
+<TT>fscanf</TT> <TT>(</TT> <I>flot-de-donn es</I> <TT>,</TT> <I>format</I> <TT>,</TT> <I>param</I><SUB>1</SUB> <TT>,</TT> <I>param</I><SUB>2</SUB> <TT>,</TT> ... <TT>,</TT> <I>param</I><SUB><I>n</I></SUB> <TT>)</TT>
+
+<P>
+
+<H3><A NAME="SECTION00755200000000000000">
+S mantique des param tres</A>
+</H3>
+<DL COMPACT>
+<DT><FONT SIZE="-1">-</FONT>
+<DD><I>flot-de-donn es</I> est de type pointeur vers <TT>FILE</TT>.
+Il pointe vers le fichier   partir duquel se fait la lecture.
+<DT><FONT SIZE="-1">-</FONT>
+<DD><I>format</I> est une cha ne de caract res qui sp cifie la forme
+de l'entr e admissible dans <I>flot-de-donn es</I>.
+<DT><FONT SIZE="-1">-</FONT>
+<DD>les <I>param</I><SUB><I>i</I></SUB> sont des pointeurs. Ils pointent des
+variables dans lesquelles <TT>fscanf</TT> d pose les valeurs
+lues dans <I>flot-de-donn es</I>, apr s les avoir converties en binaire.
+</DL>
+<P>
+
+<H3><A NAME="SECTION00755300000000000000">&#160;</A>
+<A NAME="scanret">&#160;</A>
+<BR>
+Valeur rendue
+</H3>
+Si au moins un <I>param</I><SUB><I>i</I></SUB> s'est vu affecter une valeur, <TT>fscanf</TT>
+retourne le nombre de <I>param</I><SUB><I>i</I></SUB> affect s.
+Si il y a eu rencontre de fin de fichier ou erreur d'entr e-sortie
+avant toute affectation   un <I>param</I><SUB><I>i</I></SUB>, <TT>fscanf</TT> retourne <TT>EOF</TT>.
+<A NAME="8716">&#160;</A>
+
+<P>
+
+<H3><A NAME="SECTION00755400000000000000">
+Description</A>
+</H3>
+<TT>fscanf</TT> lit une suite de caract res du fichier d fini par <I>flot-de-donn es</I>
+en v rifiant que cette suite est conforme   la description qui en est faite
+dans <I>format</I>.
+Cette v rification s'accompagne d'un effet de bord qui consiste  
+affecter des valeurs aux variables point es par les diff rents
+<I>param</I><SUB><I>i</I></SUB>.
+<A NAME="8440">&#160;</A>
+
+<P>
+
+<H3><A NAME="SECTION00755500000000000000">
+Quelques d finitions</A>
+</H3>
+
+<P>
+<DL>
+<DD><P>
+<DT><STRONG>flot d'entr e</STRONG>
+<DD>il s'agit de la suite de caract res lus du fichier
+d fini par <I>flot-de-donn es</I>.
+
+<P>
+<DT><STRONG>caract res blancs</STRONG>
+<DD>il s'agit des six caract res suivants&nbsp;: <I>espace</I>,
+<I>tab</I>, <I>line feed</I>, <I>new line</I>, <I>vertical tab</I> et
+<I>form feed</I>.
+
+<P>
+<DT><STRONG>mod le</STRONG>
+<DD>un mod le est la description d'un ensemble de cha nes de
+caract res. Exemple&nbsp;: <code>%d</code> est le mod le des cha nes form es 
+de chiffres d cimaux,  ventuellement sign es.
+
+<P>
+<DT><STRONG>conforme</STRONG>
+<DD>on dira qu'une cha ne est conforme   un mod le quand elle
+appartient   l'ensemble des cha nes d crites par le mod le. Exemple&nbsp;:
+<code>123</code> est conforme au mod le <code>%d</code>.
+
+<P>
+<DT><STRONG>directive</STRONG>
+<DD>une directive peut  tre&nbsp;:
+
+<P>
+<DL COMPACT>
+<DT><FONT SIZE="-1">-</FONT>
+<DD>une suite de caract res blancs qui est un mod le d'un nombre
+quelconque de caract res blancs. Exemple&nbsp;: un espace est un mod le pour un
+nombre quelconque d'espaces, ou d'un nombre quelconque d'espace et de <I>tab</I>
+m lang s, ou d'un nombre quelconque d'espaces, de <I>tab</I> et de 
+<I>line-feed</I> m lang s etc.
+<P>
+<DT><FONT SIZE="-1">-</FONT>
+<DD>une suite de caract res ordinaires (c'est   dire qui ne sont ni des
+caract res blancs, ni le caract re <code>%</code>) qui est un mod le pour elle-m me.
+Exemple&nbsp;: la cha ne <code>hello</code> est un mod le de la seule cha ne <code>hello</code>.
+
+<P>
+<DT><FONT SIZE="-1">-</FONT>
+<DD>des s quences d' chappement introduites par le caract re <code>%</code>.
+Ces  s quences jouent un double r le&nbsp;: elle sont   la fois un mod le 
+des cha nes acceptables dans le  flot d'entr e, et elles sont  galement des
+ordres de conversion de la cha ne lue et d'affectation du r sultat  
+une variable point e par le <I>param</I><SUB><I>i</I></SUB> correspondant.
+Exemple&nbsp;: la directive <code>%d</code> est un mod le des nombres
+d cimaux et un ordre de conversion de la cha ne lue en valeur binaire et
+d'affectation   l'entier point  par le <I>param</I><SUB><I>i</I></SUB> correspondant.
+
+<P>
+</DL>
+<P>
+</DL>
+<P>
+
+<H3><A NAME="SECTION00755600000000000000">
+Les s quences d' chappement</A>
+</H3>
+<A NAME="8717">&#160;</A>
+<A NAME="8460">&#160;</A>
+<A NAME="8461">&#160;</A>
+<A NAME="8718">&#160;</A>
+<A NAME="8719">&#160;</A>
+<A NAME="8720">&#160;</A>
+<A NAME="8721">&#160;</A>
+<A NAME="8722">&#160;</A>
+Les s quences d' chappement se composent des  l ments suivants&nbsp;:
+<DL COMPACT>
+
+<P>
+<DT>1
+<DD>le caract re <code>*</code> (optionnel) qui indique que la
+directive doit  tre consid r e comme un pur mod le&nbsp;: pas de conversion de la
+cha ne lue, et pas d'affectation   un <I>param</I><SUB><I>i</I></SUB>.
+
+<P>
+<DT>2
+<DD>un nombre (optionnel) qui indique la longueur maximum
+de la cha ne acceptable du flot d'entr e.
+
+<P>
+<DT>3
+<DD>un caract re optionnel, qui est un modificateur de
+type, pouvant prendre l'une des valeurs suivantes&nbsp;:
+
+<P>
+<DL COMPACT>
+
+<P>
+<DT><TT>h</TT>
+<DD>s'appliquant aux formats <TT>d</TT>, <TT>i</TT>, <TT>n</TT>&nbsp;:
+   <I>param</I><SUB><I>i</I></SUB> sera interpr t  comme un pointeur vers un <TT>short int</TT>.
+
+<P>
+<DT><TT>h</TT>
+<DD>s'appliquant aux formats <TT>o</TT>, <TT>u</TT>, <TT>x</TT>&nbsp;:
+   <I>param</I><SUB><I>i</I></SUB> sera interpr t  comme un pointeur vers un
+   <TT>unsigned short int</TT>.
+
+<P>
+<DT><TT>l</TT>
+<DD>s'appliquant aux formats <TT>d</TT>, <TT>i</TT>, <TT>n</TT>&nbsp;:
+   <I>param</I><SUB><I>i</I></SUB> sera interpr t  comme un pointeur vers un <TT>long int</TT>.
+
+<P>
+<DT><TT>l</TT>
+<DD>s'appliquant aux formats <TT>o</TT>, <TT>u</TT>, <TT>x</TT>&nbsp;:
+   <I>param</I><SUB><I>i</I></SUB> sera interpr t  comme un pointeur vers un
+   <TT>unsigned long int</TT>.
+
+<P>
+<DT><TT>l</TT>
+<DD>s'appliquant aux formats <TT>e</TT>, <TT>f</TT>, <TT>g</TT>&nbsp;:
+   <I>param</I><SUB><I>i</I></SUB> sera interpr t  comme un pointeur vers un <TT>double</TT>.
+
+<P>
+<DT><TT>L</TT>
+<DD>s'appliquant aux formats <TT>e</TT>, <TT>f</TT>, <TT>g</TT>&nbsp;:
+   <I>param</I><SUB><I>i</I></SUB> sera interpr t  comme un pointeur vers un 
+   <TT>long double</TT>.
+
+<P>
+</DL>
+<P>
+<DT>4
+<DD>un caract re de conversion qui peut prendre l'une
+des valeurs suivantes&nbsp;:
+
+<P>
+<DL COMPACT>
+
+<P>
+<DT><TT>d</TT>
+<DD>mod le pour un nombre d cimal  ventuellement pr c d 
+d'un signe. Le <I>param</I><SUB><I>i</I></SUB> correspondant est interpr t  comme un pointeur
+vers un <TT>int</TT>, sauf si la directive contient un modificateur de type.
+
+<P>
+<DT><TT>i</TT>
+<DD>mod le pour un nombre  ventuellement pr c d  d'un signe,
+et ayant l'une des trois formes suivantes&nbsp;:
+
+<P>
+<DL COMPACT>
+
+<P>
+<DT><FONT SIZE="-1">-</FONT>
+<DD>un nombre d cimal.
+   <DT><FONT SIZE="-1">-</FONT>
+<DD>un nombre d butant par <code>0</code> qui sera pris comme nombre octal.
+   <DT><FONT SIZE="-1">-</FONT>
+<DD>un nombre d butant par <code>0x</code> ou <code>0X</code>, qui sera pris comme
+   nombre hexad cimal.
+   </DL>
+<P>
+Le <I>param</I><SUB><I>i</I></SUB> correspondant est interpr t  comme un pointeur
+vers un <TT>int</TT>, sauf si la directive contient un modificateur de type.
+
+<P>
+<DT><TT>o</TT>
+<DD>mod le pour un nombre octal  ventuellement pr c d  d'un
+signe.
+Le <I>param</I><SUB><I>i</I></SUB> correspondant est interpr t  comme un pointeur
+vers un <TT>unsigned int</TT>, sauf si la directive contient un modificateur de
+type.
+
+<P>
+<DT><TT>u</TT>
+<DD>mod le pour un nombre d cimal  ventuellement pr c d 
+d'un signe.<A NAME="tex2html17"
+ HREF="footnode.php#foot8727"><SUP>5.4</SUP></A>
+Le <I>param</I><SUB><I>i</I></SUB> correspondant est interpr t  comme un pointeur
+vers un <TT>unsigned int</TT>, sauf si la directive contient un modificateur de 
+type.
+
+<P>
+<DT><TT>x</TT>
+<DD>mod le pour un nombre hexad cimal  ventuellement pr c d 
+d'un signe.
+Le <I>param</I><SUB><I>i</I></SUB> correspondant est interpr t  comme un pointeur
+vers un <TT>unsigned int</TT>, sauf si la directive contient un modificateur de
+type.
+
+<P>
+ 
+   <BR><HR><P></P>
+   <DIV ALIGN="CENTER"><FONT SIZE="-1">
+<B>Remarque</B>
+   </FONT></DIV><FONT SIZE="-1">   En ce qui concerne les formats <TT>o</TT>, <TT>u</TT>, et <TT>x</TT>, le lecteur a
+   sans doute  t  surpris de voir que le <I>param</I></FONT><SUB><I>i</I></SUB><FONT SIZE="-1"> correspondant est
+   interpr t  comme un pointeur vers un <TT>unsigned int</TT> alors que la cha ne
+   dans le flot d'entr e qui correspond   ces formats est un nombre
+    ventuellement pr c d  d'un signe.
+   Il n'y a pas d'erreur, c'est bien ce que dit la norme.
+   </FONT>   
+<BR><HR>
+<BR>
+<P>
+<DT><TT>c</TT>
+<DD>mod le pour une suite de caract res dont le nombre est
+donn  par <I>le nombre (optionnel) qui indique la longueur maximum
+de la cha ne acceptable du flot d'entr e</I> (Cf plus haut).
+Si ce nombre optionnel ne figure pas dans la directive, il est pris  gal   1.
+Le <I>param</I><SUB><I>i</I></SUB> correspondant est interpr t  comme  tant un pointeur
+vers un tableau de caract res suffisamment grand pour contenir la cha ne lue.
+Il n'y a pas de <I>null</I> rajout    la fin de la cha ne lue dans le flot
+d'entr e.
+
+<P>
+<DT><TT>s</TT>
+<DD>mod le pour une suite de caract res non blancs.
+Le <I>param</I><SUB><I>i</I></SUB> correspondant est interpr t  comme un pointeur vers
+un tableau de caract res suffisamment grand pour contenir la cha ne lue
+plus un <I>null</I> terminal.
+
+<P>
+<DT><TT>e,f,g</TT>
+<DD>mod le pour un flottant  crit selon la syntaxe d'une
+constante flottante du langage C.
+Le <I>param</I><SUB><I>i</I></SUB> correspondant est interpr t  comme un pointeur
+vers un <TT>float </TT>, sauf si la directive contient un modificateur de
+type.
+
+<P>
+<DT><TT>[</TT>
+<DD>Dans la cha ne <I>format</I>, ce caract re introduit
+une s quence particuli re destin e   d finir un <I>scanset</I>.
+La s quence est form e du caract re <TT>[</TT>, suivi d'une suite de
+caract res quelconques, suivi du caract re <TT>]</TT>.
+Si le premier caract re apr s le crochet ouvrant n'est pas le
+caract re <code>^</code>,
+le <I>scanset</I> est l'ensemble des caract res entre crochets.
+Si le caract re apr s le crochet ouvrant est le caract re <code>^</code>,
+le <I>scanset</I> est l'ensemble des caract res <B>ne</B> se trouvant <B>pas</B>
+dans la cha ne entre crochets.
+Le <I>scanset</I> peut comprendre le caract re <code>]</code>   condition de le
+mettre en d but soit <code>[] ...]</code> ou <code>[^]...]</code> selon que l'on utilise
+la forme sans ou avec <code>^</code>.
+Le <I>scanset</I> peut contenir <code>^</code>   condition de ne pas le mettre
+en t te&nbsp;: <code>[...^...]</code>.
+
+<P>
+Une directive <code>[</code> est un mod le pour une suite de caract res appartenant
+au <I>scanset</I>.
+Le <I>param</I><SUB><I>i</I></SUB> correspondant est interpr t  comme un pointeur vers
+un tableau de caract res suffisamment grand pour contenir la cha ne lue
+plus un <I>null</I> terminal.
+
+<P>
+<DT><TT>p</TT>
+<DD>mod le pour un pointeur  crit d'une mani re d pendant de
+l'impl mentation, mais identique   l'impression par <code>printf</code> d'un
+pointeur selon le format <code>%p</code>.
+Le <I>param</I><SUB><I>i</I></SUB> correspondant est interpr t  comme un pointeur vers
+un pointeur vers <TT>void</TT>.
+
+<P>
+<DT><TT>n</TT>
+<DD>cette directive n'est pas un mod le. Elle ne sert
+qu'  mettre une valeur dans l'objet point  par le <I>param</I><SUB><I>i</I></SUB>
+correspondant.
+Le <I>param</I><SUB><I>i</I></SUB> correspondant est interpr t  comme un pointeur vers un
+<TT>int</TT> dans lequel <code>fscanf</code>  crit le nombre de caract res lus 
+jusqu'  ce moment, dans le flot de donn es, par cette invocation de
+<code>fscanf</code>.
+L'ex cution d'une directive <code>%n</code> n'augmente pas le nombre des 
+<I>param</I><SUB><I>i</I></SUB> affect s qui sera retourn  par <TT>fscanf</TT> (Cf <A HREF="node74.php#scanret">5.5.5</A>).
+
+<P>
+<DT><TT>%</TT>
+<DD>est un mod le pour le caract re <code>%</code>.
+La directive compl te est <code>%%</code>.
+</DL></DL>
+<P>
+
+<H3><A NAME="SECTION00755700000000000000">
+Algorithme de <TT>fscanf</TT></A>
+</H3>
+La cha ne <I>format</I> doit se composer d'un ensemble de directives.
+Il doit y avoir autant de <I>param</I><SUB><I>i</I></SUB> que de directives demandant
+l'affectation d'une valeur.
+Si il n'y a pas suffisamment de <I>param</I><SUB><I>i</I></SUB> pour le <I>format</I>, le
+comportement n'est pas d fini.
+Si il y a davantage de <I>param</I><SUB><I>i</I></SUB> que demand  par le <I>format</I>,
+les <I>param</I><SUB><I>i</I></SUB> en exc s sont  valu s mais ils sont inutilis s.
+
+<P>
+La fonction <code>fscanf</code> ex cute dans l'ordre chaque directive du <I>format</I>.
+Si une directive  choue, la fonction <code>fscanf</code> retourne   l'appelant.
+<DL COMPACT>
+<DT><FONT SIZE="-1">-</FONT>
+<DD>L'ex cution d'une directive form e de caract res blancs, consiste   consommer
+dans le flot d'entr e la plus longue s quence possible de caract res blancs.
+M me si cette s quence est de taille nulle, la directive a r ussi.
+<P>
+<DT><FONT SIZE="-1">-</FONT>
+<DD>L'ex cution d'une directive form e de caract res ordinaires, consiste  
+consommer dans le flot d'entr e une s quence identique   la directive.
+Au premier caract re diff rent, la directive a  chou  et ce caract re reste non
+lu.
+
+<P>
+<DT><FONT SIZE="-1">-</FONT>
+<DD>L'ex cution d'une directive form e d'une s quence d' chappement, consiste  &nbsp;:
+
+<P>
+<DL COMPACT>
+<DT>1.
+<DD>consommer dans le flot d'entr e la plus longue s quence possible
+de caract res blancs.
+   Cette s quence peut  tre de taille nulle.
+   Cette action ne s'applique pas aux formats <TT>c</TT>, <TT>n</TT>, ni <TT>[</TT>.
+
+<P>
+<DT>2.
+<DD>consommer dans le flot d'entr e la plus longue s quence possible
+   de caract res qui soit conforme au mod le.
+   Si cette s quence est de taille nulle, la directive a  chou .
+
+<P>
+<DT>3.
+<DD>si la directive ne contient pas le caract re <code>*</code>, convertir la
+   cha ne lue et l'affecter   l'objet point  par le <I>param</I><SUB><I>i</I></SUB>
+   correspondant.
+   Si cet objet n'est pas de la taille ou du type convenable pour la recevoir,
+   le comportement n'est pas d fini.
+   </DL>
+<P>
+</DL>
+<P>
+
+<H3><A NAME="SECTION00755800000000000000">
+Remarques sur la gestion des <I>espaces blancs</I></A>
+</H3>
+La gestion des espaces blancs est assez p nible.
+Il y a deux m thodes de consommation des espaces blancs du flot de donn es&nbsp;:
+<DL COMPACT>
+<DT>1.
+<DD>le <I>format</I> contient une directive form e de caract res blancs.
+Si une telle directive ne peut consommer aucun caract re blanc, c'est un
+cas d' chec de la directive.
+<P>
+<DT>2.
+<DD>le <I>format</I> contient une s quence d' chappement (autre que <TT>c</TT>, <TT>n</TT>,
+ou <TT>[</TT>) dont l'ex cution commence par consommer d' ventuels caract res
+blancs dans le flot de donn es.
+Si il n'y a pas de caract res blancs   consommer, ce n'est pas une condition
+d' chec de la directive.
+
+<P>
+</DL>
+<P>
+Voyons quelques cons quences.
+
+<P>
+Si le flot de donn es contient <TT>23   45</TT> on pourra les lire indiff remment 
+soit&nbsp;:
+<DL COMPACT>
+<DT><FONT SIZE="-1">-</FONT>
+<DD>par le format <TT>"%d %d"</TT>&nbsp;: la premi re directive <TT>%d</TT> consomme 
+<TT>23</TT>, la directive <I>blanc</I> (entre les deux <TT>%d</TT>) consomme les
+blancs entre <TT>2</TT> et <TT>45</TT>, et la seconde directive <TT>%d</TT>
+essaye de consommer des blancs,  choue (mais ce n'est pas une erreur),
+puis consomme <TT>45</TT>.
+<P>
+<DT><FONT SIZE="-1">-</FONT>
+<DD>par le format <TT>"%d%d"</TT>&nbsp;: la premi re directive <TT>%d</TT> consomme 
+<TT>23</TT>, la seconde directive <TT>%d</TT> essaye de consommer des blancs,
+r ussit, puis consomme <TT>45</TT>.
+
+<P>
+</DL>Dans les deux cas, les valeurs affect es seront bien les m mes&nbsp;: 23 et 45.
+
+<P>
+Un tel ph nom ne ne se manifeste pas avec les s quences d' chappement dont
+l'ex cution ne commence pas par consommer les espaces blancs.
+Par exemple, si le flot de donn es contient <code>23   jean dupond</code>, on
+n'obtiendra pas le m me r sultat selon que l'on utilise le format
+<BR>
+<TT>"%d %[ abcdefghijklmnopqrstuvwxyz]"</TT> ou le format
+<BR>
+<TT>"%d%[ abcdefghijklmnopqrstuvwxyz]"</TT> (sans blanc apr s <TT>%d</TT>).
+Le <TT>fscanf</TT> r ussira dans les deux cas, mais dans le premier cas,
+la cha ne affect e au <I>param</I><SUB><I>i</I></SUB> sera <TT>"jean dupond"</TT> et dans
+le second cas, ce sera <code>"   jean dupond"</code>.
+
+<P>
+
+<H2><A NAME="SECTION00756000000000000000">
+Entr es formatt es&nbsp;: <TT>scanf</TT></A>
+</H2>
+<A NAME="8732">&#160;</A>
+Nous avons d j  vu <TT>scanf</TT>, nous allons la d finir ici formellement.
+
+<P>
+
+<H3><A NAME="SECTION00756100000000000000">
+Utilisation</A>
+</H3>
+
+<P>
+La fonction <TT>scanf</TT> admet un nombre variable de param tres.
+Son utilisation est la suivante&nbsp;:
+
+<P>
+<TT>scanf</TT> <TT>(</TT> <I>format</I> <TT>,</TT> <I>param</I><SUB>1</SUB> <TT>,</TT> <I>param</I><SUB>2</SUB> <TT>,</TT> ... <TT>,</TT> <I>param</I><SUB><I>n</I></SUB> <TT>)</TT>
+
+<P>
+
+<H3><A NAME="SECTION00756200000000000000">
+Description</A>
+</H3>
+Un appel <TT>scanf(fmt,...)</TT> est rigoureusement identique  
+<TT>fscanf(stdin,fmt,...)</TT>.
+
+<P>
+
+<H2><A NAME="SECTION00757000000000000000">
+Entr es formatt es depuis une cha ne : <TT>sscanf</TT></A>
+</H2>
+<A NAME="8734">&#160;</A>
+
+<H3><A NAME="SECTION00757100000000000000">
+Utilisation</A>
+</H3>
+
+<P>
+La fonction <TT>sscanf</TT> admet un nombre variable de param tres.
+Son utilisation est la suivante&nbsp;:
+
+<P>
+<TT>sscanf</TT> <TT>(</TT> <I>cha ne</I> <TT>,</TT> <I>format</I> <TT>,</TT> <I>param</I><SUB>1</SUB> <TT>,</TT> <I>param</I><SUB>2</SUB> <TT>,</TT> ... <TT>,</TT> <I>param</I><SUB><I>n</I></SUB> <TT>)</TT>
+
+<P>
+
+<H3><A NAME="SECTION00757200000000000000">
+Description</A>
+</H3>
+La fonction <TT>sscanf</TT> r alise le m me traitement que la fonction
+<TT>fscanf</TT>, avec la diff rence que les caract res lus par <TT>sscanf</TT>
+ne sont pas lus depuis un fichier, mais du tableau de caract res
+<I>cha ne</I>. La rencontre du <I>null</I> terminal de <I>cha ne</I> pour
+<TT>sscanf</TT> est  quivalent   la rencontre de fin de fichier pour <TT>fscanf</TT>.
+
+<P>
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html2172"
+ HREF="node75.php">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next_motif.gif"></A> 
+<A NAME="tex2html2168"
+ HREF="node69.php">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up_motif.gif"></A> 
+<A NAME="tex2html2162"
+ HREF="node73.php">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="previous_motif.gif"></A> 
+<A NAME="tex2html2170"
+ HREF="node1.php">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents_motif.gif"></A> 
+<A NAME="tex2html2171"
+ HREF="node176.php">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index_motif.gif"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html2173"
+ HREF="node75.php">R cr ation</A>
+<B> Up:</B> <A NAME="tex2html2169"
+ HREF="node69.php">Les entr es-sorties</A>
+<B> Previous:</B> <A NAME="tex2html2163"
+ HREF="node73.php">Lecture et  criture par</A>
+<!--End of Navigation Panel-->
+<ADDRESS>
+<I>Bernard Cassagne</I>
+<BR><I>1998-12-09</I>
+</ADDRESS>
+
+</HTML>
+
+<script>
+	$(function() {
+		if ($("#gabarit_pubBB").is(":hidden"))
+			$('.contenuPage').attr('style', 'min-height:auto;padding-top:20px !important');
+	$("#gabarit_voiraussi").load("https://www.developpez.com/voiraussi/index/rubrique/3/");
+	$("#gabarit_encartemploi").load("https://www.developpez.com/ws/offres?alt=3&utf8=1");
+});
+</script>
+<img src="https://compteur.developpez.com/compter-3" alt="" width="1" height="1" style="position: absolute; left: 1px; top: 1px">
+<img src="https://compteur.developpez.com/show_i.php/3/0" alt="" width="1" height="1" style="position: absolute; left: 1px; top: 1px">
+<img src="https://compt.developpez.com/compter-3" alt="" width="1" height="1" style="position: absolute; left: 1px; top: 1px">
+<script>$(function(){$("#yw3aa0u").load("/template/yw3aa0u"+'0'+".jpg");});</script>
+</div>
+
+	</section>
+
+	<div id="gabarit_megaban_bas"></div>
+	<div id="gabarit_voiraussi"></div>
+	<div id="gabarit_encartemploi_desactive"></div>
+
+	<footer>
+
+	<div id="gabarit_responsable">
+				<a href="https://club.developpez.com/contacts/contribuer">Contacter</a> le responsable de la rubrique C
+			</div>
+
+	<ul id="gabarit_pied">
+		<li><a href="https://club.developpez.com/contacts/">Nous contacter</a>
+		<li><a href="https://www.developpez.com/participez/">Participez</a>
+	<li><a href="https://www.developpez.com/hebergement/">H&eacute;bergement</a>
+	<li><a href="https://www.developpez.com/advertising/">Publicit&eacute; / Advertising</a>
+	<li><a href="https://www.developpez.com/legal/">Informations l&eacute;gales</a>
+			<li>Partenaire : <a href="https://www.planethoster.com/fr/" target="_blank" rel="noopener">H&eacute;bergement Web</a>
+		</ul>
+
+<p id="gabarit_copyright">&copy; 2000-2024 - www.developpez.com</p>
+
+
+	</footer>
+<!-- Google Analytics general -->
+<script>
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-28115938-1']);
+  _gaq.push(['_setDomainName', 'developpez.com']);
+  _gaq.push(['_setCustomVar', 1, 'rubrique', 'c', 3]);
+  _gaq.push(['_setCustomVar', 2, 'type', 'Tutoriel', 3]);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+	var ga = document.createElement('script'); ga.async = true;
+	ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+	var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+
+
+
+</body>
+</html>
