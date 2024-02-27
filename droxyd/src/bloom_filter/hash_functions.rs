@@ -438,3 +438,8 @@ pub fn md5(word: &str) -> String
     //
     // *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 }
+
+pub fn double_sha256(word: &str) -> String
+{
+    return sha256(&sha256(word));
+}

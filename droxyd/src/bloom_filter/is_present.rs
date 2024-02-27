@@ -1,8 +1,11 @@
-pub fn is_present(filter: &mut Vec<u8>, hash_funcs: Vec<fn(&str) -> i64>, word: &str) -> bool
+use super::bloom_filter::*;
+
+pub fn is_present(filter: &Vec<u8>, hash_funcs: &Vec<fn(&str) -> String>, word: &str) -> bool
 {
     for func in hash_funcs
     {
-        if filter[func(word) as usize] == 0
+        let temp = ((from_hex(func(word)) as u64) % (filter.len() as u64)) as usize;
+        if filter[temp] == 0
         {
             return false;
         }

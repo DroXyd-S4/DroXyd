@@ -1,14 +1,10 @@
-use droxyd::bloom_filter::bloom_filter::bloom_filter;
-use droxyd::bloom_filter::bloom_filter::bloom_size_computing;
+use droxyd::bloom_filter::bloom_filter::*;
 use droxyd::bloom_filter::hash_functions::*;
-//use droxyd::bloom_filter::is_present::is_present;
-
-// use droxyd::bloom_filter::bloom_filter::bloom_filter;
-
-
+use droxyd::bloom_filter::is_present::is_present;
 
 fn main()
 {
+    /*
     println!();
     println!("==============================================================");
     println!();
@@ -32,7 +28,7 @@ fn main()
     num_k = 1000000;
     err_rate = 0.01;
     dbg!(bloom_size_computing(num_k, err_rate));
-
+    */
 
     println!();
     println!("===============================================================");
@@ -40,14 +36,15 @@ fn main()
 
     println!("1: Hello, World! = {}", sha256("Hello, World!"));
     println!("2: Hello, World! = {}", md5("Hello, World!"));
-    println!("3: Hello, World! = {}", sha256(&sha256("Hello, World!")));
-    println!("4: Hello, World! = {}", md5(&md5("Hello, World!")));
+    println!("3: Hello, World! = {}", double_sha256("Hello, World!"));
 
     println!();
     println!("===============================================================");
     println!();
 
-    let words: Vec<String> = vec![
+    let hash_functions = vec![sha256, md5, double_sha256];
+
+    let mut words: Vec<String> = vec![
         String::from("Mickey"),
         String::from("Minnie"),
         String::from("Donald"),
@@ -56,6 +53,28 @@ fn main()
         String::from("Pluto")
     ];
 
-    bloom_filter(words, 0.1);
+    println!("List of words :");
+    for word in &words
+    {
+        println!("{}", word);
+    }
+    println!();
+
+    let filter = bloom_filter(&words, 0.1);
+    print_filter(&filter);
+
+    println!();
+    println!("Added Uncle Scrooge, Riri, Fifi and Loulou to words");
+    println!();
+
+    words.push(String::from("Uncle Scrooge"));
+    words.push(String::from("Riri"));
+    words.push(String::from("Fifi"));
+    words.push(String::from("Loulou"));
+
+    for word in words
+    {
+        println!("{} in filter ? -> {}", word, is_present(&filter, &hash_functions, &word));
+    }
 
 }
