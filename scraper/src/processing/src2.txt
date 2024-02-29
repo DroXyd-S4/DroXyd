@@ -10,6 +10,7 @@
 
 
 <ul id="gabarit_menu" style="padding-left:56px;">
+	<li><href = "stylesheet.css"></li>
 	<li><a href="https://www.developpez.com" data-idrub="1" data-niv="1" style="padding:0;"><div id="gabarit_home"></div></a>
 			</li>
 	<li><a href="https://solutions-entreprise.developpez.com" data-idrub="86" data-niv="1">DI/DSI Solutions d&#039;entreprise<!----></a>

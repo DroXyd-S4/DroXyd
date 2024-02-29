@@ -1,33 +1,38 @@
 mod processing;
 
 use crate::processing::IO_helper::file_to_str;
-//use crate::processing::extraction::get_lang;
+use crate::processing::IO_helper::file_to_vec;
+use crate::processing::language::get_lang;
+use crate::processing::language::is_valid_lang;
 use crate::processing::extraction::get_urls;
-use crate::processing::extraction::valid_urls;
 use crate::processing::extraction::get_paragraphs;
 
 fn main() {
+    let path = "processing/iso639-1.txt";
+    let tmp = file_to_vec(&path);
+    println!("{:?}", tmp);
+
 
     let path = "processing/src2.txt";
     let tmp = file_to_str(&path);
-    println!("HTML DOC = \n{}\n\n", tmp);
+    //println!("HTML DOC = \n{}\n\n", tmp);
 
     println!("\n ////////////////////////////////////////////////////////////////////// \n");
-    //let lang = get_lang(&tmp);
-    //println!("LANGUAGE DETECTED = {}\n", lang); 
+    let lang = get_lang(&tmp);
+    println!("LANGUAGE DETECTED = {}\n", lang); 
+
+    let valid_lang = is_valid_lang(&lang);
+    dbg!(valid_lang);
 
     let path = "processing/src2.txt";
     let tmp = file_to_str(&path);
     let urls = get_urls(&tmp);
     println!("URLS FOUND = {:?}\n", urls);
 
-    let valid_urls = valid_urls(urls);
-    println!("VALID URLS FOUND = {:?}\n", valid_urls);
 
-    let path = "processing/src2.txt";
     let tmp = file_to_str(&path);
     let para = get_paragraphs(&tmp);
-    println!("PARAGRAPHS FOUND = {}\n", para);
+    //println!("PARAGRAPHS FOUND = {}\n", para);
 
     /*println!(" -------------------- get_lang tests --------------------");
     let src = "<!DOCTYPE html> <html lang=\"en-US\" prefix=\"og: http://ogp.me/ns#\"> <head> <!-- Google tag (gtag.js) --> <script async src=\"https://www.googletagmanager.com/gtag/js?id=G-KP5YVWZDRL\"></script> <script> ";
