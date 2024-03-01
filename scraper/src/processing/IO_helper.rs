@@ -1,6 +1,6 @@
 use std::fs::File;
 use std::io::{BufReader, Read};
-
+use hyper::Client;
 
 pub fn file_to_str(file_path: &str) -> String
 { 
@@ -37,3 +37,17 @@ pub fn file_to_vec(file_path: &str) -> Vec<String> {
     v
 }
 
+
+
+
+
+
+fn URL_to_String(src: &str) {
+    let client = Client::new();
+    let mut res = client.get("http://www.bloomberg.com/")
+        .send()
+        .unwrap();
+    let mut body = String::new();
+    res.read_to_string(&mut body).expect("failed to read into string");
+    body
+}

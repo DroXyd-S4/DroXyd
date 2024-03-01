@@ -4,8 +4,8 @@ use crate::processing::IO_helper::file_to_str;
 use crate::processing::IO_helper::file_to_vec;
 use crate::processing::language::get_lang;
 use crate::processing::language::is_valid_lang;
-use crate::processing::extraction::get_urls;
-use crate::processing::extraction::get_paragraphs;
+use crate::processing::extraction::*;
+
 
 fn main() {
     let path = "processing/iso639-1.txt";
@@ -13,7 +13,7 @@ fn main() {
     println!("{:?}", tmp);
 
 
-    let path = "processing/src2.txt";
+    let path = "processing/src2.html";
     let tmp = file_to_str(&path);
     //println!("HTML DOC = \n{}\n\n", tmp);
 
@@ -24,15 +24,15 @@ fn main() {
     let valid_lang = is_valid_lang(&lang);
     dbg!(valid_lang);
 
-    let path = "processing/src2.txt";
+    let path = "processing/src2.html";
     let tmp = file_to_str(&path);
     let urls = get_urls(&tmp);
     println!("URLS FOUND = {:?}\n", urls);
 
 
     let tmp = file_to_str(&path);
-    let para = get_paragraphs(&tmp);
-    //println!("PARAGRAPHS FOUND = {}\n", para);
+    let para = tag_extraction(&tmp);
+    println!("PARAGRAPHS FOUND = {}\n", para);
 
     /*println!(" -------------------- get_lang tests --------------------");
     let src = "<!DOCTYPE html> <html lang=\"en-US\" prefix=\"og: http://ogp.me/ns#\"> <head> <!-- Google tag (gtag.js) --> <script async src=\"https://www.googletagmanager.com/gtag/js?id=G-KP5YVWZDRL\"></script> <script> ";

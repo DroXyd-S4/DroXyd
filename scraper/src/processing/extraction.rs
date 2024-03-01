@@ -1,7 +1,7 @@
-pub fn get_paragraphs(src: &str) -> String {
-    let p_start: Vec<_> = src.match_indices("<P>").map(|(i, _)|i).collect();
+/*pub fn get_paragraphs(src: &str) -> String {
+    let p_start: Vec<_> = src.match_indices("<p>").map(|(i, _)|i).collect();
     if p_start.len() <= 0 { panic!("get_patagraphs: no paragraphs detected in text") }
-    let p_end: Vec<_> = src.match_indices("</P>").map(|(i, _)|i).collect();
+    let p_end: Vec<_> = src.match_indices("</p>").map(|(i, _)|i).collect();
     let mut para = String::new();
     if p_start.len() == p_end.len() {
         for i in 0..p_start.len() {
@@ -17,13 +17,9 @@ pub fn get_paragraphs(src: &str) -> String {
     }
     para
 }
-
-/*pub fn rm_tags_paragraph(src: &str) -> String {
-    let iso639_1: Vec<String> = [
 */
 
 pub fn get_urls(src: &str) -> (bool, Vec<String>) {
-
     let href_indices: Vec<_> = src.match_indices("a href").map(|(i, _)|i).collect();
     if href_indices.len() <= 0 { return (false, Vec::new()) }
     let mut urls_vec: Vec<String> = vec![String::new(); href_indices.len()];
@@ -42,16 +38,25 @@ pub fn get_urls(src: &str) -> (bool, Vec<String>) {
     (true, urls_vec)
 }
 
+pub fn tag_extraction(src: &str) -> String {
+    let tag_start: Vec<_> = src.match_indices("<").map(|(i, _)|i).collect();
+    if tag_start.len() <= 0 { 
+        println!("tag_extraction: no tags detected");
+        return String::new()
+    }
+    let tag_end: Vec<_> = src.match_indices(">").map(|(i, _)|i).collect();
+    let mut para = String::new();
 
-/*pub fn valid_urls(urls: (bool, Vec<String>)) -> Vec<String> {
-    if !urls.0 { panic!("valid_urls: no urls detected") }
-    let mut valid_urls: Vec<String> = Vec::new();
-    for i in urls.1 {
-        match i.find("http") {
-            Some(_) => valid_urls.push(i),
-            None => continue,
+    for i in 0..tag_start.len() {
+        for c in src[tag_end[i]+1..].chars() {
+            if c == '<' { break }
+            para.push(c);
         }
     }
-    valid_urls
-}*/
+    para
+}
+
+
+
+
 
