@@ -1,4 +1,5 @@
 /** Imports **/
+use console::Term;
 use std::fs::read_to_string;
 
 /** MAIN **/
@@ -8,9 +9,31 @@ fn main() {
     let mut Dic: &mut [[u32; 6]; 100000] = &mut [[0u32; 6]; 100000];
     Dic[0] = [0, 2, 0, 0, 0, 0]; // Default
     Dic[1] = [1, 97, 0, 0, 0, 0];
-    testSuite(Dic);
+    //testSuite(Dic);
     loadDic(Dic);
-    debug(Dic);
+    //debug(Dic);
+
+    let mut s = String::new();
+    let mut p = String::new();
+    let stdout = Term::buffered_stdout();
+    'game_loop: loop {
+        println!("====================================================");
+        println!("your sentence: {} ",p);
+        println!("your word: {} ",s);
+        if let Ok(character) = stdout.read_char() {
+            match character {
+                '.' => break 'game_loop,
+                ' ' => {s.push(' ');p+=&s;s=String::new();},
+                '-' => {s.pop();},
+                _ => {
+                println!("{} {}",character,character as u32);
+                s.push(character);
+                checkWord(Dic,&s,false);
+                },
+            }
+        }
+    }
+
 }
 
 fn loadDic(mut Dic: &mut [[u32; 6]; 100000]) {
@@ -30,7 +53,7 @@ fn debug(mut Dic: &mut [[u32; 6]; 100000]) {
 
 /** Add a word in dictionnary **/
 fn addWord(mut Dic: &mut [[u32; 6]; 100000], s: &str) {
-    insert(Dic, 1, s.to_string(), 0, 0);
+    insert(Dic, 1, s.to_string(), 0, 0,1);
 }
 
 /** Find a word in dictionnary **/
@@ -182,6 +205,7 @@ fn insert(
     word: String,
     index: u32,
     mut f: usize,
+    occ: u32
 ) -> u32 {
     if node == 0 && f == 0 {
         node = Dic[0][1] as usize;
@@ -190,14 +214,14 @@ fn insert(
         Dic[node][1] = word.chars().nth(index.try_into().unwrap()).unwrap() as u32;
     }
     if (word.chars().nth(index.try_into().unwrap()).unwrap() as u32) < Dic[node][1] {
-        Dic[node][3] = insert(Dic, Dic[node][3] as usize, word, index, 0);
+        Dic[node][3] = insert(Dic, Dic[node][3] as usize, word, index, 0,occ);
     } else if (word.chars().nth(index.try_into().unwrap()).unwrap() as u32) > Dic[node][1] {
-        Dic[node][5] = insert(Dic, Dic[node][5] as usize, word, index, 0);
+        Dic[node][5] = insert(Dic, Dic[node][5] as usize, word, index, 0,occ);
     } else {
         if index < (word.chars().count() as u32) - 1 {
-            Dic[node][4] = insert(Dic, Dic[node][4] as usize, word, index + 1, 0);
+            Dic[node][4] = insert(Dic, Dic[node][4] as usize, word, index + 1, 0,occ);
         } else {
-            Dic[node][2] = 1;
+            Dic[node][2] = occ;
         }
     }
     return node.try_into().unwrap();
@@ -214,7 +238,7 @@ fn search(mut Dic: &mut [[u32; 6]; 100000], mut node: usize, word: String, index
         return search(Dic, Dic[node][5].try_into().unwrap(), word, index);
     } else {
         if index == (word.chars().count() as u32) - 1 {
-            return Dic[node][2] == 1;
+            return Dic[node][2] >= 1;
         } else {
             return search(Dic, Dic[node][4].try_into().unwrap(), word, index + 1);
         }
@@ -230,7 +254,7 @@ fn listAll(mut Dic: &mut [[u32; 6]; 100000], mut node: usize, mut word: String, 
     listAll(Dic, Dic[node][3].try_into().unwrap(), word.clone(), l);}
     word.push(char::from_u32(Dic[node][1]).unwrap());
     l += 1;
-    if Dic[node][2] == 1 {
+    if Dic[node][2] >= 1 {
         println!("{}", word);
     }
     let mut word2 = String::new();
@@ -282,7 +306,7 @@ fn traverse(
         );
         let mut prefix2 = prefix.clone();
         prefix2.push(char::from_u32(Dic[node][1]).unwrap());
-        if Dic[node][2] == 1 {
+        if Dic[node][2] >= 1 {
             println!(">> suggestion: {}", prefix2);
         }
         traverse(
