@@ -11,29 +11,89 @@ fn main() {
     Dic[1] = [1, 97, 0, 0, 0, 0];
     //testSuite(Dic);
     loadDic(Dic);
-    //debug(Dic);
 
+    insert(Dic, 1, "lea".to_string(), 0, 0,2);
+    insert(Dic, 1, "leo".to_string(), 0, 0,3);
+    
+    //debug(Dic);
+    println!("====================================================");
+    //println!("start typing: ");
     let mut s = String::new();
     let mut p = String::new();
     let stdout = Term::buffered_stdout();
     'game_loop: loop {
-        println!("====================================================");
-        println!("your sentence: {} ",p);
-        println!("your word: {} ",s);
         if let Ok(character) = stdout.read_char() {
             match character {
-                '.' => break 'game_loop,
+                '\n' => break 'game_loop,
                 ' ' => {s.push(' ');p+=&s;s=String::new();},
                 '-' => {s.pop();},
+                '+' => {p.pop();},
                 _ => {
-                println!("{} {}",character,character as u32);
+                // println!("{} {}",character,character as u32);
                 s.push(character);
-                checkWord(Dic,&s,false);
                 },
             }
         }
+        println!("your sentence: {} ",p);
+        println!("your word: {} ",s);
+        let mut res = Vec::new();
+        manageQuery(Dic,&s,&mut res,false);
+        println!("====================================================");
     }
+}
 
+fn manageQuery(mut Dic: &mut [[u32; 6]; 100000], s : &str,mut results : &mut Vec<(String,u32)>,debug:bool )
+{
+    if s != ""{
+    let a = checkWord(Dic,&s,false,&mut results);
+    println!("[WORDISVALID]: {}",a==0);
+    if a != 2
+    {
+       let mut s = results.iter().count();
+       let mut l = s;
+       if l > 5
+       {l=5;}
+       for i in 0..l
+       {
+         let mut index = 0;
+         let mut max = results[0].1;
+         for j in 1..s
+         {
+            if results[j].1>max
+            {
+                max = results[j].1;
+                index = j;
+            }
+         }
+         println!("[AUTOCOMPLETION_{}]: {}",i,results[index].0);
+         results.remove(index);
+         s -= 1;
+       }
+    }
+    else
+    {
+       let s = results.iter().count();
+       if s == 0
+       {
+          println!("[CORRECTION]: No correction found !");
+       }
+       else
+       {
+       let mut l = s;
+       let mut index = 0;
+       let mut max = results[0].1;
+       for j in 1..s
+       {
+            if results[j].1>max
+            {
+                max = results[j].1;
+                index = j;
+            }
+       }
+       println!("[CORRECTION]: {}",results[index].0);
+       }
+    }
+    }
 }
 
 fn loadDic(mut Dic: &mut [[u32; 6]; 100000]) {
@@ -45,7 +105,8 @@ fn loadDic(mut Dic: &mut [[u32; 6]; 100000]) {
 fn debug(mut Dic: &mut [[u32; 6]; 100000]) {
     for line in read_to_string("Debug.txt").unwrap().lines() {
         println!("Debug for word: {}", line);
-        checkWord(Dic, line, false);
+        let mut res = Vec::new();
+        checkWord(Dic, line, false,&mut res);
     }
 }
 
@@ -67,36 +128,46 @@ fn listAllWords(mut Dic: &mut [[u32; 6]; 100000]) {
 }
 
 /** Suggest words from a given prefix **/
-fn suggest(mut Dic: &mut [[u32; 6]; 100000], s: &str) {
+fn suggest(mut Dic: &mut [[u32; 6]; 100000], s: &str, mut results : &mut Vec<(String,u32)>,debug:bool) {
     let a = getNodeID(Dic, s.to_string());
     if a == 0 {
-        println!(">> no suggestions found !");
+        if debug {println!(">> no suggestions found !");}
     } else {
         traverse(
             Dic,
             Dic[a][4].try_into().unwrap(),
             s.to_string().clone(),
             s.to_string().chars().count().try_into().unwrap(),
-            s.to_string().clone(),
+            s.to_string().clone(),results,debug
         );
     }
 }
 
-/** Check if a word exists, or try a suggestion or correction **/
-fn checkWord(mut Dic: &mut [[u32; 6]; 100000], s: &str, debug: bool) {
+/** Check if a word exists, or try a suggestion or correction
+0: word found (vec contains autocompletion)
+1: word not found, but suggestions are given
+2: word not found, but corrections are given
+**/
+fn checkWord(mut Dic: &mut [[u32; 6]; 100000], s: &str, debug: bool,
+mut results : &mut Vec<(String,u32)> ) -> usize {
+    let mut r = 1;
     if findWord(Dic, s) {
-        println!(">> {} is a word", s);
+        if debug {println!(">> {} is a word", s);}
+        r = 0;
     }
     let a = getNodeID(Dic, s.to_string());
     if a != 0 {
-        suggest(Dic, s);
+        suggest(Dic, s, results,debug);
+        return r;
     } else {
-        correct(Dic, s, debug)
+      correct(Dic, s, debug,results);
+      return 2;
     }
 }
 
 /** Try if a word exists in dictionnary as a correction **/
-fn tryInDic(mut Dic: &mut [[u32; 6]; 100000], s: String, debug: bool) -> u32 {
+fn tryInDic(mut Dic: &mut [[u32; 6]; 100000], s: String, debug: bool,
+mut results : &mut Vec<(String,u32)>) -> u32 {
     let a = findWord(Dic, &s.trim());
     if debug {
         println!("testing if {} is in Dic => {}", s, a);
@@ -104,7 +175,8 @@ fn tryInDic(mut Dic: &mut [[u32; 6]; 100000], s: String, debug: bool) -> u32 {
             return 1;
         }
     } else if a {
-        println!(">> {} is a possible correction !", s);
+        if debug {println!(">> {} is a possible correction !", s);}
+        results.push((s.clone(),Dic[getNodeID(Dic, s) as usize][2]));
         return 1;
     }
     return 0;
@@ -162,35 +234,37 @@ fn testSuite(mut Dic: &mut [[u32; 6]; 100000]) {
     println!("Contains: /uwu/  {}", findWord(Dic, "uwu"));
     println!("Contains: /bu/   {}", findWord(Dic, "bu"));
 
+    let mut res = Vec::new();
+    
     println!("\n#SUGGESTIONS#\n");
     println!("Suggestions for : /c/");
-    suggest(Dic, "c");
+    suggest(Dic, "c",&mut res,true);
     println!("Suggestions for : /ca/");
-    suggest(Dic, "ca");
+    suggest(Dic, "ca",&mut res,true);
     println!("Suggestions for : /b/");
-    suggest(Dic, "b");
+    suggest(Dic, "b",&mut res,true);
     println!("Suggestions for : /bat/");
-    suggest(Dic, "bat");
+    suggest(Dic, "bat",&mut res,true);
 
     println!("\n#CORRECTION#\n");
     println!("Corrections for : /caat/");
-    correct(Dic, "caat", false);
+    correct(Dic, "caat", false,&mut res);
     println!("Debug corrections for : /bu/");
-    correct(Dic, "bu", true);
+    correct(Dic, "bu", true,&mut res);
 
     println!("\n#CHECK#\n");
     println!("WordCheck for : /cat/");
-    checkWord(Dic, "cat", false);
+    checkWord(Dic, "cat", false,&mut res);
     println!("WordCheck for : /ca/");
-    checkWord(Dic, "ca", false);
+    checkWord(Dic, "ca", false,&mut res);
     println!("WordCheck for : /ug/");
-    checkWord(Dic, "ug", false);
+    checkWord(Dic, "ug", false,&mut res);
     println!("WordCheck for : /cazt/");
-    checkWord(Dic, "cazt", false);
+    checkWord(Dic, "cazt", false,&mut res);
     println!("WordCheck for : /op/");
-    checkWord(Dic, "op", false);
+    checkWord(Dic, "op", false,&mut res);
     println!("WordCheck for : /caaat/");
-    checkWord(Dic, "caaat", false);
+    checkWord(Dic, "caaat", false,&mut res);
 
     println!("\n#PRITING MEMORY#\n");
     printMemory(Dic, 100);
@@ -288,13 +362,14 @@ fn getNodeID(mut Dic: &mut [[u32; 6]; 100000], prefix: String) -> usize {
     return node;
 }
 
-/** Print all autocompletion suggestions **/
+/** Return all autocompletion suggestions **/
 fn traverse(
     mut Dic: &mut [[u32; 6]; 100000],
     mut node: usize,
     prefix: String,
     l: u32,
-    base: String,
+    base: String, mut results : &mut Vec<(String,u32)>,
+    debug : bool
 ) {
     if node != 0 {
         traverse(
@@ -302,32 +377,35 @@ fn traverse(
             Dic[node][3].try_into().unwrap(),
             prefix.clone(),
             l,
-            base.clone(),
+            base.clone(),results,debug
         );
         let mut prefix2 = prefix.clone();
         prefix2.push(char::from_u32(Dic[node][1]).unwrap());
         if Dic[node][2] >= 1 {
-            println!(">> suggestion: {}", prefix2);
+            if debug {println!(">> suggestion: {}", prefix2);}
+            results.push((prefix2.clone(),Dic[node][2]));
         }
         traverse(
             Dic,
             Dic[node][4].try_into().unwrap(),
             prefix2,
             l + 1,
-            base.clone(),
+            base.clone(),results,debug
         );
         traverse(
             Dic,
             Dic[node][5].try_into().unwrap(),
             prefix,
             l,
-            base.clone(),
+            base.clone(),results,debug
         );
     }
 }
 
 /** Find all possible corrections for a word **/
-fn correct(mut Dic: &mut [[u32; 6]; 100000], s: &str, debug: bool) {
+fn correct(mut Dic: &mut [[u32; 6]; 100000], s: &str, debug: bool,
+mut results : &mut Vec<(String,u32)>) {
+    
     let mut c = 0;
     /** Swap **/
     let mut base = s.to_string();
@@ -341,7 +419,7 @@ fn correct(mut Dic: &mut [[u32; 6]; 100000], s: &str, debug: bool) {
         for j in i + 2..base.chars().count() {
             test.push(base.chars().nth(j).unwrap());
         }
-        c += tryInDic(Dic, test, debug);
+        c += tryInDic(Dic, test, debug,results);
     }
 
     /** Deletion **/
@@ -352,7 +430,7 @@ fn correct(mut Dic: &mut [[u32; 6]; 100000], s: &str, debug: bool) {
                 test.push(base.chars().nth(j).unwrap());
             }
         }
-        c += tryInDic(Dic, test, debug);
+        c += tryInDic(Dic, test, debug,results);
     }
 
     /** Replacement **/
@@ -366,7 +444,7 @@ fn correct(mut Dic: &mut [[u32; 6]; 100000], s: &str, debug: bool) {
                     test.push(char::from_u32('a' as u32 + k).unwrap());
                 }
             }
-            c += tryInDic(Dic, test, debug);
+            c += tryInDic(Dic, test, debug,results);
         }
     }
 
@@ -383,10 +461,10 @@ fn correct(mut Dic: &mut [[u32; 6]; 100000], s: &str, debug: bool) {
                     test.push(base.chars().nth(j).unwrap());
                 }
             }
-            c += tryInDic(Dic, test, debug);
+            c += tryInDic(Dic, test, debug,results);
         }
     }
-    if c == 0 {
+    if c == 0 && debug{
         println!(">> no corrections found =/");
     }
 }
