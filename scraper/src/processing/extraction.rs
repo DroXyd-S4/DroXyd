@@ -1,24 +1,3 @@
-/*pub fn get_paragraphs(src: &str) -> String {
-    let p_start: Vec<_> = src.match_indices("<p>").map(|(i, _)|i).collect();
-    if p_start.len() <= 0 { panic!("get_patagraphs: no paragraphs detected in text") }
-    let p_end: Vec<_> = src.match_indices("</p>").map(|(i, _)|i).collect();
-    let mut para = String::new();
-    if p_start.len() == p_end.len() {
-        for i in 0..p_start.len() {
-            for p in src[p_start[i]+3..p_end[i]].chars() { para.push(p); }
-            para.push('\n');
-        }
-    }
-    else {
-        for i in 1..p_start.len() {
-            for p in src[p_start[i-1]+3..p_start[i]].chars() { para.push(p); }
-            para.push('\n');
-        }
-    }
-    para
-}
-*/
-
 pub fn get_urls(src: &str) -> (bool, Vec<String>) {
     let href_indices: Vec<_> = src.match_indices("a href").map(|(i, _)|i).collect();
     if href_indices.len() <= 0 { return (false, Vec::new()) }
@@ -37,6 +16,7 @@ pub fn get_urls(src: &str) -> (bool, Vec<String>) {
     }
     (true, urls_vec)
 }
+
 
 pub fn tag_extraction(src: &str) -> String {
     let tag_start: Vec<_> = src.match_indices("<").map(|(i, _)|i).collect();
