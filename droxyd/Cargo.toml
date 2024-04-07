@@ -9,3 +9,9 @@ overflow-checks = false
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+# LEO added the following lines:
+# {
+queues = "1.1.0"
+reqwest = { version = "0.12.3", features = ["blocking"] }
+tokio = { version = "1", features = ["full"] } # Works without this lib
+# }

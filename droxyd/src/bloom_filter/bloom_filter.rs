@@ -50,7 +50,7 @@ pub fn from_hex(word: String) -> i64
     return res;
 }
 
-pub fn bloom_size_computing(num_key: i64, error_rate: f64) -> Vec<u64>
+pub fn bloom_size_computing(num_key: u64, error_rate: f64) -> Vec<u64>
 {
     let mut x = 2.0_f64;
     let mut y = 2.0_f64;
@@ -71,9 +71,30 @@ pub fn bloom_size_computing(num_key: i64, error_rate: f64) -> Vec<u64>
     return res;
 }
 
+pub fn init_filter(len: u64, error_rate: f64) -> Vec<u8>
+{
+    let dimensions = bloom_size_computing(len, error_rate);
+    let mut filter: Vec<u8> = vec![];
+    for _i in 0..(dimensions[0])
+    {
+        filter.push(0);
+    }
+    return filter;
+}
+
+pub fn add_elt(filter: &mut Vec<u8>, word: &String) -> ()
+{
+    let r1 = ((from_hex(sha256(&word))) as u64) % (filter.len() as u64);
+    let r2 = ((from_hex(md5(&word))) as u64) % (filter.len() as u64);
+    let r3 = ((from_hex(sha256(&sha256(&word)))) as u64) % (filter.len() as u64);
+    filter[r1 as usize] = 1;
+    filter[r2 as usize] = 1;
+    filter[r3 as usize] = 1;
+}
+
 pub fn bloom_filter(words: &Vec<String>, error_rate: f64) -> Vec<u8>
 {
-    let dimensions = bloom_size_computing((words.len()) as i64, error_rate);
+    let dimensions = bloom_size_computing((words.len()) as u64, error_rate);
     let mut filter: Vec<u8> = vec![];
     for _i in 0..(dimensions[0])
     {

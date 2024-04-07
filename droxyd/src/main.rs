@@ -1,35 +1,14 @@
-use droxyd::bloom_filter::bloom_filter::*;
+/*use droxyd::bloom_filter::bloom_filter::*;
 use droxyd::bloom_filter::hash_functions::*;
-use droxyd::bloom_filter::is_present::is_present;
+use droxyd::bloom_filter::is_present::*;
+*/
+
+//use droxyd::crawl_web::get_content::*;
+use droxyd::crawl_web::crawler::*;
 
 fn main()
 {
     /*
-       println!();
-       println!("==============================================================");
-       println!();
-
-       let mut num_k: i64 = 10000;
-       let mut err_rate: f64 = 0.5;
-       dbg!(bloom_size_computing(num_k, err_rate));
-
-       num_k = 10000;
-       err_rate = 0.9;
-       dbg!(bloom_size_computing(num_k, err_rate));
-
-       num_k = 100000;
-       err_rate = 0.9;
-       dbg!(bloom_size_computing(num_k, err_rate));
-
-       num_k = 100000;
-       err_rate = 0.1;
-       dbg!(bloom_size_computing(num_k, err_rate));
-
-       num_k = 1000000;
-       err_rate = 0.01;
-       dbg!(bloom_size_computing(num_k, err_rate));
-       */
-
     println!();
     println!("===============================================================");
     println!();
@@ -83,7 +62,6 @@ fn main()
     ];
 
     println!("List of words : ");
-    let mut a = 0;
     for word in &words
     {
         println!("md5     {}: {}", word, md5(word));
@@ -110,5 +88,15 @@ fn main()
     {
         println!("{} in filter ? -> {}", word, is_present(&filter, &hash_functions, &word));
     }
+    */
+
+    println!();
+    println!("===============================================================");
+    println!();
+    println!("Now, it's time to get the content of a webpage");
+    println!();
+
+    //println!("{}", get_content(String::from("https://example.com/")));
+    crawler(10, String::from("https://example.com"));
 
 }

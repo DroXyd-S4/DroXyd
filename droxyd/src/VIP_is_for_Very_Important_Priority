@@ -1,0 +1,4 @@
+VERY IMPORTANT THINGS for working with the crawler :
+
+Open SSL must be installed !!
+If not, do : sudo apt-get install pkg-config libssl-dev

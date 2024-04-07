@@ -18,12 +18,18 @@ Takes the number of words, the error rate as arguments to create the filter.
 Computes the probabilty of positive result being false positive thanks to
 Bose, Guo, Kranakis... algorithm.
 
+### Init filter
+Initializes the filter thanks to its size and its error rate.
+
+### Add element
+Adds an element in the bloom filter.
+
 ### bloom size computing
 Computes the perfect size of the bloom filter based on the number of keys and
 the error rate.
 
 ### bloom filter
 Main function around bloom filter.
-Takes 2 parameters : The number of keys and the error rate aimed.
+Takes 2 parameters : The keys and the error rate aimed.
 
 Optionnal : The array will be saved in a file to be re-used later.
