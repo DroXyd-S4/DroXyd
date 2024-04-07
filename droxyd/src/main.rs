@@ -6,7 +6,7 @@ use droxyd::bloom_filter::is_present::*;
 //use droxyd::crawl_web::get_content::*;
 use droxyd::crawl_web::crawler::*;
 
-fn main()
+fn leo()
 {
     /*
     println!();
@@ -99,4 +99,62 @@ fn main()
     //println!("{}", get_content(String::from("https://example.com/")));
     crawler(10, String::from("https://example.com"));
 
+
+
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* TESTS DE JUSTINE */
+
+mod processing;
+use crate::processing::demo::demo;
+
+
+fn justine() {
+    println!("\n ////////////////////////////////////////////////////////////////////// \n");
+    let header =  "
+  ∧,,,∧
+ (• v •) ☆
+|￣U U￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣|
+|          DATA PROCESSING            |
+￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣";
+    println!("{}", header);
+    let path = "processing/src3.html";
+    demo(&path, false);
+
+
+
+    let header_2 = "        ∧,,,∧
+                           (- _ -) ☆
+|￣￣￣￣￣￣￣￣￣￣￣￣￣￣U U￣￣￣|
+|              TF - IDF               |
+￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣";
+    println!("{}", header_2);
+
+}
+
+fn main()
+{
+    leo();
+    //justine();
 }

@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="fr" prefix="og: http://ogp.me/ns#">
+<head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-KP5YVWZDRL"></script>
+
+</head>
+<body>
+	<header>
+
+
+<ul id="gabarit_menu" style="padding-left:56px;">
+	<li><href = "stylesheet.css"></li>
+	<li><a href="https://www.developpez.com" data-idrub="1" data-niv="1" style="padding:0;"><div id="gabarit_home"></div></a>
+			</li>
+	<li><a href="https://solutions-entreprise.developpez.com" data-idrub="86" data-niv="1">DI/DSI Solutions d&#039;entreprise<!----></a>
+			<ul class="gabarit_sousmenu">
+				<li><a href="https://solutions-entreprise.developpez.com" data-idrub="86" data-niv="2">DI/DSI Solutions d&#039;entreprise</a></li>
+				<li><a href="https://abbyy.developpez.com" data-idrub="147" data-niv="2">ABBYY</a></li>
+				<li><a href="https://big-data.developpez.com" data-idrub="126" data-niv="2">Big Data</a></li>
+				<li><a href="https://bpm.developpez.com" data-idrub="134" data-niv="2">BPM</a></li>
+				<li><a href="https://business-intelligence.developpez.com" data-idrub="61" data-niv="2">Business Intelligence</a></li>
+				<li><a href="https://data-science.developpez.com" data-idrub="151" data-niv="2">Data Science</a></li>
+				<li><a href="https://solutions-entreprise.developpez.com/erp-pgi/presentation-erp-pgi/" data-idrub="91" data-niv="2">ERP / PGI</a></li>
+				<li><a href="https://crm.developpez.com" data-idrub="92" data-niv="2">CRM</a></li>
+				<li><a href="https://sas.developpez.com" data-idrub="93" data-niv="2">SAS</a></li>
+				<li><a href="https://sap.developpez.com" data-idrub="106" data-niv="2">SAP</a></li>
+				<li><a href="https://www.developpez.net/forums/f1664/systemes/windows/windows-serveur/biztalk-server/" data-idrub="115" data-niv="2">Microsoft BizTalk Server</a></li>
+				<li><a href="https://talend.developpez.com" data-idrub="118" data-niv="2">Talend</a></li>
+				<li><a href="https://droit.developpez.com" data-idrub="132" data-niv="2">Droit informatique et entreprise</a></li>
+				<li><a href="https://onlyoffice.developpez.com" data-idrub="149" data-niv="2">OnlyOffice</a></li>
+			</ul></li>
+	<li><a href="https://cloud-computing.developpez.com" data-idrub="103" data-niv="1">Cloud<!----></a>
+			<ul class="gabarit_sousmenu">
+				<li><a href="https://cloud-computing.developpez.com" data-idrub="103" data-niv="2">Cloud Computing</a></li>
+				<li><a href="https://oracle.developpez.com" data-idrub="25" data-niv="2">Oracle</a></li>
+				<li><a href="https://windows-azure.developpez.com" data-idrub="107" data-niv="2">Azure</a></li>
+				<li><a href="https://ibmcloud.developpez.com" data-idrub="135" data-niv="2">IBM Cloud</a></li>
+			</ul></li>
+	
+</ul>
+
+
+
+</nav>
+
+
+	</header>
+	
+
+<P>
+<DT><TT>[</TT>
+<DD>Dans la cha ne <I>format</I>, ce caract re introduit
+une s quence particuli re destin e   d finir un <I>scanset</I>.
+La s quence est form e du caract re <TT>[</TT>, suivi d'une suite de
+caract res quelconques, suivi du caract re <TT>]</TT>.
+Si le premier caract re apr s le crochet ouvrant n'est pas le
+caract re <code>^</code>,
+le <I>scanset</I> est l'ensemble des caract res entre crochets.
+Si le caract re apr s le crochet ouvrant est le caract re <code>^</code>,
+le <I>scanset</I> est l'ensemble des caract res <B>ne</B> se trouvant <B>pas</B>
+dans la cha ne entre crochets.
+Le <I>scanset</I> peut comprendre le caract re <code>]</code>   condition de le
+mettre en d but soit <code>[] ...]</code> ou <code>[^]...]</code> selon que l'on utilise
+la forme sans ou avec <code>^</code>.
+Le <I>scanset</I> peut contenir <code>^</code>   condition de ne pas le mettre
+en t te&nbsp;: <code>[...^...]</code>.
+
+<P>
+Une directive <code>[</code> est un mod le pour une suite de caract res appartenant
+au <I>scanset</I>.
+Le <I>param</I><SUB><I>i</I></SUB> correspondant est interpr t  comme un pointeur vers
+un tableau de caract res suffisamment grand pour contenir la cha ne lue
+plus un <I>null</I> terminal.
+
+<P>
+<DT><TT>p</TT>
+<DD>mod le pour un pointeur  crit d'une mani re d pendant de
+l'impl mentation, mais identique   l'impression par <code>printf</code> d'un
+pointeur selon le format <code>%p</code>.
+Le <I>param</I><SUB><I>i</I></SUB> correspondant est interpr t  comme un pointeur vers
+un pointeur vers <TT>void</TT>.
+
+<P>
+<DT><TT>n</TT>
+<DD>cette directive n'est pas un mod le. Elle ne sert
+qu'  mettre une valeur dans l'objet point  par le <I>param</I><SUB><I>i</I></SUB>
+correspondant.
+Le <I>param</I><SUB><I>i</I></SUB> correspondant est interpr t  comme un pointeur vers un
+<TT>int</TT> dans lequel <code>fscanf</code>  crit le nombre de caract res lus 
+jusqu'  ce moment, dans le flot de donn es, par cette invocation de
+<code>fscanf</code>.
+L'ex cution d'une directive <code>%n</code> n'augmente pas le nombre des 
+<I>param</I><SUB><I>i</I></SUB> affect s qui sera retourn  par <TT>fscanf</TT> (Cf <A HREF="node74.php#scanret">5.5.5</A>).
+
+<P>
+<DT><TT>%</TT>
+<DD>est un mod le pour le caract re <code>%</code>.
+La directive compl te est <code>%%</code>.
+</DL></DL>
+<P>
+
+<H3><A NAME="SECTION00755700000000000000">
+Algorithme de <TT>fscanf</TT></A>
+</H3>
+La cha ne <I>format</I> doit se composer d'un ensemble de directives.
+Il doit y avoir autant de <I>param</I><SUB><I>i</I></SUB> que de directives demandant
+l'affectation d'une valeur.
+Si il n'y a pas suffisamment de <I>param</I><SUB><I>i</I></SUB> pour le <I>format</I>, le
+comportement n'est pas d fini.
+Si il y a davantage de <I>param</I><SUB><I>i</I></SUB> que demand  par le <I>format</I>,
+les <I>param</I><SUB><I>i</I></SUB> en exc s sont  valu s mais ils sont inutilis s.
+
+<P>
+La fonction <code>fscanf</code> ex cute dans l'ordre chaque directive du <I>format</I>.
+Si une directive  choue, la fonction <code>fscanf</code> retourne   l'appelant.
+<DL COMPACT>
+<DT><FONT SIZE="-1">-</FONT>
+<DD>L'ex cution d'une directive form e de caract res blancs, consiste   consommer
+dans le flot d'entr e la plus longue s quence possible de caract res blancs.
+M me si cette s quence est de taille nulle, la directive a r ussi.
+<P>
+<DT><FONT SIZE="-1">-</FONT>
+<DD>L'ex cution d'une directive form e de caract res ordinaires, consiste  
+consommer dans le flot d'entr e une s quence identique   la directive.
+Au premier caract re diff rent, la directive a  chou  et ce caract re reste non
+lu.
+
+<P>
+<DT><FONT SIZE="-1">-</FONT>
+<DD>L'ex cution d'une directive form e d'une s quence d' chappement, consiste  &nbsp;:
+
+<P>
+<DL COMPACT>
+<DT>1.
+<DD>consommer dans le flot d'entr e la plus longue s quence possible
+de caract res blancs.
+   Cette s quence peut  tre de taille nulle.
+   Cette action ne s'applique pas aux formats <TT>c</TT>, <TT>n</TT>, ni <TT>[</TT>.
+
+<P>
+<DT>2.
+<DD>consommer dans le flot d'entr e la plus longue s quence possible
+   de caract res qui soit conforme au mod le.
+   Si cette s quence est de taille nulle, la directive a  chou .
+
+<P>
+<DT>3.
+<DD>si la directive ne contient pas le caract re <code>*</code>, convertir la
+   cha ne lue et l'affecter   l'objet point  par le <I>param</I><SUB><I>i</I></SUB>
+   correspondant.
+   Si cet objet n'est pas de la taille ou du type convenable pour la recevoir,
+   le comportement n'est pas d fini.
+   </DL>
+<P>
+</DL>
+<P>
+
+<H3><A NAME="SECTION00755800000000000000">
+Remarques sur la gestion des <I>espaces blancs</I></A>
+</H3>
+La gestion des espaces blancs est assez p nible.
+Il y a deux m thodes de consommation des espaces blancs du flot de donn es&nbsp;:
+<DL COMPACT>
+<DT>1.
+<DD>le <I>format</I> contient une directive form e de caract res blancs.
+Si une telle directive ne peut consommer aucun caract re blanc, c'est un
+cas d' chec de la directive.
+<P>
+<DT>2.
+<DD>le <I>format</I> contient une s quence d' chappement (autre que <TT>c</TT>, <TT>n</TT>,
+ou <TT>[</TT>) dont l'ex cution commence par consommer d' ventuels caract res
+blancs dans le flot de donn es.
+Si il n'y a pas de caract res blancs   consommer, ce n'est pas une condition
+d' chec de la directive.
+
+<P>
+</DL>
+<P>
+Voyons quelques cons quences.
+
+<P>
+Si le flot de donn es contient <TT>23   45</TT> on pourra les lire indiff remment 
+soit&nbsp;:
+<DL COMPACT>
+<DT><FONT SIZE="-1">-</FONT>
+<DD>par le format <TT>"%d %d"</TT>&nbsp;: la premi re directive <TT>%d</TT> consomme 
+<TT>23</TT>, la directive <I>blanc</I> (entre les deux <TT>%d</TT>) consomme les
+blancs entre <TT>2</TT> et <TT>45</TT>, et la seconde directive <TT>%d</TT>
+essaye de consommer des blancs,  choue (mais ce n'est pas une erreur),
+puis consomme <TT>45</TT>.
+<P>
+<DT><FONT SIZE="-1">-</FONT>
+<DD>par le format <TT>"%d%d"</TT>&nbsp;: la premi re directive <TT>%d</TT> consomme 
+<TT>23</TT>, la seconde directive <TT>%d</TT> essaye de consommer des blancs,
+r ussit, puis consomme <TT>45</TT>.
+
+<P>
+</DL>Dans les deux cas, les valeurs affect es seront bien les m mes&nbsp;: 23 et 45.
+
+<P>
+Un tel ph nom ne ne se manifeste pas avec les s quences d' chappement dont
+l'ex cution ne commence pas par consommer les espaces blancs.
+Par exemple, si le flot de donn es contient <code>23   jean dupond</code>, on
+n'obtiendra pas le m me r sultat selon que l'on utilise le format
+<BR>
+<TT>"%d %[ abcdefghijklmnopqrstuvwxyz]"</TT> ou le format
+<BR>
+<TT>"%d%[ abcdefghijklmnopqrstuvwxyz]"</TT> (sans blanc apr s <TT>%d</TT>).
+Le <TT>fscanf</TT> r ussira dans les deux cas, mais dans le premier cas,
+la cha ne affect e au <I>param</I><SUB><I>i</I></SUB> sera <TT>"jean dupond"</TT> et dans
+le second cas, ce sera <code>"   jean dupond"</code>.
+
+<P>
+
+<H3><A NAME="SECTION00757200000000000000">
+Description</A>
+</H3>
+La fonction <TT>sscanf</TT> r alise le m me traitement que la fonction
+<TT>fscanf</TT>, avec la diff rence que les caract res lus par <TT>sscanf</TT>
+ne sont pas lus depuis un fichier, mais du tableau de caract res
+<I>cha ne</I>. La rencontre du <I>null</I> terminal de <I>cha ne</I> pour
+<TT>sscanf</TT> est  quivalent   la rencontre de fin de fichier pour <TT>fscanf</TT>.
+
+
+
+</HTML>
+
+
+
+
+</body>
+</html>
