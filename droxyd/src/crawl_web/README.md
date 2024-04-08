@@ -3,6 +3,7 @@
 
 ### get_content
 Explore internet and catch the source code of a website with a given address.
+Returns the content of the website and the domain name.
 
 ### crawler
 Main function that expands the crawler, needs an argument that represents
