@@ -1,3 +1,5 @@
+
+//takes a HTML source code as an entry and returns all the detectable URLs in it
 pub fn get_urls(src: &str) -> (bool, Vec<String>) {
     let href_indices: Vec<_> = src.match_indices("a href").map(|(i, _)|i).collect();
     if href_indices.len() <= 0 { return (false, Vec::new()) }
@@ -17,7 +19,7 @@ pub fn get_urls(src: &str) -> (bool, Vec<String>) {
     (true, urls_vec)
 }
 
-
+//takes a HTML source code as an entry and returns all the text/paragraphs found.
 pub fn tag_extraction(src: &str) -> String {
     let tag_start: Vec<_> = src.match_indices("<").map(|(i, _)|i).collect();
     if tag_start.len() <= 0 { 
@@ -36,7 +38,21 @@ pub fn tag_extraction(src: &str) -> String {
     para
 }
 
-
-
+//takes a text as an entry and returns a tuple consisiting of a Vec<String> containing 
+//all the sentences and the number of sentences in a usize.
+pub fn get_sentences(src: &str) -> (Vec<String>, usize) {
+    let mut sent: Vec<String> = Vec::new();
+    let mut nb: usize = 0;
+    let mut curr_sent = String::new();
+    for i in src.chars() {
+        curr_sent.push(i); 
+        if i == '.' { 
+            nb += 1;
+            sent.push(curr_sent);
+            curr_sent = String::new();
+        }
+    }
+    (sent, nb)
+}
 
 
