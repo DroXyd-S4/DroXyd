@@ -2,7 +2,7 @@ use crate::processing::IO_helper::file_to_vec;
 
 pub fn get_lang(src: &str) -> String {
     let mut lang: String = String::new();
-    let mut i_l: usize;
+    let i_l: usize;
     match src.find("lang") {
         Some(i) => i_l = i,
         _ => return "no language".to_string(),
