@@ -3,9 +3,8 @@
 use std::collections::BTreeMap;
 use crate::processing::extraction::get_sentences;
 
-
-/*Takes a string containing all the texts as a paramater
-  Returns a BTreeMap<String, usize> containing the keyword and its TF-IDF value */
+//Takes a string containing all the texts as a paramater
+//Returns a BTreeMap<String, usize> containing the keyword and its TF-IDF value.
 pub fn TF_IDF(s: String) -> BTreeMap<String, f64> {
     //let mut tf: BTreeMap<String, usize> = BTreeMap::new();
     //let mut idf: BTreeMap<String, usize> = BTreeMap::new();
@@ -42,6 +41,8 @@ pub fn TF_IDF(s: String) -> BTreeMap<String, f64> {
     tf_idf
 }
 
+//takes a TF-IDF BTreeMap as an entry and returns the keywords that 
+//possess a TF-IDF under the TF-IDF BTreeMap average.
 pub fn keywords(tf_idf: BTreeMap<String, f64>) -> Vec<String> {
     let mut average = 0.0;
     for (_, n) in &tf_idf { average += n; }

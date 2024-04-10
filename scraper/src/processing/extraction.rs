@@ -1,10 +1,10 @@
 
-//takes a HTML source code as an entry and returns all the detectable URLs in it
-pub fn get_urls(src: &str) -> (bool, Vec<String>) {
+//takes a HTML source code as an entry and returns all the detectable URLs in it.
+pub fn get_urls(src: &str) -> Vec<String> {
     let href_indices: Vec<_> = src.match_indices("a href").map(|(i, _)| i).collect();
     if href_indices.len() <= 0 { 
         println!("urls returned cause len = 0");
-        return (false, Vec::new()) }
+        return Vec::new() }
     let mut urls_vec: Vec<String> = vec![String::new(); href_indices.len()];
     let mut i_in_vec: usize = 0;
     for i in href_indices {
@@ -18,7 +18,7 @@ pub fn get_urls(src: &str) -> (bool, Vec<String>) {
         };
         i_in_vec += 1;
     }
-    (true, urls_vec)
+    urls_vec
 }
 
 //takes a HTML source code as an entry and returns all the text/paragraphs found.

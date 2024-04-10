@@ -1,5 +1,6 @@
 use crate::processing::IO_helper::file_to_vec;
 
+//Takes a &str as an entry and returns the found language.
 pub fn get_lang(src: &str) -> String {
     let mut lang: String = String::new();
     let i_l: usize;
@@ -18,6 +19,7 @@ pub fn get_lang(src: &str) -> String {
     lang
 }
 
+//Takes a language &str as an entry and returns if it is a valid ISO639-1 language.
 pub fn is_valid_lang(src: &str) -> bool {
     let path = "/home/woopi/Code/Droxyd/scraper/src/processing/sources/iso639-1.txt";
     let iso639_1: Vec<String> = file_to_vec(&path);
