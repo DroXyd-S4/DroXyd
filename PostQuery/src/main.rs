@@ -1,58 +1,126 @@
 /** Imports **/
-use console::Term;
 use std::fs::read_to_string;
+mod interface;
+
+/** Rocket **/
+mod models;
+use rocket::{get, launch, post, routes, uri};
+use rocket::form::{Contextual, Form};
+use rocket::fs::{FileServer, Options, relative};
+use rocket::request::FlashMessage;
+use rocket::response::{Flash, Redirect};
+use rocket_dyn_templates::{context, Template};
+use crate::models::SearchRequest;
+
 
 /** MAIN **/
+#[get("/")]
+async fn root() -> Template {
+    Template::render("root", context! { message: "Welcome to DroXyd !"})
+}
 
-fn main() {
+#[get("/hi?<request>")]
+async fn hello(request: String, flash: Option<FlashMessage<'_>>) -> Template {
+    let message2 = flash.map_or_else(|| String::default(), |msg| msg.message().to_string());
+    println!("{} {}",request,message2);
+    let parts: Vec<_> = message2.split("#").collect();
+    let bRequest = parts[0]; // Base Request
+    let sRequest = parts[1]; // Suggestion of correction
+    let qResults = parts[2]; // All results
+    //println!("render {} {} {} ",name,*message,qResults);
+    Template::render("hello", context! {bRequest ,sRequest, qResults})
+    
+}
+
+#[post("/", data = "<form>")]
+async fn create(form: Form<Contextual<'_, SearchRequest>>) -> Result<Flash<Redirect>, Template> {
+    if let Some(ref search) = form.value {
+        let name = format!("{} {}", search.request, search.results_number);
+        let mut qRes = String::new();
+        unsafe{
+            qRes += &search.request;
+            qRes += "#";
+            for i in (&search.request).split_whitespace()
+            {
+                let mut res = Vec::new();
+                qRes += &manageQuery(i,&mut res,false,1);
+                qRes += " ";
+            }
+            qRes += "#";
+            for i in (&search.request).split_whitespace()
+            {
+                let mut res = Vec::new();
+                qRes += "[word: ";
+                qRes += i;
+                qRes += ",results: {";
+                qRes += &manageQuery(i,&mut res,false,5);
+                qRes += "}]";
+            }
+            //qRes = manageQuery(&search.request,&mut res,false,1);
+        }
+        //println!("t2 {}",search.request);
+        let message = Flash::success(Redirect::to(uri!(hello(name))),
+        "".to_owned()+&qRes);
+        return Ok(message);
+    }
+    let error_messages: Vec<String> = form.context.errors().map(|error| {
+        let name = error.name.as_ref().unwrap().to_string();
+        let description = error.to_string();
+        format!("'{}' {}", name, description)
+    }).collect();
+    Err(Template::render("root", context! {
+        request : form.context.field_value("request"),
+        number_results : form.context.field_value("number_results"),
+        request_error : form.context.field_errors("request").count() > 0,
+        number_results_error : form.context.field_errors("number_results").count() >= 0,
+        errors: error_messages
+    }))
+}
+
+static mut Dic: &mut [[u32; 6]; 100000] = &mut [[0u32; 6]; 100000];
+
+#[launch]
+fn rocket() -> _ {
+   unsafe{
+   
     // ID, int value of letter, bool endWord, pointers (l,m,r)
-    let mut Dic: &mut [[u32; 6]; 100000] = &mut [[0u32; 6]; 100000];
+    //let mut Dic: &mut [[u32; 6]; 100000] = &mut [[0u32; 6]; 100000];
     Dic[0] = [0, 2, 0, 0, 0, 0]; // Default
     Dic[1] = [1, 97, 0, 0, 0, 0];
     //testSuite(Dic);
-    loadDic(Dic);
+    loadDic();
 
-    insert(Dic, 1, "lea".to_string(), 0, 0,2);
-    insert(Dic, 1, "leo".to_string(), 0, 0,3);
-    
+    insert(1, "lea".to_string(), 0, 0,2);
+    insert(1, "leo".to_string(), 0, 0,3);
     //debug(Dic);
-    println!("====================================================");
-    //println!("start typing: ");
-    let mut s = String::new();
-    let mut p = String::new();
-    let stdout = Term::buffered_stdout();
-    'game_loop: loop {
-        if let Ok(character) = stdout.read_char() {
-            match character {
-                '\n' => break 'game_loop,
-                ' ' => {s.push(' ');p+=&s;s=String::new();},
-                '-' => {s.pop();},
-                '+' => {p.pop();},
-                _ => {
-                // println!("{} {}",character,character as u32);
-                s.push(character);
-                },
-            }
-        }
-        println!("your sentence: {} ",p);
-        println!("your word: {} ",s);
-        let mut res = Vec::new();
-        manageQuery(Dic,&s,&mut res,false);
-        println!("====================================================");
-    }
-}
 
-fn manageQuery(mut Dic: &mut [[u32; 6]; 100000], s : &str,mut results : &mut Vec<(String,u32)>,debug:bool )
-{
+        rocket::build()
+        // add templating system
+        .attach(Template::fairing())
+        // serve content from disk
+        .mount("/public", FileServer::new(relative!("/public"), Options::Missing | Options::NormalizeDirs))
+        // register routes
+        .mount("/", routes![root, create, hello])
+}}
+
+fn manageQuery(s : &str,mut results : &mut Vec<(String,u32)>,debug:bool,mut nb:u32 ) -> String
+{ unsafe{
+    let mut qRes = String::new();
     if s != ""{
-    let a = checkWord(Dic,&s,false,&mut results);
+    let a = checkWord(&s,false,&mut results);
     println!("[WORDISVALID]: {}",a==0);
+    if a == 0
+    {
+        qRes += s;
+        qRes += ",";
+        nb -= 1;
+    }
     if a != 2
     {
        let mut s = results.iter().count();
        let mut l = s;
-       if l > 5
-       {l=5;}
+       if l > nb as usize
+       {l=nb as usize;}
        for i in 0..l
        {
          let mut index = 0;
@@ -66,6 +134,8 @@ fn manageQuery(mut Dic: &mut [[u32; 6]; 100000], s : &str,mut results : &mut Vec
             }
          }
          println!("[AUTOCOMPLETION_{}]: {}",i,results[index].0);
+         qRes += &results[index].0;
+         qRes += ",";
          results.remove(index);
          s -= 1;
        }
@@ -91,84 +161,88 @@ fn manageQuery(mut Dic: &mut [[u32; 6]; 100000], s : &str,mut results : &mut Vec
             }
        }
        println!("[CORRECTION]: {}",results[index].0);
+       qRes += &results[index].0;
+       qRes += ",";
        }
     }
     }
+    qRes.pop();
+    return qRes;
+}
 }
 
-fn loadDic(mut Dic: &mut [[u32; 6]; 100000]) {
+fn loadDic() { unsafe{
     for line in read_to_string("Dic.txt").unwrap().lines() {
-        addWord(Dic, line);
+        addWord(line);
     }
-}
+}}
 
-fn debug(mut Dic: &mut [[u32; 6]; 100000]) {
+fn debug() { unsafe{
     for line in read_to_string("Debug.txt").unwrap().lines() {
         println!("Debug for word: {}", line);
         let mut res = Vec::new();
-        checkWord(Dic, line, false,&mut res);
+        checkWord(line, false,&mut res);
     }
-}
+}}
 
 /** TOOLS **/
 
 /** Add a word in dictionnary **/
-fn addWord(mut Dic: &mut [[u32; 6]; 100000], s: &str) {
-    insert(Dic, 1, s.to_string(), 0, 0,1);
-}
+fn addWord(s: &str) { unsafe{
+    insert(1, s.to_string(), 0, 0,1);
+}}
 
 /** Find a word in dictionnary **/
-fn findWord(mut Dic: &mut [[u32; 6]; 100000], s: &str) -> bool {
-    return search(Dic, 1, s.to_string(), 0);
-}
+fn findWord(s: &str) -> bool { unsafe{
+    return search(1, s.to_string(), 0);
+}}
 
 /** List the entire dictionnary **/
-fn listAllWords(mut Dic: &mut [[u32; 6]; 100000]) {
-    listAll(Dic, 1, "".to_string(), 0);
-}
+fn listAllWords() { unsafe{
+    listAll( 1, "".to_string(), 0);
+}}
 
 /** Suggest words from a given prefix **/
-fn suggest(mut Dic: &mut [[u32; 6]; 100000], s: &str, mut results : &mut Vec<(String,u32)>,debug:bool) {
-    let a = getNodeID(Dic, s.to_string());
+fn suggest( s: &str, mut results : &mut Vec<(String,u32)>,debug:bool) { unsafe{
+    let a = getNodeID( s.to_string());
     if a == 0 {
         if debug {println!(">> no suggestions found !");}
     } else {
         traverse(
-            Dic,
             Dic[a][4].try_into().unwrap(),
             s.to_string().clone(),
             s.to_string().chars().count().try_into().unwrap(),
             s.to_string().clone(),results,debug
         );
     }
-}
+}}
 
 /** Check if a word exists, or try a suggestion or correction
 0: word found (vec contains autocompletion)
 1: word not found, but suggestions are given
 2: word not found, but corrections are given
 **/
-fn checkWord(mut Dic: &mut [[u32; 6]; 100000], s: &str, debug: bool,
-mut results : &mut Vec<(String,u32)> ) -> usize {
+fn checkWord( s: &str, debug: bool,
+mut results : &mut Vec<(String,u32)>) -> usize { unsafe{
     let mut r = 1;
-    if findWord(Dic, s) {
+    if findWord(s) {
         if debug {println!(">> {} is a word", s);}
         r = 0;
     }
-    let a = getNodeID(Dic, s.to_string());
+    let a = getNodeID(s.to_string());
     if a != 0 {
-        suggest(Dic, s, results,debug);
+        suggest(s, results,debug);
         return r;
     } else {
-      correct(Dic, s, debug,results);
+      correct(s, debug,results);
       return 2;
     }
-}
+}}
 
 /** Try if a word exists in dictionnary as a correction **/
-fn tryInDic(mut Dic: &mut [[u32; 6]; 100000], s: String, debug: bool,
-mut results : &mut Vec<(String,u32)>) -> u32 {
-    let a = findWord(Dic, &s.trim());
+fn tryInDic( s: String, debug: bool,
+mut results : &mut Vec<(String,u32)>) -> u32 { unsafe{
+    let a = findWord(&s.trim());
     if debug {
         println!("testing if {} is in Dic => {}", s, a);
         if a {
@@ -176,16 +250,16 @@ mut results : &mut Vec<(String,u32)>) -> u32 {
         }
     } else if a {
         if debug {println!(">> {} is a possible correction !", s);}
-        results.push((s.clone(),Dic[getNodeID(Dic, s) as usize][2]));
+        results.push((s.clone(),Dic[getNodeID(s) as usize][2]));
         return 1;
     }
     return 0;
-}
+}}
 
 /** DEBUG **/
 
 /** Display all memory info and values**/
-fn printMemory(mut Dic: &mut [[u32; 6]; 100000], size: usize) {
+fn printMemory(size: usize) { unsafe{
     println!();
     println!("================== MEMORY  STATUS ==================");
     println!("ID status: {}", Dic[0][0]);
@@ -207,80 +281,79 @@ fn printMemory(mut Dic: &mut [[u32; 6]; 100000], size: usize) {
         println!();
     }
     println!("====================================================");
-}
+}}
 
-fn testSuite(mut Dic: &mut [[u32; 6]; 100000]) {
+fn testSuite() { unsafe{
     println!("==================   TEST SUITE   ==================");
 
     println!("\n#ADDING WORDS#\n");
-    addWord(Dic, "cat");
+    addWord("cat");
     println!("Added: /cat/");
-    addWord(Dic, "cats");
+    addWord("cats");
     println!("Added: /cats/");
-    addWord(Dic, "bug");
+    addWord("bug");
     println!("Added: /bug/");
-    addWord(Dic, "up");
+    addWord("up");
     println!("Added: /up/");
 
     println!("\n#LISTING WORDS#\n");
-    listAllWords(Dic);
+    listAllWords();
 
     println!("\n#SEARCHING WORDS#\n");
 
-    println!("Contains: /cat/  {}", findWord(Dic, "cat"));
-    println!("Contains: /cats/ {}", findWord(Dic, "cats"));
-    println!("Contains: /bug/  {}", findWord(Dic, "bug"));
-    println!("Contains: /up/   {}", findWord(Dic, "up"));
-    println!("Contains: /uwu/  {}", findWord(Dic, "uwu"));
-    println!("Contains: /bu/   {}", findWord(Dic, "bu"));
+    println!("Contains: /cat/  {}", findWord("cat"));
+    println!("Contains: /cats/ {}", findWord("cats"));
+    println!("Contains: /bug/  {}", findWord("bug"));
+    println!("Contains: /up/   {}", findWord("up"));
+    println!("Contains: /uwu/  {}", findWord("uwu"));
+    println!("Contains: /bu/   {}", findWord("bu"));
 
     let mut res = Vec::new();
     
     println!("\n#SUGGESTIONS#\n");
     println!("Suggestions for : /c/");
-    suggest(Dic, "c",&mut res,true);
+    suggest("c",&mut res,true);
     println!("Suggestions for : /ca/");
-    suggest(Dic, "ca",&mut res,true);
+    suggest("ca",&mut res,true);
     println!("Suggestions for : /b/");
-    suggest(Dic, "b",&mut res,true);
+    suggest("b",&mut res,true);
     println!("Suggestions for : /bat/");
-    suggest(Dic, "bat",&mut res,true);
+    suggest("bat",&mut res,true);
 
     println!("\n#CORRECTION#\n");
     println!("Corrections for : /caat/");
-    correct(Dic, "caat", false,&mut res);
+    correct("caat", false,&mut res);
     println!("Debug corrections for : /bu/");
-    correct(Dic, "bu", true,&mut res);
+    correct("bu", true,&mut res);
 
     println!("\n#CHECK#\n");
     println!("WordCheck for : /cat/");
-    checkWord(Dic, "cat", false,&mut res);
+    checkWord("cat", false,&mut res);
     println!("WordCheck for : /ca/");
-    checkWord(Dic, "ca", false,&mut res);
+    checkWord("ca", false,&mut res);
     println!("WordCheck for : /ug/");
-    checkWord(Dic, "ug", false,&mut res);
+    checkWord("ug", false,&mut res);
     println!("WordCheck for : /cazt/");
-    checkWord(Dic, "cazt", false,&mut res);
+    checkWord("cazt", false,&mut res);
     println!("WordCheck for : /op/");
-    checkWord(Dic, "op", false,&mut res);
+    checkWord("op", false,&mut res);
     println!("WordCheck for : /caaat/");
-    checkWord(Dic, "caaat", false,&mut res);
+    checkWord("caaat", false,&mut res);
 
     println!("\n#PRITING MEMORY#\n");
-    printMemory(Dic, 100);
-}
+    printMemory(100);
+}}
 
 /** CORE **/
 
 /** Insert a word node by node in a ternary search tree **/
 fn insert(
-    mut Dic: &mut [[u32; 6]; 100000],
     mut node: usize,
     word: String,
     index: u32,
     mut f: usize,
     occ: u32
-) -> u32 {
+) -> u32 { unsafe{
     if node == 0 && f == 0 {
         node = Dic[0][1] as usize;
         Dic[0][1] += 1;
@@ -288,44 +361,44 @@ fn insert(
         Dic[node][1] = word.chars().nth(index.try_into().unwrap()).unwrap() as u32;
     }
     if (word.chars().nth(index.try_into().unwrap()).unwrap() as u32) < Dic[node][1] {
-        Dic[node][3] = insert(Dic, Dic[node][3] as usize, word, index, 0,occ);
+        Dic[node][3] = insert( Dic[node][3] as usize, word, index, 0,occ);
     } else if (word.chars().nth(index.try_into().unwrap()).unwrap() as u32) > Dic[node][1] {
-        Dic[node][5] = insert(Dic, Dic[node][5] as usize, word, index, 0,occ);
+        Dic[node][5] = insert( Dic[node][5] as usize, word, index, 0,occ);
     } else {
         if index < (word.chars().count() as u32) - 1 {
-            Dic[node][4] = insert(Dic, Dic[node][4] as usize, word, index + 1, 0,occ);
+            Dic[node][4] = insert( Dic[node][4] as usize, word, index + 1, 0,occ);
         } else {
             Dic[node][2] = occ;
         }
     }
     return node.try_into().unwrap();
-}
+}}
 
 /**  Find a word in a ternary search tree  **/
-fn search(mut Dic: &mut [[u32; 6]; 100000], mut node: usize, word: String, index: u32) -> bool {
+fn search( mut node: usize, word: String, index: u32) -> bool { unsafe{
     if node == 0 {
         return false;
     }
     if (word.chars().nth(index.try_into().unwrap()).unwrap() as u32) < Dic[node][1] {
-        return search(Dic, Dic[node][3].try_into().unwrap(), word, index);
+        return search( Dic[node][3].try_into().unwrap(), word, index);
     } else if (word.chars().nth(index.try_into().unwrap()).unwrap() as u32) > Dic[node][1] {
-        return search(Dic, Dic[node][5].try_into().unwrap(), word, index);
+        return search( Dic[node][5].try_into().unwrap(), word, index);
     } else {
         if index == (word.chars().count() as u32) - 1 {
             return Dic[node][2] >= 1;
         } else {
-            return search(Dic, Dic[node][4].try_into().unwrap(), word, index + 1);
+            return search( Dic[node][4].try_into().unwrap(), word, index + 1);
         }
     }
-}
+}}
 
 /**  List all words from node **/
-fn listAll(mut Dic: &mut [[u32; 6]; 100000], mut node: usize, mut word: String, mut l: usize) {
+fn listAll( mut node: usize, mut word: String, mut l: usize) { unsafe{
     if node == 0 {
         return;
     }
     if Dic[node][3] as usize !=node{
-    listAll(Dic, Dic[node][3].try_into().unwrap(), word.clone(), l);}
+    listAll( Dic[node][3].try_into().unwrap(), word.clone(), l);}
     word.push(char::from_u32(Dic[node][1]).unwrap());
     l += 1;
     if Dic[node][2] >= 1 {
@@ -339,12 +412,12 @@ fn listAll(mut Dic: &mut [[u32; 6]; 100000], mut node: usize, mut word: String, 
     let mut word3 = word2.clone();
     let l2 = l + 1;
     word3.push(char::from_u32(Dic[node][1]).unwrap());
-    listAll(Dic, Dic[node][4].try_into().unwrap(), word3, l2);
-    listAll(Dic, Dic[node][5].try_into().unwrap(), word2, l);
-}
+    listAll( Dic[node][4].try_into().unwrap(), word3, l2);
+    listAll( Dic[node][5].try_into().unwrap(), word2, l);
+}}
 
 /**  Find node id given a prefix  **/
-fn getNodeID(mut Dic: &mut [[u32; 6]; 100000], prefix: String) -> usize {
+fn getNodeID( prefix: String) -> usize { unsafe{
     let mut node = 1;
     let mut index = 0;
     while node != 0 && index < prefix.chars().count() {
@@ -360,20 +433,18 @@ fn getNodeID(mut Dic: &mut [[u32; 6]; 100000], prefix: String) -> usize {
         }
     }
     return node;
-}
+}}
 
 /** Return all autocompletion suggestions **/
 fn traverse(
-    mut Dic: &mut [[u32; 6]; 100000],
     mut node: usize,
     prefix: String,
     l: u32,
     base: String, mut results : &mut Vec<(String,u32)>,
     debug : bool
-) {
+) { unsafe{
     if node != 0 {
         traverse(
-            Dic,
             Dic[node][3].try_into().unwrap(),
             prefix.clone(),
             l,
@@ -386,25 +457,23 @@ fn traverse(
             results.push((prefix2.clone(),Dic[node][2]));
         }
         traverse(
-            Dic,
             Dic[node][4].try_into().unwrap(),
             prefix2,
             l + 1,
             base.clone(),results,debug
         );
         traverse(
-            Dic,
             Dic[node][5].try_into().unwrap(),
             prefix,
             l,
             base.clone(),results,debug
         );
     }
-}
+}}
 
 /** Find all possible corrections for a word **/
-fn correct(mut Dic: &mut [[u32; 6]; 100000], s: &str, debug: bool,
-mut results : &mut Vec<(String,u32)>) {
+fn correct(s: &str, debug: bool,
+mut results : &mut Vec<(String,u32)>) { unsafe{
     
     let mut c = 0;
     /** Swap **/
@@ -419,7 +488,7 @@ mut results : &mut Vec<(String,u32)>) {
         for j in i + 2..base.chars().count() {
             test.push(base.chars().nth(j).unwrap());
         }
-        c += tryInDic(Dic, test, debug,results);
+        c += tryInDic( test, debug,results);
     }
 
     /** Deletion **/
@@ -430,7 +499,7 @@ mut results : &mut Vec<(String,u32)>) {
                 test.push(base.chars().nth(j).unwrap());
             }
         }
-        c += tryInDic(Dic, test, debug,results);
+        c += tryInDic(test, debug,results);
     }
 
     /** Replacement **/
@@ -444,7 +513,7 @@ mut results : &mut Vec<(String,u32)>) {
                     test.push(char::from_u32('a' as u32 + k).unwrap());
                 }
             }
-            c += tryInDic(Dic, test, debug,results);
+            c += tryInDic( test, debug,results);
         }
     }
 
@@ -461,10 +530,10 @@ mut results : &mut Vec<(String,u32)>) {
                     test.push(base.chars().nth(j).unwrap());
                 }
             }
-            c += tryInDic(Dic, test, debug,results);
+            c += tryInDic( test, debug,results);
         }
     }
     if c == 0 && debug{
         println!(">> no corrections found =/");
     }
-}
+}}

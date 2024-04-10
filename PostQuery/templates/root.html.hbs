@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="color-scheme" content="light dark"/>
+    <link rel="stylesheet" href="/public/css/pico.min.css">
+    <title>DroXyd Search Engine</title>
+</head>
+<body>
+<main class="container">
+    <h1>DroXyd Search engine</h1>
+    {{#if errors }}
+        <article>
+            <header>🥺Oh No!</header>
+            <p>There are some invalid fields in the form</p>
+            <ul>
+                {{#each errors}}
+                    <li>{{this}}</li>
+                {{/each}}
+            </ul>
+        </article>
+    {{/if}}
+    <form method="POST" enctype="multipart/form-data" action="/">
+        <input type="text"
+               name="request"
+               placeholder="enter search"
+               aria-label="Request"
+               value="{{ request }}"
+               aria-invalid="{{ request_error}}"
+        />
+        <input type="text"
+               name="results_number"
+               placeholder="enter number"
+               aria-label="Number of results"
+               value="{{ results_number }}"
+               aria-invalid="{{ results_number_error}}"
+        />
+        
+        <button type="submit">Search</button>
+    </form>
+</main>
+</body>
+</html>
