@@ -27,8 +27,14 @@ async fn hello(request: String, flash: Option<FlashMessage<'_>>) -> Template {
     let bRequest = parts[0]; // Base Request
     let sRequest = parts[1]; // Suggestion of correction
     let qResults = parts[2]; // All results
+    let nb = parts[3]; // Nb results
+    let mut R0 = "Wikipedia |  https://fr.wikipedia.org/ | keyword1 | keyword2";
+    if nb.parse::<i32>().unwrap() == 0
+    {
+        R0 = "";
+    }
     //println!("render {} {} {} ",name,*message,qResults);
-    Template::render("hello", context! {bRequest ,sRequest, qResults})
+    Template::render("hello", context! {bRequest ,sRequest, qResults,R0})
     
 }
 
@@ -58,7 +64,8 @@ async fn create(form: Form<Contextual<'_, SearchRequest>>) -> Result<Flash<Redir
             }
             //qRes = manageQuery(&search.request,&mut res,false,1);
         }
-        //println!("t2 {}",search.request);
+        qRes += "#";
+        qRes += &search.results_number;
         let message = Flash::success(Redirect::to(uri!(hello(name))),
         "".to_owned()+&qRes);
         return Ok(message);
@@ -90,8 +97,11 @@ fn rocket() -> _ {
     //testSuite(Dic);
     loadDic();
 
-    insert(1, "lea".to_string(), 0, 0,2);
-    insert(1, "leo".to_string(), 0, 0,3);
+    insert(1, "ferrari".to_string(), 0, 0,8);
+    insert(1, "ferraille".to_string(), 0, 0,3);
+    insert(1, "ferry".to_string(), 0, 0,5);
+
+
     //debug(Dic);
 
         rocket::build()
@@ -107,6 +117,17 @@ fn manageQuery(s : &str,mut results : &mut Vec<(String,u32)>,debug:bool,mut nb:u
 { unsafe{
     let mut qRes = String::new();
     if s != ""{
+
+    // check if special char
+    for i in s.chars()
+    {
+        if !( (i >= 'A' && i <= 'Z') || (i >= 'a' && i <= 'z') )
+        {
+           qRes += s;
+           return qRes;
+        }
+    }
+
     let a = checkWord(&s,false,&mut results);
     println!("[WORDISVALID]: {}",a==0);
     if a == 0
