@@ -41,7 +41,34 @@ async fn hello(request: String, flash: Option<FlashMessage<'_>>) -> Template {
     let mut RESDB = [[""; 7]; 10];
     RESDB[0] =
     ["Wikipedia","https://fr.wikipedia.org/","info","wiki","data",
-    "ferrari","car"];
+    "news","learn"];
+    RESDB[1] =
+    ["Youtube","https://m.youtube.com/","videos","discover","news",
+    "shorts","followed"];
+    RESDB[2] =
+    ["Github","https://github.com/","projects","browse","develloper",
+    "microsoft","login"];
+    RESDB[3] =
+    ["Instagram","https://instagram.com/","discover","post","foryou",
+    "videos","followed"];
+    RESDB[4] =
+    ["Wikihow","https://fr.wikihow.org/","tutorials","wiki","learn",
+    "news","trending"];
+    RESDB[5] =
+    ["testWebsite","https://test.com/","KeywordA","KeywordB","KeywordC",
+    "KeywordD","KeywordE"];
+    RESDB[6] =
+    ["Wikipedia","https://fr.wikipedia.org/","info","wiki","data",
+    "news","learn"];
+    RESDB[7] =
+    ["Wikipedia","https://fr.wikipedia.org/","info","wiki","data",
+    "news","learn"];
+    RESDB[8] =
+    ["Wikipedia","https://fr.wikipedia.org/","info","wiki","data",
+    "news","learn"];
+    RESDB[9] =
+    ["Wikipedia","https://fr.wikipedia.org/","info","wiki","data",
+    "news","learn"];
     let mut SUGG = String::new();
     if nb.parse::<i32>().unwrap() > 0
     {R0 = getParsedRes(RESDB[0]);}
@@ -66,7 +93,7 @@ async fn hello(request: String, flash: Option<FlashMessage<'_>>) -> Template {
     let mut f = 0;
     for i in 2..7
     {
-        for j in 0..10
+        for j in 0..nb.parse::<i32>().unwrap() as usize
         {
              if !(bRequest.contains(RESDB[j][i]))
              {
@@ -78,6 +105,10 @@ async fn hello(request: String, flash: Option<FlashMessage<'_>>) -> Template {
              {
                 break;
              }
+        }
+	if f>=5
+        {
+             break;
         }
     }
     Template::render("hello", context! {bRequest ,sRequest, qResults,
