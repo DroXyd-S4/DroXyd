@@ -97,7 +97,7 @@ fn leo()
     println!();
 
     //println!("{}", get_content(String::from("https://example.com/")));
-    crawler(10, String::from("https://en.wikipedia.org/wiki/42_(number)"));
+    crawler(100);
 
 
 

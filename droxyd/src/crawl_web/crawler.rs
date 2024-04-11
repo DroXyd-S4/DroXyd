@@ -10,16 +10,21 @@ use crate::processing::extraction::*;
 
 use std::process::Command; // Used to sleep
 
-pub fn crawler(limit: u64, start: String) -> Vec<String>
+pub fn crawler(limit: u64) -> Vec<String>
 {
     let mut i = 0;
     let mut res = vec![];
-    let mut filter = init_filter(limit, 0.1_f64);
+    let mut filter = init_filter(limit, 0.005_f64);
     // Error rate can change -> [0.01, 1]
 
     let hash_functions = vec![sha256, md5, double_sha256];
     let mut links: Queue<String> = queue![];
-    let _ = links.add(start);
+    let _ = links.add(String::from("https://en.wikipedia.org/wiki/42_(number)"));
+    let _ = links.add(String::from("https://www.lepoint.fr/eureka/qu-est-ce-qu-une-eclipse-solaire-totale-08-04-2024-2557109_4706.php"));
+    let _ = links.add(String::from("https://www.psychologue.net/articles/largent-fait-il-le-bonheur"));
+    let _ = links.add(String::from("https://www.lequipe.fr/Football/Coupe-du-monde/"));
+    let _ = links.add(String::from("https://stackoverflow.com/questions/tagged/web-crawler"));
+
     while i < limit && links.size() > 0
     {
         let temp = links.remove().unwrap();
