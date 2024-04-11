@@ -30,13 +30,7 @@ pub fn tag_extraction(src: &str) -> String {
     }
     let tag_end: Vec<_> = src.match_indices(">").map(|(i, _)|i).collect();
     let mut para = String::new();
-    println!("{:?}", tag_end.len());
-    if tag_start.len() != tag_end.len() { 
-        println!("not same len");
-        return "not same length".to_string() }
     for i in 0..tag_start.len() {
-        println!("{}", tag_start[i]);
-        println!("{}\n", tag_end[i]+1);
         for c in src[tag_end[i]+1..].chars() {
             if c == '<' { break }
             para.push(c);

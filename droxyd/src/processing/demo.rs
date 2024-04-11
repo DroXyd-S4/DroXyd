@@ -21,7 +21,7 @@ pub fn demo(url: &str, show_tf_idf: bool) {
         _ => println!("Aucune langue valide n'a été détectée"),
     }
     let urls = get_urls(&body);
-    println!("Les URLs référencées dans {} sont: \n {:?}\n", url, urls.1);
+    println!("Les URLs référencées dans {} sont: \n {:?}\n", url, urls);
     let para = tag_extraction(&body);
     let (sent, nb) = get_sentences(&para);
     println!("Les {} phrases trouvées sont: \n", nb);

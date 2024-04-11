@@ -22,10 +22,6 @@ pub fn TF_IDF(s: String) -> BTreeMap<String, f64> {
             else { curr_w.push(s.as_bytes()[c] as char); }
             j+=1;
         }
-<<<<<<< HEAD:droxyd/src/processing/cleansing.rs
-        words.push((s.matches(&curr_w).count(), curr_w.clone()));
-        s = remove_str(s, curr_w);
-=======
         if !(curr_w == " " || curr_w == "") {
             let tf_res = (s.matches(&curr_w).count() as f64)/(s.chars().count() as f64);
             //tf.entry(curr_w).or_insert(tf_res);
@@ -41,7 +37,6 @@ pub fn TF_IDF(s: String) -> BTreeMap<String, f64> {
             tf_idf.entry(curr_w).or_insert(tf_res*idf_res);
         }
         j+=1;
->>>>>>> scraper:scraper/src/processing/cleansing.rs
     }
     tf_idf
 }

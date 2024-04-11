@@ -74,7 +74,7 @@ pub fn crawler(limit: u64) -> Vec<String>
 
 
             let content = get_content(temp);
-            let urls = get_urls(&content).1; //Enlever .1 si Justine fix sa fct
+            let urls = get_urls(&content); //Enlever .1 si Justine fix sa fct
 
             //dbg!(&urls);
             for elt in urls

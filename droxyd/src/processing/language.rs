@@ -21,13 +21,10 @@ pub fn get_lang(src: &str) -> String {
 
 //Takes a language &str as an entry and returns if it is a valid ISO639-1 language.
 pub fn is_valid_lang(src: &str) -> bool {
-    let path = "/home/woopi/Code/Droxyd/scraper/src/processing/sources/iso639-1.txt";
+    let path = "/home/thegeekeuhhhhhhh/throw/DroXyd/droxyd/src/processing/sources/iso639-1.txt";
     let iso639_1: Vec<String> = file_to_vec(&path);
     match Some(iso639_1.iter().position(|l| l == src)) {
         None => return false,
         _ => return true,
     }
 }
-
-
-
