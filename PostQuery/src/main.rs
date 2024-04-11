@@ -28,14 +28,79 @@ async fn hello(request: String, flash: Option<FlashMessage<'_>>) -> Template {
     let sRequest = parts[1]; // Suggestion of correction
     let qResults = parts[2]; // All results
     let nb = parts[3]; // Nb results
-    let mut R0 = "Wikipedia |  https://fr.wikipedia.org/ | keyword1 | keyword2";
-    if nb.parse::<i32>().unwrap() == 0
+    let mut R0 = "".to_string();
+    let mut R1 = "".to_string();
+    let mut R2 = "".to_string();
+    let mut R3 = "".to_string();
+    let mut R4 = "".to_string();
+    let mut R5 = "".to_string();
+    let mut R6 = "".to_string();
+    let mut R7 = "".to_string();
+    let mut R8 = "".to_string();
+    let mut R9 = "".to_string();
+    let mut RESDB = [[""; 7]; 10];
+    RESDB[0] =
+    ["Wikipedia","https://fr.wikipedia.org/","info","wiki","data",
+    "ferrari","car"];
+    let mut SUGG = String::new();
+    if nb.parse::<i32>().unwrap() > 0
+    {R0 = getParsedRes(RESDB[0]);}
+    if nb.parse::<i32>().unwrap() > 1
+    {R1 = getParsedRes(RESDB[1]);}
+    if nb.parse::<i32>().unwrap() > 2
+    {R2 = getParsedRes(RESDB[2]);}
+    if nb.parse::<i32>().unwrap() > 3
+    {R3 = getParsedRes(RESDB[3]);}
+    if nb.parse::<i32>().unwrap() > 4
+    {R4 = getParsedRes(RESDB[4]);}
+    if nb.parse::<i32>().unwrap() > 5
+    {R5 = getParsedRes(RESDB[5]);}
+    if nb.parse::<i32>().unwrap() > 6
+    {R6 = getParsedRes(RESDB[6]);}
+    if nb.parse::<i32>().unwrap() > 7
+    {R7 = getParsedRes(RESDB[7]);}
+    if nb.parse::<i32>().unwrap() > 8
+    {R8 = getParsedRes(RESDB[8]);}
+    if nb.parse::<i32>().unwrap() > 9
+    {R9 = getParsedRes(RESDB[9]);}
+    let mut f = 0;
+    for i in 2..7
     {
-        R0 = "";
+        for j in 0..10
+        {
+             if !(bRequest.contains(RESDB[j][i]))
+             {
+                f += 1;
+                SUGG += RESDB[j][i];
+                SUGG += " ";
+             }
+             if f>=5
+             {
+                break;
+             }
+        }
     }
-    //println!("render {} {} {} ",name,*message,qResults);
-    Template::render("hello", context! {bRequest ,sRequest, qResults,R0})
-    
+    Template::render("hello", context! {bRequest ,sRequest, qResults,
+    R0,R1,R2,R3,R4,R5,R6,R7,R8,R9,SUGG})
+}
+
+fn getParsedRes(l: [&str;7]) -> String
+{
+     let mut res = String::new();
+     res += &l[0];
+     res += " | ";
+     res += &l[1];
+     res += " | ";
+     res += &l[2];
+     res += ",";
+     res += &l[3];
+     res += ",";
+     res += &l[4];
+     res += ",";
+     res += &l[5];
+     res += ",";
+     res += &l[6];
+     return res;
 }
 
 #[post("/", data = "<form>")]
@@ -127,7 +192,6 @@ fn manageQuery(s : &str,mut results : &mut Vec<(String,u32)>,debug:bool,mut nb:u
            return qRes;
         }
     }
-
     let a = checkWord(&s,false,&mut results);
     println!("[WORDISVALID]: {}",a==0);
     if a == 0
@@ -246,16 +310,16 @@ fn suggest( s: &str, mut results : &mut Vec<(String,u32)>,debug:bool) { unsafe{
 fn checkWord( s: &str, debug: bool,
 mut results : &mut Vec<(String,u32)>) -> usize { unsafe{
     let mut r = 1;
-    if findWord(s) {
+    if findWord(&s.to_lowercase()) {
         if debug {println!(">> {} is a word", s);}
         r = 0;
     }
     let a = getNodeID(s.to_string());
     if a != 0 {
-        suggest(s, results,debug);
+        suggest(&s.to_lowercase(), results,debug);
         return r;
     } else {
-      correct(s, debug,results);
+      correct(&s.to_lowercase(), debug,results);
       return 2;
     }
 }}
