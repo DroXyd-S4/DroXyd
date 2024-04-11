@@ -1,9 +1,20 @@
+#![allow(non_snake_case)]
+#![allow(dead_code)]
 
 use std::fs::File;
-use std::io::{BufReader, Read};
-//use hyper::Client;
+use std::io::{BufReader, Read, Write};
+//use std::io::prelude::*;
+use std::path::Path;
+use std::net::TcpStream;
 
+//Takes a file path as an entry and returns the file name
+pub fn get_filename(file_path: &str) {
+    let path = Path::new(file_path);
+    let filename = path.file_name().unwrap();
+    println!("{}", filename.to_str().unwrap());
+}
 
+//Takes a file path as an entry and returns the content of the file as a String
 pub fn file_to_str(file_path: &str) -> String
 { 
     let mut file = match File::open(&file_path) {
@@ -15,6 +26,7 @@ pub fn file_to_str(file_path: &str) -> String
     s
 }
 
+//Takes a file path as an entry and returns the content of the file as a Vec<String>
 pub fn file_to_vec(file_path: &str) -> Vec<String> {
     let mut file = match File::open(&file_path) {
         Err(why) => panic!("file_to_vec: couldn't open {}: {}", file_path, why),
@@ -39,12 +51,23 @@ pub fn file_to_vec(file_path: &str) -> Vec<String> {
     v
 }
 
-/*pub fn URL_to_String(src: &str) -> String {
-    let client = Client::new();
-    let mut res = client.get(src)
-        .send()
+//Checks if an internet connexion is present or not
+fn IMCP_ping() -> std::io::Result<()> {
+    let mut stream = TcpStream::connect("209.85.233.101:80")?;
+    stream.write(&[1])?;
+    stream.read(&mut [0; 128])?;
+    Ok(())
+}
+
+//Takes an URL as an entry and returns a String containing the html code of the URL
+pub fn URL_to_String(url: &str) -> Option<String> {
+    match IMCP_ping() {
+        Ok(_) => println!("Connexion detected"),
+        Err(_) => println!("URL_to_String: no ping detected")
+    };
+    let body = reqwest::blocking::get(url)
+        .unwrap()
+        .text()
         .unwrap();
-    let mut body = String::new();
-    res.read_to_string(&mut body).expect("failed to read into string");
-    body
-}*/
+    Some(body)
+}
