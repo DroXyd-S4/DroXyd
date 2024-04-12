@@ -98,31 +98,7 @@ fn crawler_tests()
 
     //println!("{}", get_content(String::from("https://example.com/")));
     crawler(5);
-
-
-
-
-
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 /* TESTS DE JUSTINE */
 
@@ -136,6 +112,214 @@ fn scraper_tests()
     demo(&url, false);
 }
 
+fn parser_tests() {
+    //let s = "-aa inurl:bernard.com \" t e s t \" aaa OR:\"char a\"/\"heli helo\" unsite:chat.com intext:fer argent";
+    println!("Teste suite:");
+    println!("");
+
+    let s1 = "crevette";
+    let p = parser::parser::parser(&s1);
+    println!("{:?}",s1);
+    println!("{:?}",p);
+    println!("");
+
+    let s1 = "-voiture";
+    let p = parser::parser::parser(&s1);
+    println!("{:?}",s1);
+    println!("{:?}",p);
+    println!("");
+
+    let s1 = "site:pizzahut.com";
+    let p = parser::parser::parser(&s1);
+    println!("{:?}",s1);
+    println!("{:?}",p);
+    println!("");
+
+    let s1 = "OR:voiture/moto";
+    let p = parser::parser::parser(&s1);
+    println!("{:?}",s1);
+    println!("{:?}",p);
+    println!("");
+
+    let s1 = "inurl:pizza/commande";
+    let p = parser::parser::parser(&s1);
+    println!("{:?}",s1);
+    println!("{:?}",p);
+    println!("");
+
+    let s1 = "unsite:pizza.com";
+    let p = parser::parser::parser(&s1);
+    println!("{:?}",s1);
+    println!("{:?}",p);
+    println!("");
+
+    let s1 = "\"pizza au 4 fromage\"";
+    let p = parser::parser::parser(&s1);
+    println!("{:?}",s1);
+    println!("{:?}",p);
+    println!("");
+
+    let s1 = "site:pizzahut.com -ananas \"fromage a raclette\"";
+    let p = parser::parser::parser(&s1);
+    println!("{:?}",s1);
+    println!("{:?}",p);
+    println!("");
+}
+
+
+use self::models::*;
+use diesel::prelude::*;
+use sqlquery::*;
+
+
+pub fn search(s: &str) -> Vec<Post1>
+{
+    use self::schema::posts1::dsl::*;
+    use self::schema::posts2::dsl::*;
+
+    let connection = &mut establish_connection();
+    let results = posts1
+        .inner_join(posts2.on(
+                key.eq(s).and(idofsite.eq(id))
+                ))
+        .select(Post1::as_select())
+        .load(connection)
+        .expect("Error loading posts");
+    return results;
+}
+
+#[derive(Debug)]
+pub struct Parse
+{
+    pub  key_word : Vec<String>,
+    pub  no_word : Vec<String>,
+    pub  link : Vec<String>,
+    pub  no_link : Vec<String>,
+    pub  word_or : Vec<String>,
+}
+
+mod parser
+{
+    pub mod parser;
+}
+use parser::parser::parser;
+
+pub fn query(s: &str) -> Vec<Post1>
+{
+    let test = parser(s);
+    let mut sitetmp:Vec<Post1> = vec![];
+    let mut occ:Vec<usize> = vec![];
+    let mut nositetmp:Vec<Post1> = vec![];
+    let mut site:Vec<Post1> = vec![];
+    for w in test.no_word
+    {
+        let tmp = search(&w);
+        for p in tmp
+        {
+            let mut t = true;
+            for i in &nositetmp
+            {
+                if i.id == p.id
+                {
+                    t = false;
+                    break;
+                }
+            }
+            if t
+            {
+                nositetmp.push(p);
+            }
+        }
+    }
+    let len = test.key_word.len();
+    for w in test.key_word
+    {
+        let tmp = search(&w);
+        for p in tmp
+        {
+            let mut t = true;
+            for i in &nositetmp
+            {
+                if i.id == p.id
+                {
+                    t = false;
+                    break;
+                }
+            }
+            if t
+            {
+                let mut oc:i32 = -1;
+                let mut n = 0;
+                for i in &sitetmp
+                {
+                    if i.id == p.id
+                    {
+                        oc = n;
+                        break;
+                    }
+                    n +=1;
+                }
+                if oc != -1
+                {
+                    occ[oc as usize] += 1;
+                    if occ[oc as usize] == len
+                    {
+                        site.push(p);
+                    }
+                }
+                else
+                {
+                    if len != 1
+                    {
+                        occ.push(1);
+                        sitetmp.push(p);
+                    }
+                    else
+                    {
+                        site.push(p);
+                    }
+                }
+            }
+        }
+    }
+    return site;
+    /*use testing::src::main::test;
+    test();*/
+    /*let words = ["pizza","ananas","hut"];
+    let mut site:Vec<Post1> = vec![];
+    for i in words
+    {
+        let c = search(i);
+        for j in c
+        {
+            site.push(j);
+        }
+    }
+    for i in site
+    {
+        dbg!(i);
+    }*/
+}
+
+fn query_tests()
+{
+    println!("Test suite:");
+    println!("============================================================");
+    println!("Input: cat");
+    dbg!(query("cat"));
+    println!("============================================================");
+    println!("Input: pizza");
+    dbg!(query("pizza"));
+    println!("============================================================");
+    println!("Input: pizza fromage");
+    dbg!(query("pizza fromage"));
+    println!("============================================================");
+    println!("Input: pizza -fromage");
+    dbg!(query("pizza -fromage"));
+}
+
+
+
 fn main()
 {
     println!("Crawler's Tests");
@@ -144,4 +328,12 @@ fn main()
     println!("Scraper's Tests");
     scraper_tests();
     println!();
+    //println!("Parser's Tests");
+    //parser_tests();
+    //println!();
+    println!("Queries's Tests");
+    query_tests();
+    println!();
 }
+
+

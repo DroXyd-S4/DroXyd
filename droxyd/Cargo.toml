@@ -15,3 +15,9 @@ queues = "1.1.0"
 reqwest = { version = "0.12.3", features = ["blocking"] }
 tokio = { version = "1", features = ["full"] } # Works without this lib
 # }
+
+# QUENTIN added the following lines:
+# {
+diesel = { version = "2.1.0", features = ["sqlite"] }
+dotenvy = "0.15"
+# }
