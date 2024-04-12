@@ -169,7 +169,7 @@ fn parser_tests() {
 
 use self::models::*;
 use diesel::prelude::*;
-use sqlquery::*;
+use droxyd::*;
 
 
 pub fn search(s: &str) -> Vec<Post1>
@@ -186,16 +186,6 @@ pub fn search(s: &str) -> Vec<Post1>
         .load(connection)
         .expect("Error loading posts");
     return results;
-}
-
-#[derive(Debug)]
-pub struct Parse
-{
-    pub  key_word : Vec<String>,
-    pub  no_word : Vec<String>,
-    pub  link : Vec<String>,
-    pub  no_link : Vec<String>,
-    pub  word_or : Vec<String>,
 }
 
 mod parser
