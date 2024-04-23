@@ -1,8 +1,8 @@
-/** Imports **/
+/** IMPORTS **/
 use std::fs::read_to_string;
 mod interface;
 
-/** Rocket **/
+/** ROCKET **/
 mod models;
 use rocket::{get, launch, post, routes, uri};
 use rocket::form::{Contextual, Form};
@@ -12,22 +12,31 @@ use rocket::response::{Flash, Redirect};
 use rocket_dyn_templates::{context, Template};
 use crate::models::SearchRequest;
 
+/** VARIABLES **/
+static mut Dic: &mut [[u32; 6]; 100000] = &mut [[0u32; 6]; 100000];//dictionnary
+static mut RESDB: [[&str; 7]; 100] = [[""; 7]; 100];
+static mut cReq: std::string::String = String::new();
 
-/** MAIN **/
+/** RENDER HOME PAGE **/
 #[get("/")]
 async fn root() -> Template {
     Template::render("root", context! { message: "Welcome to DroXyd !"})
 }
 
+/** RENDER RESULTS PAGE **/
 #[get("/hi?<request>")]
 async fn hello(request: String, flash: Option<FlashMessage<'_>>) -> Template {
+
+    /** PARSE REQUEST **/
     let message2 = flash.map_or_else(|| String::default(), |msg| msg.message().to_string());
-    println!("{} {}",request,message2);
     let parts: Vec<_> = message2.split("#").collect();
     let bRequest = parts[0]; // Base Request
     let sRequest = parts[1]; // Suggestion of correction
     let qResults = parts[2]; // All results
-    let nb = parts[3]; // Nb results
+    let mut nb = "10"; // Nb results
+    if parts[3] != "" {nb = parts[3];}
+
+    /** PRINTABLE RESULTS **/
     let mut R0 = "".to_string();
     let mut R1 = "".to_string();
     let mut R2 = "".to_string();
@@ -38,7 +47,26 @@ async fn hello(request: String, flash: Option<FlashMessage<'_>>) -> Template {
     let mut R7 = "".to_string();
     let mut R8 = "".to_string();
     let mut R9 = "".to_string();
-    let mut RESDB = [[""; 7]; 10];
+    let mut link0 = String::new();
+    let mut link1 = String::new();
+    let mut link2 = String::new();
+    let mut link3 = String::new();
+    let mut link4 = String::new();
+    let mut link5 = String::new();
+    let mut link6 = String::new();
+    let mut link7 = String::new();
+    let mut link8 = String::new();
+    let mut link9 = String::new();
+    let mut SUGG = String::new();
+    let mut SUGG_A = String::new();
+    let mut SUGG_B = String::new();
+    let mut SUGG_C = String::new();
+    let mut SUGG_D = String::new();
+    let mut SUGG_E = String::new();
+
+    /** DEFAULT FILL **/
+    unsafe {
+    RESDB = [[""; 7]; 100];
     RESDB[0] =
     ["Wikipedia","https://fr.wikipedia.org/","info","wiki","data",
     "news","learn"];
@@ -69,7 +97,8 @@ async fn hello(request: String, flash: Option<FlashMessage<'_>>) -> Template {
     RESDB[9] =
     ["Wikipedia","https://fr.wikipedia.org/","info","wiki","data",
     "news","learn"];
-    let mut SUGG = String::new();
+
+    /** PARSE RESULTS/PAGE **/
     if nb.parse::<i32>().unwrap() > 0
     {R0 = getParsedRes(RESDB[0]);}
     if nb.parse::<i32>().unwrap() > 1
@@ -90,6 +119,8 @@ async fn hello(request: String, flash: Option<FlashMessage<'_>>) -> Template {
     {R8 = getParsedRes(RESDB[8]);}
     if nb.parse::<i32>().unwrap() > 9
     {R9 = getParsedRes(RESDB[9]);}
+
+    /** DISPLAY RESULTS INFO **/
     let mut f = 0;
     for i in 2..7
     {
@@ -99,22 +130,50 @@ async fn hello(request: String, flash: Option<FlashMessage<'_>>) -> Template {
              {
                 f += 1;
                 SUGG += RESDB[j][i];
-                SUGG += " ";
+                SUGG += "#";
              }
              if f>=5
              {
                 break;
              }
         }
-	if f>=5
+        if f>=5
         {
              break;
         }
     }
-    Template::render("hello", context! {bRequest ,sRequest, qResults,
-    R0,R1,R2,R3,R4,R5,R6,R7,R8,R9,SUGG})
+    }
+
+    let parts2: Vec<_> = SUGG.split("#").collect();
+    SUGG_A = parts2[0].to_string();
+    SUGG_B = parts2[1].to_string();
+    SUGG_C = parts2[2].to_string();
+    SUGG_D = parts2[3].to_string();
+    SUGG_E = parts2[4].to_string();
+
+    /** BROWSE LINKS **/
+    unsafe{
+        link0 += RESDB[0][1];
+        link1 += RESDB[1][1];
+        link2 += RESDB[2][1];
+        link3 += RESDB[3][1];
+        link4 += RESDB[4][1];
+        link5 += RESDB[5][1];
+        link6 += RESDB[6][1];
+        link7 += RESDB[7][1];
+        link8 += RESDB[8][1];
+        link9 += RESDB[9][1];
+    }
+
+    /** RENDER **/
+    Template::render("hello", context!
+    {bRequest ,sRequest, qResults,
+    SUGG_A,SUGG_B,SUGG_C,SUGG_D,SUGG_E,
+    R0,R1,R2,R3,R4,R5,R6,R7,R8,R9,
+    link0,link1,link2,link3,link4,link5,link6,link7,link8,link9})
 }
 
+/** PARSE RESULTS ON PAGE **/
 fn getParsedRes(l: [&str;7]) -> String
 {
      let mut res = String::new();
@@ -134,6 +193,7 @@ fn getParsedRes(l: [&str;7]) -> String
      return res;
 }
 
+/** PARSE REQUEST AND REDIRECT **/
 #[post("/", data = "<form>")]
 async fn create(form: Form<Contextual<'_, SearchRequest>>) -> Result<Flash<Redirect>, Template> {
     if let Some(ref search) = form.value {
@@ -175,40 +235,39 @@ async fn create(form: Form<Contextual<'_, SearchRequest>>) -> Result<Flash<Redir
         request : form.context.field_value("request"),
         number_results : form.context.field_value("number_results"),
         request_error : form.context.field_errors("request").count() > 0,
-        number_results_error : form.context.field_errors("number_results").count() >= 0,
+        number_results_error : form.context.field_errors("number_results")
+        .count() >= 0,
         errors: error_messages
     }))
 }
 
-static mut Dic: &mut [[u32; 6]; 100000] = &mut [[0u32; 6]; 100000];
-
+/** ON START FUNCTION **/
 #[launch]
 fn rocket() -> _ {
    unsafe{
-   
     // ID, int value of letter, bool endWord, pointers (l,m,r)
     //let mut Dic: &mut [[u32; 6]; 100000] = &mut [[0u32; 6]; 100000];
     Dic[0] = [0, 2, 0, 0, 0, 0]; // Default
     Dic[1] = [1, 97, 0, 0, 0, 0];
-    //testSuite(Dic);
+    testSuite();
     loadDic();
-
     insert(1, "ferrari".to_string(), 0, 0,8);
     insert(1, "ferraille".to_string(), 0, 0,3);
     insert(1, "ferry".to_string(), 0, 0,5);
-
-
     //debug(Dic);
-
-        rocket::build()
-        // add templating system
-        .attach(Template::fairing())
-        // serve content from disk
-        .mount("/public", FileServer::new(relative!("/public"), Options::Missing | Options::NormalizeDirs))
-        // register routes
-        .mount("/", routes![root, create, hello])
+    open::that("localhost:8000");
+    printMemory(2);
+    rocket::build()
+    // add templating system
+    .attach(Template::fairing())
+    // serve content from disk
+    .mount("/public", FileServer::new(relative!("/public"),
+    Options::Missing | Options::NormalizeDirs))
+    // register routes
+    .mount("/", routes![root, create, hello])
 }}
 
+/** GENERATE RESULTS FOR A SINGLE WORD QUERY **/
 fn manageQuery(s : &str,mut results : &mut Vec<(String,u32)>,debug:bool,mut nb:u32 ) -> String
 { unsafe{
     let mut qRes = String::new();
@@ -287,12 +346,14 @@ fn manageQuery(s : &str,mut results : &mut Vec<(String,u32)>,debug:bool,mut nb:u
 }
 }
 
+/** LOAD DICTIONNARY FROM FILE **/
 fn loadDic() { unsafe{
     for line in read_to_string("Dic.txt").unwrap().lines() {
         addWord(line);
     }
 }}
 
+/** PRINT DEBUG RESULTS FROM A FILE **/
 fn debug() { unsafe{
     for line in read_to_string("Debug.txt").unwrap().lines() {
         println!("Debug for word: {}", line);
@@ -425,7 +486,7 @@ fn testSuite() { unsafe{
     println!("Contains: /bu/   {}", findWord("bu"));
 
     let mut res = Vec::new();
-    
+
     println!("\n#SUGGESTIONS#\n");
     println!("Suggestions for : /c/");
     suggest("c",&mut res,true);
@@ -474,11 +535,14 @@ fn insert(
         node = Dic[0][1] as usize;
         Dic[0][1] += 1;
         Dic[node][0] = node as u32;
-        Dic[node][1] = word.chars().nth(index.try_into().unwrap()).unwrap() as u32;
+        Dic[node][1] = word.chars().nth(index.try_into().unwrap()).unwrap()
+        as u32;
     }
-    if (word.chars().nth(index.try_into().unwrap()).unwrap() as u32) < Dic[node][1] {
+    if (word.chars().nth(index.try_into().unwrap()).unwrap() as u32)
+    < Dic[node][1] {
         Dic[node][3] = insert( Dic[node][3] as usize, word, index, 0,occ);
-    } else if (word.chars().nth(index.try_into().unwrap()).unwrap() as u32) > Dic[node][1] {
+    } else if (word.chars().nth(index.try_into().unwrap()).unwrap() as u32)
+    > Dic[node][1] {
         Dic[node][5] = insert( Dic[node][5] as usize, word, index, 0,occ);
     } else {
         if index < (word.chars().count() as u32) - 1 {
@@ -495,9 +559,11 @@ fn search( mut node: usize, word: String, index: u32) -> bool { unsafe{
     if node == 0 {
         return false;
     }
-    if (word.chars().nth(index.try_into().unwrap()).unwrap() as u32) < Dic[node][1] {
+    if (word.chars().nth(index.try_into().unwrap()).unwrap() as u32)
+    < Dic[node][1] {
         return search( Dic[node][3].try_into().unwrap(), word, index);
-    } else if (word.chars().nth(index.try_into().unwrap()).unwrap() as u32) > Dic[node][1] {
+    } else if (word.chars().nth(index.try_into().unwrap()).unwrap() as u32)
+    > Dic[node][1] {
         return search( Dic[node][5].try_into().unwrap(), word, index);
     } else {
         if index == (word.chars().count() as u32) - 1 {
@@ -537,9 +603,12 @@ fn getNodeID( prefix: String) -> usize { unsafe{
     let mut node = 1;
     let mut index = 0;
     while node != 0 && index < prefix.chars().count() {
-        if (prefix.chars().nth(index.try_into().unwrap()).unwrap() as u32) < Dic[node][1] {
+        if (prefix.chars().nth(index.try_into().unwrap()).unwrap() as u32)
+        < Dic[node][1] {
             node = Dic[node][3] as usize;
-        } else if (prefix.chars().nth(index.try_into().unwrap()).unwrap() as u32) > Dic[node][1] {
+        }
+        else if (prefix.chars().nth(index.try_into().unwrap()).unwrap() as u32)
+        > Dic[node][1] {
             node = Dic[node][5] as usize;
         } else {
             index += 1;
@@ -590,7 +659,7 @@ fn traverse(
 /** Find all possible corrections for a word **/
 fn correct(s: &str, debug: bool,
 mut results : &mut Vec<(String,u32)>) { unsafe{
-    
+
     let mut c = 0;
     /** Swap **/
     let mut base = s.to_string();
