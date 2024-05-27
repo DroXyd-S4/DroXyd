@@ -20,4 +20,5 @@ tokio = { version = "1", features = ["full"] } # Works without this lib
 # {
 diesel = { version = "2.1.0", features = ["sqlite"] }
 dotenvy = "0.15"
+proc-macro2 = "=1.0.79"
 # }
