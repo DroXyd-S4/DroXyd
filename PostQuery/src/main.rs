@@ -1,4 +1,5 @@
 /** IMPORTS **/
+use std::time::{ SystemTime, SystemTimeError, UNIX_EPOCH };
 use std::fs::read_to_string;
 mod interface;
 
@@ -13,13 +14,34 @@ use rocket_dyn_templates::{context, Template};
 use crate::models::SearchRequest;
 
 /** VARIABLES **/
-static mut Dic: &mut [[u32; 6]; 100000] = &mut [[0u32; 6]; 100000];//dictionnary
+static mut Dic: &mut [[u32; 6]; 1000000] = &mut [[0u32; 6]; 1000000];//dictionnary
 static mut RESDB: [[&str; 7]; 100] = [[""; 7]; 100];
 static mut cReq: std::string::String = String::new();
 
 /** RENDER HOME PAGE **/
 #[get("/")]
 async fn root() -> Template {
+    Template::render("root", context! { message: "Welcome to DroXyd !"})
+}
+
+/** RENDER HOME PAGE **/
+#[get("/fr")]
+async fn root_fr() -> Template {
+    init_dic(1);
+    Template::render("root", context! { message: "Welcome to DroXyd !"})
+}
+
+/** RENDER HOME PAGE **/
+#[get("/en")]
+async fn root_en() -> Template {
+    init_dic(0);
+    Template::render("root", context! { message: "Welcome to DroXyd !"})
+}
+
+/** RENDER HOME PAGE **/
+#[get("/home")]
+async fn root_home() -> Template {
+    init_dic(2);
     Template::render("root", context! { message: "Welcome to DroXyd !"})
 }
 
@@ -241,22 +263,64 @@ async fn create(form: Form<Contextual<'_, SearchRequest>>) -> Result<Flash<Redir
     }))
 }
 
+fn init_dic(l:u32)
+{
+    let mut tot = 0;
+    let milliseconds_timestamp: u128 = std::time::SystemTime::now()
+    .duration_since(std::time::UNIX_EPOCH)
+    .unwrap()
+    .as_millis();
+    // ID, int value of letter, bool endWord, pointers (l,m,r)
+    //let mut Dic: &mut [[u32; 6]; 1000000] = &mut [[0u32; 6]; 100000];
+    unsafe {
+       let m = Dic[0][1];
+       for i in 0..m
+       {
+          Dic[i as usize] = [0, 0, 0, 0, 0, 0];
+       }
+       Dic[0] = [0, 2, 0, 0, 0, 0]; // Default
+       Dic[1] = [1, 97, 0, 0, 0, 0];
+    }
+    if l == 0
+    {
+       tot += loadDic("Dic-en.txt");
+    }
+    else if l == 1
+    {
+        tot += loadDic("Dic-fr.txt");
+    }
+    else
+    {
+        tot += loadDic("Dic-fr.txt");
+        tot += loadDic("Dic-en.txt");
+    }
+    printMemory(2);
+    let milliseconds_timestamp2: u128 = std::time::SystemTime::now()
+    .duration_since(std::time::UNIX_EPOCH)
+    .unwrap()
+    .as_millis();
+    println!("=============== Dictionnary Built ===============");
+    println!("words: {}",tot);
+    println!("time: {}ms",(milliseconds_timestamp2-milliseconds_timestamp));
+    unsafe {
+       let saved = ((9*tot*4*2*2) -  21*Dic[0][1] ) as i32;
+       println!("size: {} bytes ({} ko)",21*Dic[0][1],(21*Dic[0][1]/8000));
+       println!("saved: {} bytes ({} ko)",saved,saved/8000);
+    }
+    println!("==================================================");
+}
+
 /** ON START FUNCTION **/
 #[launch]
 fn rocket() -> _ {
    unsafe{
-    // ID, int value of letter, bool endWord, pointers (l,m,r)
-    //let mut Dic: &mut [[u32; 6]; 100000] = &mut [[0u32; 6]; 100000];
-    Dic[0] = [0, 2, 0, 0, 0, 0]; // Default
-    Dic[1] = [1, 97, 0, 0, 0, 0];
     testSuite();
-    loadDic();
+    init_dic(2);
     insert(1, "ferrari".to_string(), 0, 0,8);
     insert(1, "ferraille".to_string(), 0, 0,3);
     insert(1, "ferry".to_string(), 0, 0,5);
     //debug(Dic);
     open::that("localhost:8000");
-    printMemory(2);
     rocket::build()
     // add templating system
     .attach(Template::fairing())
@@ -264,7 +328,7 @@ fn rocket() -> _ {
     .mount("/public", FileServer::new(relative!("/public"),
     Options::Missing | Options::NormalizeDirs))
     // register routes
-    .mount("/", routes![root, create, hello])
+    .mount("/", routes![root, create, hello,root_fr,root_en,root_home])
 }}
 
 /** GENERATE RESULTS FOR A SINGLE WORD QUERY **/
@@ -347,11 +411,19 @@ fn manageQuery(s : &str,mut results : &mut Vec<(String,u32)>,debug:bool,mut nb:u
 }
 
 /** LOAD DICTIONNARY FROM FILE **/
-fn loadDic() { unsafe{
-    for line in read_to_string("Dic.txt").unwrap().lines() {
-        addWord(line);
+fn loadDic(s:&str) -> u32 {
+   println!("loading Dictionnary");
+
+    let mut a = 0;
+    for line in read_to_string(s).unwrap().lines() {
+        unsafe{
+           addWord(line);
+           a += 1;
+        }
     }
-}}
+    println!("Dictionnary loaded");
+    return a;
+}
 
 /** PRINT DEBUG RESULTS FROM A FILE **/
 fn debug() { unsafe{
@@ -365,8 +437,23 @@ fn debug() { unsafe{
 /** TOOLS **/
 
 /** Add a word in dictionnary **/
-fn addWord(s: &str) { unsafe{
-    insert(1, s.to_string(), 0, 0,1);
+fn addWord(s: &str) {
+let mut a = 0;
+for i in s.to_string().to_lowercase().chars()
+{
+    if i<'a' || i>'z'
+    {
+       a = 1;
+    }
+}
+if s == ""
+{
+    a = 1;
+}
+unsafe{
+    if a == 0 {
+       insert(1, s.to_string().to_lowercase(), 0, 0,1);
+    }
 }}
 
 /** Find a word in dictionnary **/
@@ -461,6 +548,8 @@ fn printMemory(size: usize) { unsafe{
 }}
 
 fn testSuite() { unsafe{
+    Dic[0] = [0, 2, 0, 0, 0, 0]; // Default
+    Dic[1] = [1, 97, 0, 0, 0, 0];
     println!("==================   TEST SUITE   ==================");
 
     println!("\n#ADDING WORDS#\n");
