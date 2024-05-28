@@ -1,3 +1,24 @@
-.logo {
-    background-color: deeppink;
+.botton_language {
+    text-decoration: none;
+    padding: 10px;
+    font-family: verdana;
+    font-size: 1em;
+    color: #ffffff;
+    background-color: #244061;
+    border-radius: 30px;
+    -webkit-border-radius: 30px;
+    -moz-border-radius: 30px;
+    border: 2px solid #8db3e2;
+    box-shadow: 2px 5px 10px #548dd4;
+    -webkit-box-shadow: 2px 5px 10px #548dd4;
+    -moz-box-shadow: 2px 5px 10px #548dd4;
+}
+
+.botton_language:hover {
+    padding: 10px;
+    background-color: #548dd4;
+    border: 2px solid #c6d9f0;
+    box-shadow: 2px 5px 10px #95b3d7;
+    -webkit-box-shadow: 2px 5px 10px #95b3d7;
+    -moz-box-shadow: 2px 5px 10px #95b3d7;
 }
