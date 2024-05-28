@@ -593,16 +593,16 @@ fn init_dic(l:u32)
     }
     if l == 0
     {
-       tot += loadDic("Dic-en.txt");
+       tot += loadDic("src/postquery/ic-en.txt");
     }
     else if l == 1
     {
-        tot += loadDic("Dic-fr.txt");
+        tot += loadDic("src/postquery/Dic-fr.txt");
     }
     else
     {
-        tot += loadDic("Dic-fr.txt");
-        tot += loadDic("Dic-en.txt");
+        tot += loadDic("src/postquery/Dic-fr.txt");
+        tot += loadDic("src/postquery/Dic-en.txt");
     }
     printMemory(2);
     let milliseconds_timestamp2: u128 = std::time::SystemTime::now()
