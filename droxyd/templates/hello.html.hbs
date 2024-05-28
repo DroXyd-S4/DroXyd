@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="color-scheme" content="light dark" />
+    <link rel="stylesheet" href="/public/css/pico.min.css">
+    <title>Droxyd/{{ bRequest }}</title>
+</head>
+<p> Create a new tab <a href="http://localhost:8000/" target="_blank">here</a> !</p>
+<body>
+<main class="container">
+    <dialog open>
+        <article>
+            <header>
+                <a href="/" aria-label="Close" rel="prev"></a>
+                <p>
+                    <strong>🗓️Results for: {{ bRequest }}!</strong>
+                </p>
+            </header>
+            <p>
+              <form method="POST" enctype="multipart/form-data" action="/">
+                Suggested request:
+                <input type="hidden" name="request" value="{{ sRequest }}"/>
+                <input type="hidden" name="results_number" value="10"/>
+                <button type="submit">{{ sRequest }}</button>
+              </form>
+            </p>
+             <p>
+                results: {{ qResults }}
+             </p>
+            <p>Suggested words: <br/>
+               <form method="POST" enctype="multipart/form-data" action="/">
+                <input type="hidden" name="request" value="{{ SUGG_A }}"/>
+                <input type="hidden" name="results_number" value="10"/>
+                <button type="submit">{{ SUGG_A }}</button>
+               </form>
+               <form method="POST" enctype="multipart/form-data" action="/">
+                <input type="hidden" name="request" value="{{ SUGG_B }}"/>
+                <input type="hidden" name="results_number" value="10"/>
+                <button type="submit">{{ SUGG_B }}</button>
+               </form>
+               <form method="POST" enctype="multipart/form-data" action="/">
+                <input type="hidden" name="request" value="{{ SUGG_C }}"/>
+                <input type="hidden" name="results_number" value="10"/>
+                <button type="submit">{{ SUGG_C }}</button>
+               </form>
+               <form method="POST" enctype="multipart/form-data" action="/">
+                <input type="hidden" name="request" value="{{ SUGG_D }}"/>
+                <input type="hidden" name="results_number" value="10"/>
+                <button type="submit">{{ SUGG_D }}</button>
+               </form>
+               <form method="POST" enctype="multipart/form-data" action="/">
+                <input type="hidden" name="request" value="{{ SUGG_E }}"/>
+                <input type="hidden" name="results_number" value="10"/>
+                <button type="submit">{{ SUGG_E }}</button>
+               </form>
+            </p>
+        </article>
+    </dialog>
+    <p>
+      <br/> <br/> <br/> <br/> <br/><br/> <br/> <br/> <br/> <br/><br/>
+      <br/> <br/> <br/> <br/>
+      <br/> <br/> <br/> <br/> <br/> <br/> <br/>
+        {{R0}}    <a href="{{link0}}" target="_blank">Browse</a>
+    </p>
+    <p>
+        {{R1}}    <a href="{{link1}}" target="_blank">Browse</a>
+    </p>
+    <p>
+        {{R2}}    <a href="{{link2}}" target="_blank">Browse</a>
+    </p>
+    <p>
+        {{R3}}    <a href="{{link3}}" target="_blank">Browse</a>
+    </p>
+    <p>
+        {{R4}}    <a href="{{link4}}" target="_blank">Browse</a>
+    </p>
+    <p>
+        {{R5}}    <a href="{{link5}}" target="_blank">Browse</a>
+    </p>
+    <p>
+        {{R6}}    <a href="{{link6}}" target="_blank">Browse</a>
+    </p>
+    <p>
+        {{R7}}    <a href="{{link7}}" target="_blank">Browse</a>
+    </p>
+    <p>
+        {{R8}}    <a href="{{link8}}" target="_blank">Browse</a>
+    </p>
+    <p>
+        {{R9}}    <a href="{{link9}}" target="_blank">Browse</a>
+    </p>
+</main>
+</body>
+</html>

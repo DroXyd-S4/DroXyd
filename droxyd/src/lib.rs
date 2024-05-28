@@ -4,6 +4,7 @@ pub mod processing;
 pub mod parser;
 pub mod models;
 pub mod schema;
+pub mod postquery;
 
 use diesel::prelude::*;
 use dotenvy::dotenv;

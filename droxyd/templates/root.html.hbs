@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="color-scheme" content="light dark"/>
+    <link rel="stylesheet" href="/public/css/pico.min.css">
+    <title>DroXyd Search Engine</title>
+</head>
+<body>
+<main class="container">
+    <h1>DroXyd Search engine</h1>
+    {{#if errors }}
+        <article>
+            <header>🥺Oh No!</header>
+            <p>There are some invalid fields in the form</p>
+            <ul>
+                {{#each errors}}
+                    <li>{{this}}</li>
+                {{/each}}
+            </ul>
+        </article>
+    {{/if}}
+    <form method="POST" enctype="multipart/form-data" action="/">
+        <input type="text"
+               name="request"
+               placeholder="enter search"
+               aria-label="Request"
+               value="{{ request }}"
+               aria-invalid="{{ request_error}}"
+        />
+        <input type="text"
+               name="results_number"
+               placeholder="enter number"
+               aria-label="Number of results"
+               value="{{ results_number }}"
+               aria-invalid="{{ results_number_error}}"
+        />
+        <button type="submit">Search</button>
+    </form>
+    <img src="https://media.discordapp.net/attachments/1187780315553468513/1213068828867690536/logo.png?ex=662cd1e2&is=662b8062&hm=e484be63492fb2bae0184d03061c9e0f218baa6669397ee81ae9e722a7d1ab56&=&format=webp&quality=lossless&width=430&height=621" alt="DroXydSearchEngine">
+    <p><a href="http://localhost:8000/fr" target="_blank">Droxyd fr</a> !</p>
+    <p><a href="http://localhost:8000/en" target="_blank">Droxyd en</a> !</p>
+     <p><a href="http://localhost:8000/home" target="_blank">Droxyd premium</a> !</p>
+</main>
+</body>
+</html>
