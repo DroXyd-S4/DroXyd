@@ -328,6 +328,10 @@ static mut Dic: &mut [[u32; 6]; 1000000] = &mut [[0u32; 6]; 1000000];//dictionna
 static mut RESDB: [[&str; 7]; 100] = [[""; 7]; 100];
 static mut cReq: std::string::String = String::new();
 
+/** quentin **/
+static mut QueryLimit: i32 = 0;
+
+
 /** RENDER HOME PAGE **/
 #[get("/")]
 async fn root() -> Template {
@@ -365,8 +369,12 @@ async fn hello(request: String, flash: Option<FlashMessage<'_>>) -> Template {
     let bRequest = parts[0]; // Base Request
     let sRequest = parts[1]; // Suggestion of correction
     let qResults = parts[2]; // All results
-    let mut nb = "10"; // Nb results
-    if parts[3] != "" {nb = parts[3];}
+    let mut nb = "0".to_string(); // N°page
+    let mut currentPage = "0".to_string();
+    let mut currentPagePlus = "1".to_string();
+    let mut currentPageMinus = "0".to_string();
+    if parts[3] != "" {nb = parts[3].to_string();}
+    let mut nbResults = 0;
 
     /** PRINTABLE RESULTS **/
     let mut R0 = "".to_string();
@@ -429,39 +437,48 @@ async fn hello(request: String, flash: Option<FlashMessage<'_>>) -> Template {
     RESDB[9] =
     ["Wikipedia","https://fr.wikipedia.org/","info","wiki","data",
     "news","learn"];
-
+    RESDB[10] =
+    ["Quentin le grand","https://fr.wikipedia.org/","info","wiki","data",
+    "news","learn"];
+    nbResults = 11;
+    if nbResults == 0
+    {
+        open::that("https://www.youtube.com/watch?v=dQw4w9WgXcQ");
+    }
     /** PARSE RESULTS/PAGE **/
-    if nb.parse::<i32>().unwrap() > 0
-    {R0 = getParsedRes(RESDB[0]);}
-    if nb.parse::<i32>().unwrap() > 1
-    {R1 = getParsedRes(RESDB[1]);}
-    if nb.parse::<i32>().unwrap() > 2
-    {R2 = getParsedRes(RESDB[2]);}
-    if nb.parse::<i32>().unwrap() > 3
-    {R3 = getParsedRes(RESDB[3]);}
-    if nb.parse::<i32>().unwrap() > 4
-    {R4 = getParsedRes(RESDB[4]);}
-    if nb.parse::<i32>().unwrap() > 5
-    {R5 = getParsedRes(RESDB[5]);}
-    if nb.parse::<i32>().unwrap() > 6
-    {R6 = getParsedRes(RESDB[6]);}
-    if nb.parse::<i32>().unwrap() > 7
-    {R7 = getParsedRes(RESDB[7]);}
-    if nb.parse::<i32>().unwrap() > 8
-    {R8 = getParsedRes(RESDB[8]);}
-    if nb.parse::<i32>().unwrap() > 9
-    {R9 = getParsedRes(RESDB[9]);}
+    if nb.parse::<i32>().unwrap()*10 >= nbResults
+    {
+        nb = (nb.parse::<i32>().unwrap() as usize - 1).to_string();
+    }
+    if nb.parse::<i32>().unwrap() >= 10
+    {
+        nb = "9".to_string();
+    }
+    if nb.parse::<i32>().unwrap() < 0
+    {
+        nb = "0".to_string();
+    }
+    R0 = getParsedRes(RESDB[ nb.parse::<i32>().unwrap() as usize * 10 + 0]);
+    R1 = getParsedRes(RESDB[ nb.parse::<i32>().unwrap() as usize * 10 + 1]);
+    R2 = getParsedRes(RESDB[ nb.parse::<i32>().unwrap() as usize * 10 + 2]);
+    R3 = getParsedRes(RESDB[ nb.parse::<i32>().unwrap() as usize * 10 + 3]);
+    R4 = getParsedRes(RESDB[ nb.parse::<i32>().unwrap() as usize * 10 + 4]);
+    R5 = getParsedRes(RESDB[ nb.parse::<i32>().unwrap() as usize * 10 + 5]);
+    R6 = getParsedRes(RESDB[ nb.parse::<i32>().unwrap() as usize * 10 + 6]);
+    R7 = getParsedRes(RESDB[ nb.parse::<i32>().unwrap() as usize * 10 + 7]);
+    R8 = getParsedRes(RESDB[ nb.parse::<i32>().unwrap() as usize * 10 + 8]);
+    R9 = getParsedRes(RESDB[ nb.parse::<i32>().unwrap() as usize * 10 + 9]);
 
     /** DISPLAY RESULTS INFO **/
     let mut f = 0;
     for i in 2..7
     {
-        for j in 0..nb.parse::<i32>().unwrap() as usize
+        for j in 0..10 as usize
         {
-             if !(bRequest.contains(RESDB[j][i]))
+             if !(bRequest.contains(RESDB[nb.parse::<i32>().unwrap() as usize * 10 + j][i]))
              {
                 f += 1;
-                SUGG += RESDB[j][i];
+                SUGG += RESDB[nb.parse::<i32>().unwrap() as usize * 10 + j][i];
                 SUGG += "#";
              }
              if f>=5
@@ -485,24 +502,33 @@ async fn hello(request: String, flash: Option<FlashMessage<'_>>) -> Template {
 
     /** BROWSE LINKS **/
     unsafe{
-        link0 += RESDB[0][1];
-        link1 += RESDB[1][1];
-        link2 += RESDB[2][1];
-        link3 += RESDB[3][1];
-        link4 += RESDB[4][1];
-        link5 += RESDB[5][1];
-        link6 += RESDB[6][1];
-        link7 += RESDB[7][1];
-        link8 += RESDB[8][1];
-        link9 += RESDB[9][1];
+        link0 += RESDB[ nb.parse::<i32>().unwrap() as usize * 10 + 0][1];
+        link1 += RESDB[ nb.parse::<i32>().unwrap() as usize * 10 + 1][1];
+        link2 += RESDB[ nb.parse::<i32>().unwrap() as usize * 10 + 2][1];
+        link3 += RESDB[ nb.parse::<i32>().unwrap() as usize * 10 + 3][1];
+        link4 += RESDB[ nb.parse::<i32>().unwrap() as usize * 10 + 4][1];
+        link5 += RESDB[ nb.parse::<i32>().unwrap() as usize * 10 + 5][1];
+        link6 += RESDB[ nb.parse::<i32>().unwrap() as usize * 10 + 6][1];
+        link7 += RESDB[ nb.parse::<i32>().unwrap() as usize * 10 + 7][1];
+        link8 += RESDB[ nb.parse::<i32>().unwrap() as usize * 10 + 8][1];
+        link9 += RESDB[ nb.parse::<i32>().unwrap() as usize * 10 + 9][1];
     }
-
+    currentPage = nb.clone();
+    currentPagePlus = (nb.parse::<i32>().unwrap()  as usize + 1).to_string();
+    if nb.parse::<i32>().unwrap() != 0
+    {
+        currentPageMinus = (nb.parse::<i32>().unwrap() as usize - 1).to_string();
+    }
+    let nbResultsToString = nbResults.to_string();
+    let nbPage = (nbResults / 10 + 1).to_string();
     /** RENDER **/
     Template::render("hello", context!
     {bRequest ,sRequest, qResults,
     SUGG_A,SUGG_B,SUGG_C,SUGG_D,SUGG_E,
     R0,R1,R2,R3,R4,R5,R6,R7,R8,R9,
-    link0,link1,link2,link3,link4,link5,link6,link7,link8,link9})
+    link0,link1,link2,link3,link4,link5,link6,link7,link8,link9,
+    currentPage,currentPagePlus,currentPageMinus,
+    nbResultsToString,nbPage})
 }
 
 /** PARSE RESULTS ON PAGE **/
@@ -593,7 +619,7 @@ fn init_dic(l:u32)
     }
     if l == 0
     {
-       tot += loadDic("src/postquery/ic-en.txt");
+       tot += loadDic("src/postquery/Dic-en.txt");
     }
     else if l == 1
     {
