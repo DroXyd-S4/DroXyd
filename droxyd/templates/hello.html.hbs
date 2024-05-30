@@ -9,7 +9,8 @@
 </head>
 <img class="logo" src="/public/images/droxyd.jpg" alt="DroXydSearchEngine">
 <h1>DroXyd Search engine</h1>
-<p class="new_tab"> Create a new tab <a class="link" href="http://localhost:8000/" target="_blank">here</a> !</p>
+<p class="new_tab"> <a class="link" href="http://localhost:8000/" target="_blank">New page</a>  </p>
+<p class="new_tab"> Continue research  <a class="link" href="http://localhost:8000/">here</a> ! </p>
 <body>
     <main>
 
@@ -25,7 +26,7 @@
                     <form method="POST" enctype="multipart/form-data" action="/">
                         Suggested request:
                         <input type="hidden" name="request" value="{{ sRequest }}" />
-                        <input type="hidden" name="results_number" value="10" />
+                        <input type="hidden" name="results_number" value="0" />
                         <button class="btn" type="submit">{{ sRequest }}</button>
                     </form>
                     results: ({{nbResultsToString}} found)<br /> Debug: {{ qResults }}
@@ -35,27 +36,27 @@
                         Suggested words: <br />
                         <form method="POST" enctype="multipart/form-data" action="/">
                             <input type="hidden" name="request" value="{{ SUGG_A }}" />
-                            <input type="hidden" name="results_number" value="10" />
+                            <input type="hidden" name="results_number" value="0" />
                             <button class="btn" type="submit">{{ SUGG_A }}</button>
                         </form>
                         <form method="POST" enctype="multipart/form-data" action="/">
                             <input type="hidden" name="request" value="{{ SUGG_B }}" />
-                            <input type="hidden" name="results_number" value="10" />
+                            <input type="hidden" name="results_number" value="0" />
                             <button class="btn" type="submit">{{ SUGG_B }}</button>
                         </form>
                         <form method="POST" enctype="multipart/form-data" action="/">
                             <input type="hidden" name="request" value="{{ SUGG_C }}" />
-                            <input type="hidden" name="results_number" value="10" />
+                            <input type="hidden" name="results_number" value="0" />
                             <button class="btn" type="submit">{{ SUGG_C }}</button>
                         </form>
                         <form method="POST" enctype="multipart/form-data" action="/">
                             <input type="hidden" name="request" value="{{ SUGG_D }}" />
-                            <input type="hidden" name="results_number" value="10" />
+                            <input type="hidden" name="results_number" value="0" />
                             <button class="btn" type="submit">{{ SUGG_D }}</button>
                         </form>
                         <form method="POST" enctype="multipart/form-data" action="/">
                             <input type="hidden" name="request" value="{{ SUGG_E }}" />
-                            <input type="hidden" name="results_number" value="10" />
+                            <input type="hidden" name="results_number" value="0" />
                             <button class="btn" type="submit">{{ SUGG_E }}</button>
                         </form>
                     </div>

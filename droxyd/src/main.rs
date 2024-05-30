@@ -112,6 +112,60 @@ fn scraper_tests()
     demo(&url, false);
 }
 
+/* Add in data base Justine */
+
+use self::models::{NewPost1, Post1};
+
+pub fn create_post1(url: &str, langue: &str, name: &str, date: &str) {
+    use crate::schema::posts1;
+
+    let conn = &mut establish_connection();
+    let new_post = NewPost1 { url, langue, name, date};
+
+    diesel::insert_into(posts1::table)
+        .values(&new_post)
+        .execute(conn)
+        .expect("Error saving new post");
+}
+
+use self::models::{NewPost2, Post2};
+
+pub fn create_post2( key: &str, idofsite: &i32) {
+    use crate::schema::posts2;
+    let conn = &mut establish_connection();
+
+    let new_post = NewPost2 { key, idofsite };
+
+    diesel::insert_into(posts2::table)
+        .values(&new_post)
+        .execute(conn)
+        .expect("Error saving new post");
+}
+pub fn search_id(s: &str) -> i32
+{
+    use self::schema::posts1::dsl::*;
+
+    let connection = &mut establish_connection();
+    let results = posts1
+        .filter(
+                url.eq(s)
+                )
+        .select(Post1::as_select())
+        .load(connection)
+        .expect("Error loading posts");
+    if results.len() == 0
+    {
+        return -1;
+    }
+    return results[0].id;
+}
+
+pub fn add_in_data_base()
+{
+    create_post1("https://www.youtube.com/watch?v=oQaHPZ4c1QE&ab_channel=Kolanii","USA","bob","29/02/-5000");
+    create_post2("minecraft",&11);
+}
+
 fn parser_tests() {
     //let s = "-aa inurl:bernard.com \" t e s t \" aaa OR:\"char a\"/\"heli helo\" unsite:chat.com intext:fer argent";
     println!("Teste suite:");
@@ -221,10 +275,14 @@ pub fn query(s: &str) -> Vec<Post1>
             }
         }
     }
-    let len = test.key_word.len();
+    let mut len = test.key_word.len();
     for w in test.key_word
     {
         let tmp = search_in_database(&w);
+        if tmp.len() == 0
+        {
+            len -= 1;
+        }
         for p in tmp
         {
             let mut t = true;
@@ -295,8 +353,8 @@ fn query_tests()
 {
     println!("Test suite:");
     println!("============================================================");
-    println!("Input: cat");
-    dbg!(query("cat"));
+    println!("Input: the cat");
+    dbg!(query("the cat"));
     println!("============================================================");
     println!("Input: pizza");
     dbg!(query("pizza"));
@@ -648,7 +706,7 @@ fn init_dic(l:u32)
 
 /** ON START FUNCTION **/
 #[launch]
-fn rocket() -> _ {
+fn rocket() -> _ {   
    unsafe{
     testSuite();
     init_dic(2);
@@ -665,7 +723,9 @@ fn rocket() -> _ {
     Options::Missing | Options::NormalizeDirs))
     // register routes
     .mount("/", routes![root, create, hello,root_fr,root_en,root_home])
-}}
+   
+    }
+}
 
 /** GENERATE RESULTS FOR A SINGLE WORD QUERY **/
 fn manageQuery(s : &str,mut results : &mut Vec<(String,u32)>,debug:bool,mut nb:u32 ) -> String
