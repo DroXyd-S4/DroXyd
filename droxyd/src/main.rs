@@ -1,9 +1,10 @@
-/*use droxyd::bloom_filter::bloom_filter::*;
-  use droxyd::bloom_filter::hash_functions::*;
-  use droxyd::bloom_filter::is_present::*;
-  */
+/* To add 
+use droxyd::bloom_filter::bloom_filter::*;
+use droxyd::bloom_filter::hash_functions::*;
+use droxyd::bloom_filter::is_present::*;
+use droxyd::crawl_web::get_content::*;
+*/
 
-//use droxyd::crawl_web::get_content::*;
 use droxyd::crawl_web::crawler::*;
 
 fn crawler_tests()
@@ -416,37 +417,32 @@ use crate::postquery::models::SearchRequest;
 /** VARIABLES **/
 
 static mut Dic: &mut [[u32; 6]; 1000000] = &mut [[0u32; 6]; 1000000];//dictionnary
-//static mut RESDB: [[&str; 5]; 10000] = [[ ""; 5]; 10000];
 static mut cReq: std::string::String = String::new();
-
 static mut DicDb : Vec<(String,i32)> = vec![];
-
 static mut VecOfSearch: Vec<Post1> = vec![];
-
 static mut QueryLimit: i32 = 0;
 
-
-/** RENDER HOME PAGE **/
+/** RENDER DEFAULT HOME PAGE **/
 #[get("/")]
 async fn root() -> Template {
     Template::render("root", context! { message: "Welcome to DroXyd !"})
 }
 
-/** RENDER HOME PAGE **/
+/** RENDER FR HOME PAGE **/
 #[get("/fr")]
 async fn root_fr() -> Template {
     init_dic(1);
     Template::render("root", context! { message: "Welcome to DroXyd !"})
 }
 
-/** RENDER HOME PAGE **/
+/** RENDER EN HOME PAGE **/
 #[get("/en")]
 async fn root_en() -> Template {
     init_dic(0);
     Template::render("root", context! { message: "Welcome to DroXyd !"})
 }
 
-/** RENDER HOME PAGE **/
+/** RENDER PREMIUM HOME PAGE **/
 #[get("/home")]
 async fn root_home() -> Template {
     init_dic(2);
@@ -469,7 +465,6 @@ async fn hello(request: String, flash: Option<FlashMessage<'_>>) -> Template {
     let mut currentPageMinus = "0".to_string();
     if parts[3] != "" {nb = parts[3].to_string();}
     let mut nbResults = 0;
-    //let mut RESDB = [[""; 5]; 10000];
 
     /** PRINTABLE RESULTS **/
     let mut R0 = "".to_string();
@@ -499,6 +494,7 @@ async fn hello(request: String, flash: Option<FlashMessage<'_>>) -> Template {
     let mut SUGG_D = String::new();
     let mut SUGG_E = String::new();
 
+    /** LAUNCH QUERY **/
     let v = query(bRequest);
     nbResults = v.len() as i32;
     if nbResults == 0
@@ -509,37 +505,14 @@ async fn hello(request: String, flash: Option<FlashMessage<'_>>) -> Template {
     {
         nbResults = 10000;
     }
-    //RESDB = [[""; 5]; 10000];
-    /*RESDB[0] =
-    ["Wikipedia","https://fr.wikipedia.org/","info","wiki","data"];*/
     let mut resdb = [[""; 5]; 10000];
     for i in 0..(nbResults as usize)
     {
         resdb[i] = [v[i].name.as_str(),v[i].url.as_str(),v[i].word1.as_str(),v[i].word2.as_str(),v[i].word3.as_str()];
     }
 
-    /** DEFAULT FILL **/
-    unsafe {
-    /*let v = query(bRequest);
-    nbResults = v.len() as i32;
-    if nbResults == 0
-    {
-        open::that("https://www.youtube.com/watch?v=dQw4w9WgXcQ");
-    }
-    if nbResults > 10000
-    {
-        nbResults = 10000;
-    }
-    RESDB = [[""; 5]; 10000];
-    /*RESDB[0] =
-    ["Wikipedia","https://fr.wikipedia.org/","info","wiki","data"];*/
-    for i in 0..(nbResults as usize)
-    {
-        //RESDB[i] = ["Wikipedia","https://fr.wikipedia.org/","info","wiki","data"];
-        let s1 = v[i].clone();
-        RESDB[i] = [s1.name.as_str(), s1.url.as_str(), s1.word1.as_str(), s1.word2.as_str(), s1.word3.as_str()];
-    }*/
     /** PARSE RESULTS/PAGE **/
+    unsafe {
     if (nb.parse::<i32>().unwrap()*10 >= nbResults) & (nbResults != 0)
     {
         nb = (nb.parse::<i32>().unwrap() as usize - 1).to_string();
@@ -587,6 +560,7 @@ async fn hello(request: String, flash: Option<FlashMessage<'_>>) -> Template {
     }
     }
 
+    /** LINKED WORDS RENDER **/
     let parts2: Vec<_> = SUGG.split("#").collect();
     if parts2.len() > 0
     {
@@ -608,6 +582,7 @@ async fn hello(request: String, flash: Option<FlashMessage<'_>>) -> Template {
     {
         SUGG_E = parts2[4].to_string();
     }
+
     /** BROWSE LINKS **/
     unsafe{
         link0 += resdb[ nb.parse::<i32>().unwrap() as usize * 10 + 0][1];
@@ -621,6 +596,8 @@ async fn hello(request: String, flash: Option<FlashMessage<'_>>) -> Template {
         link8 += resdb[ nb.parse::<i32>().unwrap() as usize * 10 + 8][1];
         link9 += resdb[ nb.parse::<i32>().unwrap() as usize * 10 + 9][1];
     }
+    
+    /** PAGE SWITCHER **/
     currentPage = nb.clone();
     currentPagePlus = (nb.parse::<i32>().unwrap()  as usize + 1).to_string();
     if nb.parse::<i32>().unwrap() != 0
@@ -629,6 +606,7 @@ async fn hello(request: String, flash: Option<FlashMessage<'_>>) -> Template {
     }
     let nbResultsToString = nbResults.to_string();
     let nbPage = (nbResults / 10 + 1).to_string();
+
     /** RENDER **/
     Template::render("hello", context!
     {bRequest ,sRequest, qResults,
@@ -907,6 +885,7 @@ unsafe{
     }
 }}
 
+/** Add a word in dictionnary with database tf-idf value **/
 fn addWordDatabase(s: &str, i: i32) {
 let mut a = 0;
 for i in s.to_string().to_lowercase().chars()
