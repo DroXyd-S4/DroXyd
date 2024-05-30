@@ -225,6 +225,38 @@ use self::models::*;
 use diesel::prelude::*;
 use droxyd::*;
 
+use std::collections::HashMap;
+
+pub fn search_all_word() -> Vec<(String,i32)>
+{
+    use self::schema::posts2::dsl::*;
+
+    let connection = &mut establish_connection();
+    let results = posts2
+        .select(Post2::as_select())
+        .load(connection)
+        .expect("Error loading posts");
+    let mut h = HashMap::new();
+    for post in results
+    {
+        h.insert(post.key.clone(), 1 + if h.contains_key(&(post.key.clone())) { h[&(post.key.clone())] } else { 1 });
+        /*if h.contains_key(&post.key)
+        {
+            h[post.key] += 1;
+        }
+        else
+        {
+            h.insert(post.key,1);
+        }*/
+    }
+    let mut v = vec![];
+    for (la, le) in &h
+    {
+        v.push(((*la).clone(),*le));
+    }
+    return v;
+}
+//<==3
 
 pub fn search_in_database(s: &str) -> Vec<Post1>
 {
@@ -383,10 +415,11 @@ use crate::postquery::models::SearchRequest;
 
 /** VARIABLES **/
 static mut Dic: &mut [[u32; 6]; 1000000] = &mut [[0u32; 6]; 1000000];//dictionnary
-static mut RESDB: [[&str; 7]; 100] = [[""; 7]; 100];
+static mut RESDB: [[&str; 5]; 10000] = [[""; 5]; 10000];
 static mut cReq: std::string::String = String::new();
 
-/** quentin **/
+static mut DicDb : Vec<(String,i32)> = vec![];
+
 static mut QueryLimit: i32 = 0;
 
 
@@ -464,41 +497,10 @@ async fn hello(request: String, flash: Option<FlashMessage<'_>>) -> Template {
 
     /** DEFAULT FILL **/
     unsafe {
-    RESDB = [[""; 7]; 100];
-    RESDB[0] =
-    ["Wikipedia","https://fr.wikipedia.org/","info","wiki","data",
-    "news","learn"];
-    RESDB[1] =
-    ["Youtube","https://m.youtube.com/","videos","discover","news",
-    "shorts","followed"];
-    RESDB[2] =
-    ["Github","https://github.com/","projects","browse","develloper",
-    "microsoft","login"];
-    RESDB[3] =
-    ["Instagram","https://instagram.com/","discover","post","foryou",
-    "videos","followed"];
-    RESDB[4] =
-    ["Wikihow","https://fr.wikihow.org/","tutorials","wiki","learn",
-    "news","trending"];
-    RESDB[5] =
-    ["testWebsite","https://test.com/","KeywordA","KeywordB","KeywordC",
-    "KeywordD","KeywordE"];
-    RESDB[6] =
-    ["Wikipedia","https://fr.wikipedia.org/","info","wiki","data",
-    "news","learn"];
-    RESDB[7] =
-    ["Wikipedia","https://fr.wikipedia.org/","info","wiki","data",
-    "news","learn"];
-    RESDB[8] =
-    ["Wikipedia","https://fr.wikipedia.org/","info","wiki","data",
-    "news","learn"];
-    RESDB[9] =
-    ["Wikipedia","https://fr.wikipedia.org/","info","wiki","data",
-    "news","learn"];
-    RESDB[10] =
-    ["Quentin le grand","https://fr.wikipedia.org/","info","wiki","data",
-    "news","learn"];
-    nbResults = 11;
+    RESDB = [[""; 5]; 10000];
+    /*RESDB[0] =
+    ["Wikipedia","https://fr.wikipedia.org/","info","wiki","data"];*/
+    nbResults = 0;
     if nbResults == 0
     {
         open::that("https://www.youtube.com/watch?v=dQw4w9WgXcQ");
@@ -529,7 +531,7 @@ async fn hello(request: String, flash: Option<FlashMessage<'_>>) -> Template {
 
     /** DISPLAY RESULTS INFO **/
     let mut f = 0;
-    for i in 2..7
+    for i in 2..5
     {
         for j in 0..10 as usize
         {
@@ -590,7 +592,7 @@ async fn hello(request: String, flash: Option<FlashMessage<'_>>) -> Template {
 }
 
 /** PARSE RESULTS ON PAGE **/
-fn getParsedRes(l: [&str;7]) -> String
+fn getParsedRes(l: [&str;5]) -> String
 {
      let mut res = String::new();
      res += &l[0];
@@ -602,10 +604,6 @@ fn getParsedRes(l: [&str;7]) -> String
      res += &l[3];
      res += ",";
      res += &l[4];
-     res += ",";
-     res += &l[5];
-     res += ",";
-     res += &l[6];
      return res;
 }
 
@@ -687,6 +685,14 @@ fn init_dic(l:u32)
     {
         tot += loadDic("src/postquery/Dic-fr.txt");
         tot += loadDic("src/postquery/Dic-en.txt");
+        unsafe{
+        let h = DicDb.clone();
+        for (key,value) in h
+        {
+            tot += 1;
+            addWordDatabase(&key,value);
+        }
+        }
     }
     printMemory(2);
     let milliseconds_timestamp2: u128 = std::time::SystemTime::now()
@@ -709,6 +715,7 @@ fn init_dic(l:u32)
 fn rocket() -> _ {   
    unsafe{
     testSuite();
+    DicDb = search_all_word();
     init_dic(2);
     insert(1, "ferrari".to_string(), 0, 0,8);
     insert(1, "ferraille".to_string(), 0, 0,3);
@@ -849,6 +856,25 @@ if s == ""
 unsafe{
     if a == 0 {
        insert(1, s.to_string().to_lowercase(), 0, 0,1);
+    }
+}}
+
+fn addWordDatabase(s: &str, i: i32) {
+let mut a = 0;
+for i in s.to_string().to_lowercase().chars()
+{
+    if i<'a' || i>'z'
+    {
+       a = 1;
+    }
+}
+if s == ""
+{
+    a = 1;
+}
+unsafe{
+    if a == 0 {
+       insert(1, s.to_string().to_lowercase(), 0, 0,i as u32);
     }
 }}
 
