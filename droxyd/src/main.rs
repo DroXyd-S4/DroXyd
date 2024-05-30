@@ -621,6 +621,7 @@ fn init_dic(l:u32)
 }
 
 /** ON START FUNCTION **/
+/*
 #[launch]
 fn rocket() -> _ {
    unsafe{
@@ -640,6 +641,7 @@ fn rocket() -> _ {
     // register routes
     .mount("/", routes![root, create, hello,root_fr,root_en,root_home])
 }}
+*/
 
 /** GENERATE RESULTS FOR A SINGLE WORD QUERY **/
 fn manageQuery(s : &str,mut results : &mut Vec<(String,u32)>,debug:bool,mut nb:u32 ) -> String
@@ -1122,21 +1124,21 @@ mut results : &mut Vec<(String,u32)>) { unsafe{
     }
 }}
 
-/*
+
 fn main()
 {
     println!("Crawler's Tests");
     crawler_tests();
-    println!();
-    println!("Scraper's Tests");
-    scraper_tests();
-    println!();
+    //println!();
+    //println!("Scraper's Tests");
+    //scraper_tests();
+    //println!();
     //println!("Parser's Tests");
     //parser_tests();
     //println!();
-    println!("Queries's Tests");
-    query_tests();
-    println!();
+    //println!("Queries's Tests");
+    //query_tests();
+    //println!();
 }
-*/
+
 
