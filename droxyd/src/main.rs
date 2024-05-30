@@ -540,7 +540,7 @@ async fn hello(request: String, flash: Option<FlashMessage<'_>>) -> Template {
         RESDB[i] = [s1.name.as_str(), s1.url.as_str(), s1.word1.as_str(), s1.word2.as_str(), s1.word3.as_str()];
     }*/
     /** PARSE RESULTS/PAGE **/
-    if nb.parse::<i32>().unwrap()*10 >= nbResults
+    if (nb.parse::<i32>().unwrap()*10 >= nbResults) & (nbResults != 0)
     {
         nb = (nb.parse::<i32>().unwrap() as usize - 1).to_string();
     }
