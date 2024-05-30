@@ -116,11 +116,11 @@ fn scraper_tests()
 
 use self::models::{NewPost1, Post1};
 
-pub fn create_post1(url: &str, langue: &str, name: &str, date: &str) {
+pub fn create_post1(url: &str, langue: &str, name: &str, date: &str, word1: &str, word2: &str, word3: &str) {
     use crate::schema::posts1;
 
     let conn = &mut establish_connection();
-    let new_post = NewPost1 { url, langue, name, date};
+    let new_post = NewPost1 { url, langue, name, date, word1, word2, word3};
 
     diesel::insert_into(posts1::table)
         .values(&new_post)
@@ -162,7 +162,7 @@ pub fn search_id(s: &str) -> i32
 
 pub fn add_in_data_base()
 {
-    create_post1("https://www.youtube.com/watch?v=oQaHPZ4c1QE&ab_channel=Kolanii","USA","bob","29/02/-5000");
+    create_post1("https://www.youtube.com/watch?v=oQaHPZ4c1QE&ab_channel=Kolanii","USA","bob","29/02/-5000","chat","poils","teste");
     create_post2("minecraft",&11);
 }
 
@@ -414,11 +414,14 @@ use rocket_dyn_templates::{context, Template};
 use crate::postquery::models::SearchRequest;
 
 /** VARIABLES **/
+
 static mut Dic: &mut [[u32; 6]; 1000000] = &mut [[0u32; 6]; 1000000];//dictionnary
-static mut RESDB: [[&str; 5]; 10000] = [[""; 5]; 10000];
+//static mut RESDB: [[&str; 5]; 10000] = [[ ""; 5]; 10000];
 static mut cReq: std::string::String = String::new();
 
 static mut DicDb : Vec<(String,i32)> = vec![];
+
+static mut VecOfSearch: Vec<Post1> = vec![];
 
 static mut QueryLimit: i32 = 0;
 
@@ -466,6 +469,7 @@ async fn hello(request: String, flash: Option<FlashMessage<'_>>) -> Template {
     let mut currentPageMinus = "0".to_string();
     if parts[3] != "" {nb = parts[3].to_string();}
     let mut nbResults = 0;
+    //let mut RESDB = [[""; 5]; 10000];
 
     /** PRINTABLE RESULTS **/
     let mut R0 = "".to_string();
@@ -495,16 +499,46 @@ async fn hello(request: String, flash: Option<FlashMessage<'_>>) -> Template {
     let mut SUGG_D = String::new();
     let mut SUGG_E = String::new();
 
-    /** DEFAULT FILL **/
-    unsafe {
-    RESDB = [[""; 5]; 10000];
-    /*RESDB[0] =
-    ["Wikipedia","https://fr.wikipedia.org/","info","wiki","data"];*/
-    nbResults = 0;
+    let v = query(bRequest);
+    nbResults = v.len() as i32;
     if nbResults == 0
     {
         open::that("https://www.youtube.com/watch?v=dQw4w9WgXcQ");
     }
+    if nbResults > 10000
+    {
+        nbResults = 10000;
+    }
+    //RESDB = [[""; 5]; 10000];
+    /*RESDB[0] =
+    ["Wikipedia","https://fr.wikipedia.org/","info","wiki","data"];*/
+    let mut resdb = [[""; 5]; 10000];
+    for i in 0..(nbResults as usize)
+    {
+        resdb[i] = [v[i].name.as_str(),v[i].url.as_str(),v[i].word1.as_str(),v[i].word2.as_str(),v[i].word3.as_str()];
+    }
+
+    /** DEFAULT FILL **/
+    unsafe {
+    /*let v = query(bRequest);
+    nbResults = v.len() as i32;
+    if nbResults == 0
+    {
+        open::that("https://www.youtube.com/watch?v=dQw4w9WgXcQ");
+    }
+    if nbResults > 10000
+    {
+        nbResults = 10000;
+    }
+    RESDB = [[""; 5]; 10000];
+    /*RESDB[0] =
+    ["Wikipedia","https://fr.wikipedia.org/","info","wiki","data"];*/
+    for i in 0..(nbResults as usize)
+    {
+        //RESDB[i] = ["Wikipedia","https://fr.wikipedia.org/","info","wiki","data"];
+        let s1 = v[i].clone();
+        RESDB[i] = [s1.name.as_str(), s1.url.as_str(), s1.word1.as_str(), s1.word2.as_str(), s1.word3.as_str()];
+    }*/
     /** PARSE RESULTS/PAGE **/
     if nb.parse::<i32>().unwrap()*10 >= nbResults
     {
@@ -518,16 +552,16 @@ async fn hello(request: String, flash: Option<FlashMessage<'_>>) -> Template {
     {
         nb = "0".to_string();
     }
-    R0 = getParsedRes(RESDB[ nb.parse::<i32>().unwrap() as usize * 10 + 0]);
-    R1 = getParsedRes(RESDB[ nb.parse::<i32>().unwrap() as usize * 10 + 1]);
-    R2 = getParsedRes(RESDB[ nb.parse::<i32>().unwrap() as usize * 10 + 2]);
-    R3 = getParsedRes(RESDB[ nb.parse::<i32>().unwrap() as usize * 10 + 3]);
-    R4 = getParsedRes(RESDB[ nb.parse::<i32>().unwrap() as usize * 10 + 4]);
-    R5 = getParsedRes(RESDB[ nb.parse::<i32>().unwrap() as usize * 10 + 5]);
-    R6 = getParsedRes(RESDB[ nb.parse::<i32>().unwrap() as usize * 10 + 6]);
-    R7 = getParsedRes(RESDB[ nb.parse::<i32>().unwrap() as usize * 10 + 7]);
-    R8 = getParsedRes(RESDB[ nb.parse::<i32>().unwrap() as usize * 10 + 8]);
-    R9 = getParsedRes(RESDB[ nb.parse::<i32>().unwrap() as usize * 10 + 9]);
+    R0 = getParsedRes(resdb[ nb.parse::<i32>().unwrap() as usize * 10 + 0]);
+    R1 = getParsedRes(resdb[ nb.parse::<i32>().unwrap() as usize * 10 + 1]);
+    R2 = getParsedRes(resdb[ nb.parse::<i32>().unwrap() as usize * 10 + 2]);
+    R3 = getParsedRes(resdb[ nb.parse::<i32>().unwrap() as usize * 10 + 3]);
+    R4 = getParsedRes(resdb[ nb.parse::<i32>().unwrap() as usize * 10 + 4]);
+    R5 = getParsedRes(resdb[ nb.parse::<i32>().unwrap() as usize * 10 + 5]);
+    R6 = getParsedRes(resdb[ nb.parse::<i32>().unwrap() as usize * 10 + 6]);
+    R7 = getParsedRes(resdb[ nb.parse::<i32>().unwrap() as usize * 10 + 7]);
+    R8 = getParsedRes(resdb[ nb.parse::<i32>().unwrap() as usize * 10 + 8]);
+    R9 = getParsedRes(resdb[ nb.parse::<i32>().unwrap() as usize * 10 + 9]);
 
     /** DISPLAY RESULTS INFO **/
     let mut f = 0;
@@ -535,10 +569,10 @@ async fn hello(request: String, flash: Option<FlashMessage<'_>>) -> Template {
     {
         for j in 0..10 as usize
         {
-             if !(bRequest.contains(RESDB[nb.parse::<i32>().unwrap() as usize * 10 + j][i]))
+             if !(bRequest.contains(resdb[nb.parse::<i32>().unwrap() as usize * 10 + j][i]))
              {
                 f += 1;
-                SUGG += RESDB[nb.parse::<i32>().unwrap() as usize * 10 + j][i];
+                SUGG += resdb[nb.parse::<i32>().unwrap() as usize * 10 + j][i];
                 SUGG += "#";
              }
              if f>=5
@@ -554,24 +588,38 @@ async fn hello(request: String, flash: Option<FlashMessage<'_>>) -> Template {
     }
 
     let parts2: Vec<_> = SUGG.split("#").collect();
-    SUGG_A = parts2[0].to_string();
-    SUGG_B = parts2[1].to_string();
-    SUGG_C = parts2[2].to_string();
-    SUGG_D = parts2[3].to_string();
-    SUGG_E = parts2[4].to_string();
-
+    if parts2.len() > 0
+    {
+        SUGG_A = parts2[0].to_string();
+    }
+    if parts2.len() > 1
+    {
+        SUGG_B = parts2[1].to_string();
+    }
+    if parts2.len() > 2
+    {
+        SUGG_C = parts2[2].to_string();
+    }
+    if parts2.len() > 3
+    {
+        SUGG_D = parts2[3].to_string();
+    }
+    if parts2.len() > 4
+    {
+        SUGG_E = parts2[4].to_string();
+    }
     /** BROWSE LINKS **/
     unsafe{
-        link0 += RESDB[ nb.parse::<i32>().unwrap() as usize * 10 + 0][1];
-        link1 += RESDB[ nb.parse::<i32>().unwrap() as usize * 10 + 1][1];
-        link2 += RESDB[ nb.parse::<i32>().unwrap() as usize * 10 + 2][1];
-        link3 += RESDB[ nb.parse::<i32>().unwrap() as usize * 10 + 3][1];
-        link4 += RESDB[ nb.parse::<i32>().unwrap() as usize * 10 + 4][1];
-        link5 += RESDB[ nb.parse::<i32>().unwrap() as usize * 10 + 5][1];
-        link6 += RESDB[ nb.parse::<i32>().unwrap() as usize * 10 + 6][1];
-        link7 += RESDB[ nb.parse::<i32>().unwrap() as usize * 10 + 7][1];
-        link8 += RESDB[ nb.parse::<i32>().unwrap() as usize * 10 + 8][1];
-        link9 += RESDB[ nb.parse::<i32>().unwrap() as usize * 10 + 9][1];
+        link0 += resdb[ nb.parse::<i32>().unwrap() as usize * 10 + 0][1];
+        link1 += resdb[ nb.parse::<i32>().unwrap() as usize * 10 + 1][1];
+        link2 += resdb[ nb.parse::<i32>().unwrap() as usize * 10 + 2][1];
+        link3 += resdb[ nb.parse::<i32>().unwrap() as usize * 10 + 3][1];
+        link4 += resdb[ nb.parse::<i32>().unwrap() as usize * 10 + 4][1];
+        link5 += resdb[ nb.parse::<i32>().unwrap() as usize * 10 + 5][1];
+        link6 += resdb[ nb.parse::<i32>().unwrap() as usize * 10 + 6][1];
+        link7 += resdb[ nb.parse::<i32>().unwrap() as usize * 10 + 7][1];
+        link8 += resdb[ nb.parse::<i32>().unwrap() as usize * 10 + 8][1];
+        link9 += resdb[ nb.parse::<i32>().unwrap() as usize * 10 + 9][1];
     }
     currentPage = nb.clone();
     currentPagePlus = (nb.parse::<i32>().unwrap()  as usize + 1).to_string();

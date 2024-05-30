@@ -7,6 +7,9 @@ diesel::table! {
         langue -> Text,
         name -> Text,
         date -> Text,
+        word1 -> Text,
+        word2 -> Text,
+        word3 -> Text,
     }
 }
 

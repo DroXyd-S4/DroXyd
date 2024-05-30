@@ -1,6 +1,6 @@
 use diesel::prelude::*;
 
-#[derive(Queryable, Selectable,Debug)]
+#[derive(Queryable, Selectable,Debug,Clone)]
 #[diesel(table_name = crate::schema::posts1)]
 pub struct Post1 {
     pub id: i32,
@@ -8,6 +8,9 @@ pub struct Post1 {
     pub langue: String,
     pub name: String,
     pub date: String,
+    pub word1: String,
+    pub word2: String,
+    pub word3: String,
 }
 
 #[derive(Queryable, Selectable, Debug)]
@@ -28,6 +31,9 @@ pub struct NewPost1<'a> {
     pub langue: &'a str,
     pub name: &'a str,
     pub date: &'a str,
+    pub word1: &'a str,
+    pub word2: &'a str,
+    pub word3: &'a str,
 }
 
 use crate::schema::posts2;
