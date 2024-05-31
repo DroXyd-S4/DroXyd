@@ -1,12 +1,17 @@
 body {
     background-color: #000000;
     font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+    color: #ffffff;
 }
 
 h1 {
-    margin: 0 0 0 -5%;
+    margin: 0 0 0 0;
     text-align: center;
     font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+}
+
+.center_test {
+    text-align: center
 }
 
 .text_page{
@@ -17,12 +22,12 @@ h1 {
     display: inline-flex;
 }
 .change_page {
-    margin: 0 0 0 10%;
+    margin: 0 0 0 47%;
     display: inline-flex;
 }
 
 .logo {
-    margin: 0 47% -2% 0;
+    margin: 0 46% -2% 0;
     width: 150px;
     height: 150px;
     position: sticky;

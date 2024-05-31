@@ -309,13 +309,17 @@ pub fn query(s: &str) -> Vec<Post1>
         }
     }
     let mut len = test.key_word.len();
-    for w in test.key_word
+    for w in test.key_word.clone()
     {
         let tmp = search_in_database(&w);
         if tmp.len() == 0
         {
             len -= 1;
         }
+    }
+    for w in test.key_word
+    {
+        let tmp = search_in_database(&w);
         for p in tmp
         {
             let mut t = true;
@@ -363,6 +367,7 @@ pub fn query(s: &str) -> Vec<Post1>
             }
         }
     }
+    //dbg!(test.key_word.len());
     return site;
     /*use testing::src::main::test;
     test();*/
@@ -421,32 +426,34 @@ static mut cReq: std::string::String = String::new();
 static mut DicDb : Vec<(String,i32)> = vec![];
 static mut VecOfSearch: Vec<Post1> = vec![];
 static mut QueryLimit: i32 = 0;
+static mut Historique: String = String::new();
+
 
 /** RENDER DEFAULT HOME PAGE **/
 #[get("/")]
 async fn root() -> Template {
-    Template::render("root", context! { message: "Welcome to DroXyd !"})
+    Template::render("root", context! { message: "Welcome to DroXyd Premium !"})
 }
 
 /** RENDER FR HOME PAGE **/
 #[get("/fr")]
 async fn root_fr() -> Template {
     init_dic(1);
-    Template::render("root", context! { message: "Welcome to DroXyd !"})
+    Template::render("root", context! { message: "Welcome to DroXyd France !"})
 }
 
 /** RENDER EN HOME PAGE **/
 #[get("/en")]
 async fn root_en() -> Template {
     init_dic(0);
-    Template::render("root", context! { message: "Welcome to DroXyd !"})
+    Template::render("root", context! { message: "Welcome to DroXyd English !"})
 }
 
 /** RENDER PREMIUM HOME PAGE **/
 #[get("/home")]
 async fn root_home() -> Template {
     init_dic(2);
-    Template::render("root", context! { message: "Welcome to DroXyd !"})
+    Template::render("root", context! { message: "Welcome to DroXyd Premium !"})
 }
 
 /** RENDER RESULTS PAGE **/
@@ -511,8 +518,37 @@ async fn hello(request: String, flash: Option<FlashMessage<'_>>) -> Template {
         resdb[i] = [v[i].name.as_str(),v[i].url.as_str(),v[i].word1.as_str(),v[i].word2.as_str(),v[i].word3.as_str()];
     }
 
+
+
     /** PARSE RESULTS/PAGE **/
     unsafe {
+    let mut tmpV: Vec<(i32,[&str;5])> = vec![];
+    for i in 0..(resdb.len())
+    {
+        let mut note = 0;
+        for j in 0..5
+        {
+            if (j != 1) & (resdb[i][j] != "")
+            {
+                if Historique.contains(resdb[i][j])
+                {
+                    note += 1;
+                }
+                if bRequest.contains(resdb[i][j])
+                {
+                    note += 3;
+                }
+            }
+        }
+        tmpV.push((note,resdb[i].clone()));
+    }
+    tmpV.sort();
+    let tmpV2 : Vec<(i32,[&str;5])> = tmpV.into_iter().rev().collect();
+    for i in 0..(nbResults as usize)
+    {
+        resdb[i] = tmpV2[i].1.clone();
+    }
+
     if (nb.parse::<i32>().unwrap()*10 >= nbResults) & (nbResults != 0)
     {
         nb = (nb.parse::<i32>().unwrap() as usize - 1).to_string();
@@ -582,7 +618,20 @@ async fn hello(request: String, flash: Option<FlashMessage<'_>>) -> Template {
     {
         SUGG_E = parts2[4].to_string();
     }
-
+    unsafe{
+    Historique.push_str(&SUGG_A);
+    Historique.push(' ');
+    Historique.push_str(&SUGG_B);
+    Historique.push(' ');
+    Historique.push_str(&SUGG_C);
+    Historique.push(' ');
+    Historique.push_str(&SUGG_D);
+    Historique.push(' ');
+    Historique.push_str(&SUGG_E);
+    Historique.push(' ');
+    Historique.push_str(&bRequest);
+    Historique.push(' ');
+    }
     /** BROWSE LINKS **/
     unsafe{
         link0 += resdb[ nb.parse::<i32>().unwrap() as usize * 10 + 0][1];
@@ -597,7 +646,7 @@ async fn hello(request: String, flash: Option<FlashMessage<'_>>) -> Template {
         link9 += resdb[ nb.parse::<i32>().unwrap() as usize * 10 + 9][1];
     }
     
-    /** PAGE SWITCHER **/
+    
     currentPage = nb.clone();
     currentPagePlus = (nb.parse::<i32>().unwrap()  as usize + 1).to_string();
     if nb.parse::<i32>().unwrap() != 0
