@@ -7,6 +7,13 @@ use droxyd::crawl_web::get_content::*;
 
 use droxyd::crawl_web::crawler::*;
 
+use crate::processing::{
+    cleansing::*,
+    extraction::*,
+    language::*,
+    IO_helper::*,
+};
+
 fn crawler_tests()
 {
     /*
@@ -161,10 +168,21 @@ pub fn search_id(s: &str) -> i32
     return results[0].id;
 }
 
-pub fn add_in_data_base()
+pub fn add_in_data_base(u: &str)
 {
-    create_post1("https://www.youtube.com/watch?v=oQaHPZ4c1QE&ab_channel=Kolanii","USA","bob","29/02/-5000","chat","poils","teste");
-    create_post2("minecraft",&11);
+    let text = URL_to_String(&u).unwrap();
+    let lang = get_lang(&text);
+    let title = get_title(&text);
+    let (keywords, w1, w2, w3) = keywords2(TF_IDF(text), 10);
+    create_post1(&u, &lang, &title, &String::new(), &w1, &w2, &w3);
+    let id = search_id(&u);
+    if id == -1 { return }
+    for i in keywords {
+        create_post2(&i, &id);
+    }
+
+    //create_post1("https://www.youtube.com/watch?v=oQaHPZ4c1QE&ab_channel=Kolanii","USA","bob","29/02/-5000","chat","poils","teste");
+    //create_post2("minecraft",&11);
 }
 
 fn parser_tests() {
@@ -344,15 +362,17 @@ pub fn query(s: &str) -> Vec<Post1>
                     }
                     n +=1;
                 }
-                if oc != -1
+                if oc == -1
                 {
-                    occ[oc as usize] += 1;
+                    sitetmp.push(p.clone());
+                    site.push(p);
+                    /*occ[oc as usize] += 1;
                     if occ[oc as usize] == len
                     {
                         site.push(p);
-                    }
+                    }*/
                 }
-                else
+                /*else
                 {
                     if len != 1
                     {
@@ -363,7 +383,7 @@ pub fn query(s: &str) -> Vec<Post1>
                     {
                         site.push(p);
                     }
-                }
+                }*/
             }
         }
     }
@@ -786,6 +806,7 @@ fn init_dic(l:u32)
 }
 
 /** ON START FUNCTION **/
+/*
 #[launch]
 fn rocket() -> _ {   
    unsafe{
@@ -807,6 +828,11 @@ fn rocket() -> _ {
     .mount("/", routes![root, create, hello,root_fr,root_en,root_home])
    
     }
+}*/
+
+pub fn main()
+{
+    add_in_data_base("https://login.rosettastone.com/#/login");
 }
 
 /** GENERATE RESULTS FOR A SINGLE WORD QUERY **/
@@ -1313,7 +1339,8 @@ mut results : &mut Vec<(String,u32)>) { unsafe{
 /*
 fn main()
 {
-    println!("Crawler's Tests");
+    add_in_data_base("https://login.rosettastone.com/#/login");
+    /*println!("Crawler's Tests");
     crawler_tests();
     println!();
     println!("Scraper's Tests");
@@ -1324,7 +1351,7 @@ fn main()
     //println!();
     println!("Queries's Tests");
     query_tests();
-    println!();
-}
-*/
+    println!();*/
+}*/
+
 
