@@ -8,40 +8,45 @@
     <title>DroXyd Search Engine</title>
 </head>
 <body>
-<main>
-    <h1>DroXyd Search engine</h1>
-    {{#if errors }}
+    <main>
+        <img class="logo" src="/public/images/droxyd.jpg" alt="DroXydSearchEngine">
+        <h1>DroXyd Search engine</h1>
+        {{#if errors }}
         <article>
             <header>🥺Oh No!</header>
             <p>There are some invalid fields in the form</p>
             <ul>
                 {{#each errors}}
-                    <li>{{this}}</li>
+                <li>{{this}}</li>
                 {{/each}}
             </ul>
         </article>
-    {{/if}}
-    <form method="POST" enctype="multipart/form-data" action="/">
-        <input type="text"
-               name="request"
-               placeholder="enter search"
-               aria-label="Request"
-               value="{{ request }}"
-               aria-invalid="{{ request_error}}"
-        />
-        <input type="text"
-               name="results_number"
-               placeholder="enter number"
-               aria-label="Number of results"
-               value="{{ results_number }}"
-               aria-invalid="{{ results_number_error}}"
-        />
-        <button type="submit">Search</button>
-    </form>
-    <img src="/public/images/droxyd.jpg" alt="DroXydSearchEngine">
-    <p><a class="botton_language" href="http://localhost:8000/fr" target="_blank">Droxyd fr !</a> </p>
-    <p><a class="botton_language" href="http://localhost:8000/en" target="_blank">Droxyd en !</a> </p>
-     <p><a class="botton_language" href="http://localhost:8000/home" target="_blank">Droxyd premium !</a> </p>
-</main>
+        {{/if}}
+
+        <div class="body_input">
+
+            <form method="POST" enctype="multipart/form-data" action="/">
+                <button class="btn" type="submit">Search</button>
+                <input type="text"
+                       name="request"
+                       placeholder="enter search"
+                       aria-label="Request"
+                       value="{{ request }}"
+                       aria-invalid="{{ request_error}}" />
+                <input type="text"
+                       name="results_number"
+                       placeholder="start from page"
+                       aria-label="Number of results"
+                       value="{{ results_number }}"
+                       aria-invalid="{{ results_number_error}}" />
+
+            </form>
+        </div>
+        <div class="botton_center">
+            <p class="botton_space"><a class="botton_language" href="http://localhost:8000/fr" >Droxyd fr !</a> </p>
+            <p class="botton_space"><a class="botton_language" href="http://localhost:8000/en" >Droxyd en !</a> </p>
+            <p class="botton_space"><a class="botton_language" href="http://localhost:8000/home" >Droxyd premium !</a> </p>
+        </div>
+    </main>
 </body>
 </html>

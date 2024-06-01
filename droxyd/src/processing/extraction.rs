@@ -56,4 +56,16 @@ pub fn get_sentences(src: &str) -> (Vec<String>, usize) {
     (sent, nb)
 }
 
-
+pub fn get_title(src: &str) -> String {
+    let mut title: String = String::new();
+    let i_t: usize;
+    match src.find("<title>") {
+        Some(i) => i_t = i,
+        _ => return "no title".to_string(),
+    }
+    for c in src[i_t+6..].chars() {
+        if c == '<' { return title }
+        title.push(c);
+    }
+    title
+}

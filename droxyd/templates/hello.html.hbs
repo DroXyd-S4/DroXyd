@@ -4,93 +4,115 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="color-scheme" content="light dark" />
-    <link rel="stylesheet" href="/public/css/pico.min.css">
+    <link rel="stylesheet" href="/public/css/hello.min.css">
     <title>Droxyd/{{ bRequest }}</title>
 </head>
-<p> Create a new tab <a href="http://localhost:8000/" target="_blank">here</a> !</p>
+<img class="logo" src="/public/images/droxyd.jpg" alt="DroXydSearchEngine">
+<h1>DroXyd Search engine</h1>
+<div class="center_test">
+    <p class="new_tab"> <a class="link" href="http://localhost:8000/" target="_blank">New page</a>  </p>
+    <p class="new_tab"> Continue research  <a class="link" href="http://localhost:8000/">here</a> ! </p>
+</div>
 <body>
-<main class="container">
-    <dialog open>
-        <article>
-            <header>
-                <a href="/" aria-label="Close" rel="prev"></a>
+    <main>
+
+        <dialog open class="suggest">
+            <article>
+                <header>
+                    <a href="/" aria-label="Close" rel="prev"></a>
+                    <p>
+                        <h2><strong>🗓️Results for: {{ bRequest }} - Page: {{ currentPagePlus }}/{{ nbPage }}!</strong></h2>
+                    </p>
+                </header>
                 <p>
-                    <strong>🗓️Results for: {{ bRequest }}!</strong>
+                    <form method="POST" enctype="multipart/form-data" action="/">
+                        Suggested request:
+                        <input type="hidden" name="request" value="{{ sRequest }}" />
+                        <input type="hidden" name="results_number" value="0" />
+                        <button class="btn" type="submit">{{ sRequest }}</button>
+                    </form>
+                    results: ({{nbResultsToString}} found)<br /> Debug: {{ qResults }}
                 </p>
-            </header>
-            <p>
-              <form method="POST" enctype="multipart/form-data" action="/">
-                Suggested request:
-                <input type="hidden" name="request" value="{{ sRequest }}"/>
-                <input type="hidden" name="results_number" value="10"/>
-                <button type="submit">{{ sRequest }}</button>
-              </form>
+                <p>
+                    <div class="suggest_word">
+                        Suggested words: <br />
+                        <form method="POST" enctype="multipart/form-data" action="/">
+                            <input type="hidden" name="request" value="{{ SUGG_A }}" />
+                            <input type="hidden" name="results_number" value="0" />
+                            <button class="btn" type="submit">{{ SUGG_A }}</button>
+                        </form>
+                        <form method="POST" enctype="multipart/form-data" action="/">
+                            <input type="hidden" name="request" value="{{ SUGG_B }}" />
+                            <input type="hidden" name="results_number" value="0" />
+                            <button class="btn" type="submit">{{ SUGG_B }}</button>
+                        </form>
+                        <form method="POST" enctype="multipart/form-data" action="/">
+                            <input type="hidden" name="request" value="{{ SUGG_C }}" />
+                            <input type="hidden" name="results_number" value="0" />
+                            <button class="btn" type="submit">{{ SUGG_C }}</button>
+                        </form>
+                        <form method="POST" enctype="multipart/form-data" action="/">
+                            <input type="hidden" name="request" value="{{ SUGG_D }}" />
+                            <input type="hidden" name="results_number" value="0" />
+                            <button class="btn" type="submit">{{ SUGG_D }}</button>
+                        </form>
+                        <form method="POST" enctype="multipart/form-data" action="/">
+                            <input type="hidden" name="request" value="{{ SUGG_E }}" />
+                            <input type="hidden" name="results_number" value="0" />
+                            <button class="btn" type="submit">{{ SUGG_E }}</button>
+                        </form>
+                    </div>
+                </p>
+            </article>
+        </dialog>
+        <div class="div_link">
+            <p class="marge_link">
+                <br /> <br /> <br /> <br /> <br /><br /> <br /> <br /> <br /> <br /><br />
+                <br /> <br /> <br /> <br />
+                <br /> <br /> <br /> <br /> <br /> <br /> <br />
+                - {{R0}}    <a class="link" href="{{link0}}" target="_blank">Browse</a>
             </p>
-             <p>
-                results: {{ qResults }}
-             </p>
-            <p>Suggested words: <br/>
-               <form method="POST" enctype="multipart/form-data" action="/">
-                <input type="hidden" name="request" value="{{ SUGG_A }}"/>
-                <input type="hidden" name="results_number" value="10"/>
-                <button type="submit">{{ SUGG_A }}</button>
-               </form>
-               <form method="POST" enctype="multipart/form-data" action="/">
-                <input type="hidden" name="request" value="{{ SUGG_B }}"/>
-                <input type="hidden" name="results_number" value="10"/>
-                <button type="submit">{{ SUGG_B }}</button>
-               </form>
-               <form method="POST" enctype="multipart/form-data" action="/">
-                <input type="hidden" name="request" value="{{ SUGG_C }}"/>
-                <input type="hidden" name="results_number" value="10"/>
-                <button type="submit">{{ SUGG_C }}</button>
-               </form>
-               <form method="POST" enctype="multipart/form-data" action="/">
-                <input type="hidden" name="request" value="{{ SUGG_D }}"/>
-                <input type="hidden" name="results_number" value="10"/>
-                <button type="submit">{{ SUGG_D }}</button>
-               </form>
-               <form method="POST" enctype="multipart/form-data" action="/">
-                <input type="hidden" name="request" value="{{ SUGG_E }}"/>
-                <input type="hidden" name="results_number" value="10"/>
-                <button type="submit">{{ SUGG_E }}</button>
-               </form>
+            <p class="marge_link">
+                - {{R1}}    <a class="link" href="{{link1}}" target="_blank">Browse</a>
             </p>
-        </article>
-    </dialog>
-    <p>
-      <br/> <br/> <br/> <br/> <br/><br/> <br/> <br/> <br/> <br/><br/>
-      <br/> <br/> <br/> <br/>
-      <br/> <br/> <br/> <br/> <br/> <br/> <br/>
-        {{R0}}    <a href="{{link0}}" target="_blank">Browse</a>
-    </p>
-    <p>
-        {{R1}}    <a href="{{link1}}" target="_blank">Browse</a>
-    </p>
-    <p>
-        {{R2}}    <a href="{{link2}}" target="_blank">Browse</a>
-    </p>
-    <p>
-        {{R3}}    <a href="{{link3}}" target="_blank">Browse</a>
-    </p>
-    <p>
-        {{R4}}    <a href="{{link4}}" target="_blank">Browse</a>
-    </p>
-    <p>
-        {{R5}}    <a href="{{link5}}" target="_blank">Browse</a>
-    </p>
-    <p>
-        {{R6}}    <a href="{{link6}}" target="_blank">Browse</a>
-    </p>
-    <p>
-        {{R7}}    <a href="{{link7}}" target="_blank">Browse</a>
-    </p>
-    <p>
-        {{R8}}    <a href="{{link8}}" target="_blank">Browse</a>
-    </p>
-    <p>
-        {{R9}}    <a href="{{link9}}" target="_blank">Browse</a>
-    </p>
-</main>
+            <p class="marge_link">
+                - {{R2}}    <a class="link" href="{{link2}}" target="_blank">Browse</a>
+            </p>
+            <p class="marge_link">
+                - {{R3}}    <a class="link" href="{{link3}}" target="_blank">Browse</a>
+            </p>
+            <p class="marge_link">
+                - {{R4}}    <a class="link" href="{{link4}}" target="_blank">Browse</a>
+            </p>
+            <p class="marge_link">
+                - {{R5}}    <a class="link" href="{{link5}}" target="_blank">Browse</a>
+            </p>
+            <p class="marge_link">
+                - {{R6}}    <a class="link" href="{{link6}}" target="_blank">Browse</a>
+            </p>
+            <p class="marge_link">
+                - {{R7}}    <a class="link" href="{{link7}}" target="_blank">Browse</a>
+            </p>
+            <p class="marge_link">
+                - {{R8}}    <a class="link" href="{{link8}}" target="_blank">Browse</a>
+            </p>
+            <p class="marge_link">
+                - {{R9}}    <a class="link" href="{{link9}}" target="_blank">Browse</a>
+            </p>
+        </div>
+        <div class="change_page">
+            <form method="POST" enctype="multipart/form-data" action="/">
+                <input type="hidden" name="request" value="{{ bRequest }}" />
+                <input type="hidden" name="results_number" value="{{ currentPageMinus }}" />
+                <button class="btn" type="submit"><</button>
+            </form>
+            <h2 class="text_page">{{ currentPagePlus }}...{{ nbPage }}</h2>
+            <form method="POST" enctype="multipart/form-data" action="/">
+                <input type="hidden" name="request" value="{{ bRequest }}" />
+                <input type="hidden" name="results_number" value="{{ currentPagePlus }}" />
+                <button class="btn" type="submit">></button>
+            </form>
+        </div>
+    </main>
 </body>
 </html>

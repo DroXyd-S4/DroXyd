@@ -1,10 +1,18 @@
-/*use droxyd::bloom_filter::bloom_filter::*;
-  use droxyd::bloom_filter::hash_functions::*;
-  use droxyd::bloom_filter::is_present::*;
-  */
+/* To add 
+use droxyd::bloom_filter::bloom_filter::*;
+use droxyd::bloom_filter::hash_functions::*;
+use droxyd::bloom_filter::is_present::*;
+use droxyd::crawl_web::get_content::*;
+*/
 
-//use droxyd::crawl_web::get_content::*;
 use droxyd::crawl_web::crawler::*;
+
+use crate::processing::{
+    cleansing::*,
+    extraction::*,
+    language::*,
+    IO_helper::*,
+};
 
 fn crawler_tests()
 {
@@ -112,6 +120,71 @@ fn scraper_tests()
     demo(&url, false);
 }
 
+/* Add in data base Justine */
+
+use self::models::{NewPost1, Post1};
+
+pub fn create_post1(url: &str, langue: &str, name: &str, date: &str, word1: &str, word2: &str, word3: &str) {
+    use crate::schema::posts1;
+
+    let conn = &mut establish_connection();
+    let new_post = NewPost1 { url, langue, name, date, word1, word2, word3};
+
+    diesel::insert_into(posts1::table)
+        .values(&new_post)
+        .execute(conn)
+        .expect("Error saving new post");
+}
+
+use self::models::{NewPost2, Post2};
+
+pub fn create_post2( key: &str, idofsite: &i32) {
+    use crate::schema::posts2;
+    let conn = &mut establish_connection();
+
+    let new_post = NewPost2 { key, idofsite };
+
+    diesel::insert_into(posts2::table)
+        .values(&new_post)
+        .execute(conn)
+        .expect("Error saving new post");
+}
+pub fn search_id(s: &str) -> i32
+{
+    use self::schema::posts1::dsl::*;
+
+    let connection = &mut establish_connection();
+    let results = posts1
+        .filter(
+                url.eq(s)
+                )
+        .select(Post1::as_select())
+        .load(connection)
+        .expect("Error loading posts");
+    if results.len() == 0
+    {
+        return -1;
+    }
+    return results[0].id;
+}
+
+pub fn add_in_data_base(u: &str)
+{
+    let text = URL_to_String(&u).unwrap();
+    let lang = get_lang(&text);
+    let title = get_title(&text);
+    let (keywords, w1, w2, w3) = keywords2(TF_IDF(text), 10);
+    create_post1(&u, &lang, &title, &String::new(), &w1, &w2, &w3);
+    let id = search_id(&u);
+    if id == -1 { return }
+    for i in keywords {
+        create_post2(&i, &id);
+    }
+
+    //create_post1("https://www.youtube.com/watch?v=oQaHPZ4c1QE&ab_channel=Kolanii","USA","bob","29/02/-5000","chat","poils","teste");
+    //create_post2("minecraft",&11);
+}
+
 fn parser_tests() {
     //let s = "-aa inurl:bernard.com \" t e s t \" aaa OR:\"char a\"/\"heli helo\" unsite:chat.com intext:fer argent";
     println!("Teste suite:");
@@ -171,6 +244,38 @@ use self::models::*;
 use diesel::prelude::*;
 use droxyd::*;
 
+use std::collections::HashMap;
+
+pub fn search_all_word() -> Vec<(String,i32)>
+{
+    use self::schema::posts2::dsl::*;
+
+    let connection = &mut establish_connection();
+    let results = posts2
+        .select(Post2::as_select())
+        .load(connection)
+        .expect("Error loading posts");
+    let mut h = HashMap::new();
+    for post in results
+    {
+        h.insert(post.key.clone(), 1 + if h.contains_key(&(post.key.clone())) { h[&(post.key.clone())] } else { 1 });
+        /*if h.contains_key(&post.key)
+        {
+            h[post.key] += 1;
+        }
+        else
+        {
+            h.insert(post.key,1);
+        }*/
+    }
+    let mut v = vec![];
+    for (la, le) in &h
+    {
+        v.push(((*la).clone(),*le));
+    }
+    return v;
+}
+//<==3
 
 pub fn search_in_database(s: &str) -> Vec<Post1>
 {
@@ -221,7 +326,15 @@ pub fn query(s: &str) -> Vec<Post1>
             }
         }
     }
-    let len = test.key_word.len();
+    let mut len = test.key_word.len();
+    for w in test.key_word.clone()
+    {
+        let tmp = search_in_database(&w);
+        if tmp.len() == 0
+        {
+            len -= 1;
+        }
+    }
     for w in test.key_word
     {
         let tmp = search_in_database(&w);
@@ -249,15 +362,17 @@ pub fn query(s: &str) -> Vec<Post1>
                     }
                     n +=1;
                 }
-                if oc != -1
+                if oc == -1
                 {
-                    occ[oc as usize] += 1;
+                    sitetmp.push(p.clone());
+                    site.push(p);
+                    /*occ[oc as usize] += 1;
                     if occ[oc as usize] == len
                     {
                         site.push(p);
-                    }
+                    }*/
                 }
-                else
+                /*else
                 {
                     if len != 1
                     {
@@ -268,10 +383,11 @@ pub fn query(s: &str) -> Vec<Post1>
                     {
                         site.push(p);
                     }
-                }
+                }*/
             }
         }
     }
+    //dbg!(test.key_word.len());
     return site;
     /*use testing::src::main::test;
     test();*/
@@ -295,8 +411,8 @@ fn query_tests()
 {
     println!("Test suite:");
     println!("============================================================");
-    println!("Input: cat");
-    dbg!(query("cat"));
+    println!("Input: the cat");
+    dbg!(query("the cat"));
     println!("============================================================");
     println!("Input: pizza");
     dbg!(query("pizza"));
@@ -324,35 +440,40 @@ use rocket_dyn_templates::{context, Template};
 use crate::postquery::models::SearchRequest;
 
 /** VARIABLES **/
-static mut Dic: &mut [[u32; 6]; 1000000] = &mut [[0u32; 6]; 1000000];//dictionnary
-static mut RESDB: [[&str; 7]; 100] = [[""; 7]; 100];
-static mut cReq: std::string::String = String::new();
 
-/** RENDER HOME PAGE **/
+static mut Dic: &mut [[u32; 6]; 1000000] = &mut [[0u32; 6]; 1000000];//dictionnary
+static mut cReq: std::string::String = String::new();
+static mut DicDb : Vec<(String,i32)> = vec![];
+static mut VecOfSearch: Vec<Post1> = vec![];
+static mut QueryLimit: i32 = 0;
+static mut Historique: String = String::new();
+
+
+/** RENDER DEFAULT HOME PAGE **/
 #[get("/")]
 async fn root() -> Template {
-    Template::render("root", context! { message: "Welcome to DroXyd !"})
+    Template::render("root", context! { message: "Welcome to DroXyd Premium !"})
 }
 
-/** RENDER HOME PAGE **/
+/** RENDER FR HOME PAGE **/
 #[get("/fr")]
 async fn root_fr() -> Template {
     init_dic(1);
-    Template::render("root", context! { message: "Welcome to DroXyd !"})
+    Template::render("root", context! { message: "Welcome to DroXyd France !"})
 }
 
-/** RENDER HOME PAGE **/
+/** RENDER EN HOME PAGE **/
 #[get("/en")]
 async fn root_en() -> Template {
     init_dic(0);
-    Template::render("root", context! { message: "Welcome to DroXyd !"})
+    Template::render("root", context! { message: "Welcome to DroXyd English !"})
 }
 
-/** RENDER HOME PAGE **/
+/** RENDER PREMIUM HOME PAGE **/
 #[get("/home")]
 async fn root_home() -> Template {
     init_dic(2);
-    Template::render("root", context! { message: "Welcome to DroXyd !"})
+    Template::render("root", context! { message: "Welcome to DroXyd Premium !"})
 }
 
 /** RENDER RESULTS PAGE **/
@@ -365,8 +486,12 @@ async fn hello(request: String, flash: Option<FlashMessage<'_>>) -> Template {
     let bRequest = parts[0]; // Base Request
     let sRequest = parts[1]; // Suggestion of correction
     let qResults = parts[2]; // All results
-    let mut nb = "10"; // Nb results
-    if parts[3] != "" {nb = parts[3];}
+    let mut nb = "0".to_string(); // N°page
+    let mut currentPage = "0".to_string();
+    let mut currentPagePlus = "1".to_string();
+    let mut currentPageMinus = "0".to_string();
+    if parts[3] != "" {nb = parts[3].to_string();}
+    let mut nbResults = 0;
 
     /** PRINTABLE RESULTS **/
     let mut R0 = "".to_string();
@@ -396,72 +521,87 @@ async fn hello(request: String, flash: Option<FlashMessage<'_>>) -> Template {
     let mut SUGG_D = String::new();
     let mut SUGG_E = String::new();
 
-    /** DEFAULT FILL **/
-    unsafe {
-    RESDB = [[""; 7]; 100];
-    RESDB[0] =
-    ["Wikipedia","https://fr.wikipedia.org/","info","wiki","data",
-    "news","learn"];
-    RESDB[1] =
-    ["Youtube","https://m.youtube.com/","videos","discover","news",
-    "shorts","followed"];
-    RESDB[2] =
-    ["Github","https://github.com/","projects","browse","develloper",
-    "microsoft","login"];
-    RESDB[3] =
-    ["Instagram","https://instagram.com/","discover","post","foryou",
-    "videos","followed"];
-    RESDB[4] =
-    ["Wikihow","https://fr.wikihow.org/","tutorials","wiki","learn",
-    "news","trending"];
-    RESDB[5] =
-    ["testWebsite","https://test.com/","KeywordA","KeywordB","KeywordC",
-    "KeywordD","KeywordE"];
-    RESDB[6] =
-    ["Wikipedia","https://fr.wikipedia.org/","info","wiki","data",
-    "news","learn"];
-    RESDB[7] =
-    ["Wikipedia","https://fr.wikipedia.org/","info","wiki","data",
-    "news","learn"];
-    RESDB[8] =
-    ["Wikipedia","https://fr.wikipedia.org/","info","wiki","data",
-    "news","learn"];
-    RESDB[9] =
-    ["Wikipedia","https://fr.wikipedia.org/","info","wiki","data",
-    "news","learn"];
+    /** LAUNCH QUERY **/
+    let v = query(bRequest);
+    nbResults = v.len() as i32;
+    if nbResults == 0
+    {
+        open::that("https://www.youtube.com/watch?v=dQw4w9WgXcQ");
+    }
+    if nbResults > 10000
+    {
+        nbResults = 10000;
+    }
+    let mut resdb = [[""; 5]; 10000];
+    for i in 0..(nbResults as usize)
+    {
+        resdb[i] = [v[i].name.as_str(),v[i].url.as_str(),v[i].word1.as_str(),v[i].word2.as_str(),v[i].word3.as_str()];
+    }
+
+
 
     /** PARSE RESULTS/PAGE **/
-    if nb.parse::<i32>().unwrap() > 0
-    {R0 = getParsedRes(RESDB[0]);}
-    if nb.parse::<i32>().unwrap() > 1
-    {R1 = getParsedRes(RESDB[1]);}
-    if nb.parse::<i32>().unwrap() > 2
-    {R2 = getParsedRes(RESDB[2]);}
-    if nb.parse::<i32>().unwrap() > 3
-    {R3 = getParsedRes(RESDB[3]);}
-    if nb.parse::<i32>().unwrap() > 4
-    {R4 = getParsedRes(RESDB[4]);}
-    if nb.parse::<i32>().unwrap() > 5
-    {R5 = getParsedRes(RESDB[5]);}
-    if nb.parse::<i32>().unwrap() > 6
-    {R6 = getParsedRes(RESDB[6]);}
-    if nb.parse::<i32>().unwrap() > 7
-    {R7 = getParsedRes(RESDB[7]);}
-    if nb.parse::<i32>().unwrap() > 8
-    {R8 = getParsedRes(RESDB[8]);}
-    if nb.parse::<i32>().unwrap() > 9
-    {R9 = getParsedRes(RESDB[9]);}
+    unsafe {
+    let mut tmpV: Vec<(i32,[&str;5])> = vec![];
+    for i in 0..(resdb.len())
+    {
+        let mut note = 0;
+        for j in 0..5
+        {
+            if (j != 1) & (resdb[i][j] != "")
+            {
+                if Historique.contains(resdb[i][j])
+                {
+                    note += 1;
+                }
+                if bRequest.contains(resdb[i][j])
+                {
+                    note += 3;
+                }
+            }
+        }
+        tmpV.push((note,resdb[i].clone()));
+    }
+    tmpV.sort();
+    let tmpV2 : Vec<(i32,[&str;5])> = tmpV.into_iter().rev().collect();
+    for i in 0..(nbResults as usize)
+    {
+        resdb[i] = tmpV2[i].1.clone();
+    }
+
+    if (nb.parse::<i32>().unwrap()*10 >= nbResults) & (nbResults != 0)
+    {
+        nb = (nb.parse::<i32>().unwrap() as usize - 1).to_string();
+    }
+    if nb.parse::<i32>().unwrap() >= 10
+    {
+        nb = "9".to_string();
+    }
+    if nb.parse::<i32>().unwrap() < 0
+    {
+        nb = "0".to_string();
+    }
+    R0 = getParsedRes(resdb[ nb.parse::<i32>().unwrap() as usize * 10 + 0]);
+    R1 = getParsedRes(resdb[ nb.parse::<i32>().unwrap() as usize * 10 + 1]);
+    R2 = getParsedRes(resdb[ nb.parse::<i32>().unwrap() as usize * 10 + 2]);
+    R3 = getParsedRes(resdb[ nb.parse::<i32>().unwrap() as usize * 10 + 3]);
+    R4 = getParsedRes(resdb[ nb.parse::<i32>().unwrap() as usize * 10 + 4]);
+    R5 = getParsedRes(resdb[ nb.parse::<i32>().unwrap() as usize * 10 + 5]);
+    R6 = getParsedRes(resdb[ nb.parse::<i32>().unwrap() as usize * 10 + 6]);
+    R7 = getParsedRes(resdb[ nb.parse::<i32>().unwrap() as usize * 10 + 7]);
+    R8 = getParsedRes(resdb[ nb.parse::<i32>().unwrap() as usize * 10 + 8]);
+    R9 = getParsedRes(resdb[ nb.parse::<i32>().unwrap() as usize * 10 + 9]);
 
     /** DISPLAY RESULTS INFO **/
     let mut f = 0;
-    for i in 2..7
+    for i in 2..5
     {
-        for j in 0..nb.parse::<i32>().unwrap() as usize
+        for j in 0..10 as usize
         {
-             if !(bRequest.contains(RESDB[j][i]))
+             if !(bRequest.contains(resdb[nb.parse::<i32>().unwrap() as usize * 10 + j][i]))
              {
                 f += 1;
-                SUGG += RESDB[j][i];
+                SUGG += resdb[nb.parse::<i32>().unwrap() as usize * 10 + j][i];
                 SUGG += "#";
              }
              if f>=5
@@ -476,37 +616,78 @@ async fn hello(request: String, flash: Option<FlashMessage<'_>>) -> Template {
     }
     }
 
+    /** LINKED WORDS RENDER **/
     let parts2: Vec<_> = SUGG.split("#").collect();
-    SUGG_A = parts2[0].to_string();
-    SUGG_B = parts2[1].to_string();
-    SUGG_C = parts2[2].to_string();
-    SUGG_D = parts2[3].to_string();
-    SUGG_E = parts2[4].to_string();
-
+    if parts2.len() > 0
+    {
+        SUGG_A = parts2[0].to_string();
+    }
+    if parts2.len() > 1
+    {
+        SUGG_B = parts2[1].to_string();
+    }
+    if parts2.len() > 2
+    {
+        SUGG_C = parts2[2].to_string();
+    }
+    if parts2.len() > 3
+    {
+        SUGG_D = parts2[3].to_string();
+    }
+    if parts2.len() > 4
+    {
+        SUGG_E = parts2[4].to_string();
+    }
+    unsafe{
+    Historique.push_str(&SUGG_A);
+    Historique.push(' ');
+    Historique.push_str(&SUGG_B);
+    Historique.push(' ');
+    Historique.push_str(&SUGG_C);
+    Historique.push(' ');
+    Historique.push_str(&SUGG_D);
+    Historique.push(' ');
+    Historique.push_str(&SUGG_E);
+    Historique.push(' ');
+    Historique.push_str(&bRequest);
+    Historique.push(' ');
+    }
     /** BROWSE LINKS **/
     unsafe{
-        link0 += RESDB[0][1];
-        link1 += RESDB[1][1];
-        link2 += RESDB[2][1];
-        link3 += RESDB[3][1];
-        link4 += RESDB[4][1];
-        link5 += RESDB[5][1];
-        link6 += RESDB[6][1];
-        link7 += RESDB[7][1];
-        link8 += RESDB[8][1];
-        link9 += RESDB[9][1];
+        link0 += resdb[ nb.parse::<i32>().unwrap() as usize * 10 + 0][1];
+        link1 += resdb[ nb.parse::<i32>().unwrap() as usize * 10 + 1][1];
+        link2 += resdb[ nb.parse::<i32>().unwrap() as usize * 10 + 2][1];
+        link3 += resdb[ nb.parse::<i32>().unwrap() as usize * 10 + 3][1];
+        link4 += resdb[ nb.parse::<i32>().unwrap() as usize * 10 + 4][1];
+        link5 += resdb[ nb.parse::<i32>().unwrap() as usize * 10 + 5][1];
+        link6 += resdb[ nb.parse::<i32>().unwrap() as usize * 10 + 6][1];
+        link7 += resdb[ nb.parse::<i32>().unwrap() as usize * 10 + 7][1];
+        link8 += resdb[ nb.parse::<i32>().unwrap() as usize * 10 + 8][1];
+        link9 += resdb[ nb.parse::<i32>().unwrap() as usize * 10 + 9][1];
     }
+    
+    
+    currentPage = nb.clone();
+    currentPagePlus = (nb.parse::<i32>().unwrap()  as usize + 1).to_string();
+    if nb.parse::<i32>().unwrap() != 0
+    {
+        currentPageMinus = (nb.parse::<i32>().unwrap() as usize - 1).to_string();
+    }
+    let nbResultsToString = nbResults.to_string();
+    let nbPage = (nbResults / 10 + 1).to_string();
 
     /** RENDER **/
     Template::render("hello", context!
     {bRequest ,sRequest, qResults,
     SUGG_A,SUGG_B,SUGG_C,SUGG_D,SUGG_E,
     R0,R1,R2,R3,R4,R5,R6,R7,R8,R9,
-    link0,link1,link2,link3,link4,link5,link6,link7,link8,link9})
+    link0,link1,link2,link3,link4,link5,link6,link7,link8,link9,
+    currentPage,currentPagePlus,currentPageMinus,
+    nbResultsToString,nbPage})
 }
 
 /** PARSE RESULTS ON PAGE **/
-fn getParsedRes(l: [&str;7]) -> String
+fn getParsedRes(l: [&str;5]) -> String
 {
      let mut res = String::new();
      res += &l[0];
@@ -518,10 +699,6 @@ fn getParsedRes(l: [&str;7]) -> String
      res += &l[3];
      res += ",";
      res += &l[4];
-     res += ",";
-     res += &l[5];
-     res += ",";
-     res += &l[6];
      return res;
 }
 
@@ -593,7 +770,7 @@ fn init_dic(l:u32)
     }
     if l == 0
     {
-       tot += loadDic("src/postquery/ic-en.txt");
+       tot += loadDic("src/postquery/Dic-en.txt");
     }
     else if l == 1
     {
@@ -603,6 +780,14 @@ fn init_dic(l:u32)
     {
         tot += loadDic("src/postquery/Dic-fr.txt");
         tot += loadDic("src/postquery/Dic-en.txt");
+        unsafe{
+        let h = DicDb.clone();
+        for (key,value) in h
+        {
+            tot += 1;
+            addWordDatabase(&key,value);
+        }
+        }
     }
     printMemory(2);
     let milliseconds_timestamp2: u128 = std::time::SystemTime::now()
@@ -624,9 +809,10 @@ fn init_dic(l:u32)
 
 /*
 #[launch]
-fn rocket() -> _ {
+fn rocket() -> _ {   
    unsafe{
     testSuite();
+    DicDb = search_all_word();
     init_dic(2);
     insert(1, "ferrari".to_string(), 0, 0,8);
     insert(1, "ferraille".to_string(), 0, 0,3);
@@ -641,8 +827,11 @@ fn rocket() -> _ {
     Options::Missing | Options::NormalizeDirs))
     // register routes
     .mount("/", routes![root, create, hello,root_fr,root_en,root_home])
-}}
-*/
+
+pub fn main()
+{
+    add_in_data_base("https://login.rosettastone.com/#/login");
+}
 
 /** GENERATE RESULTS FOR A SINGLE WORD QUERY **/
 fn manageQuery(s : &str,mut results : &mut Vec<(String,u32)>,debug:bool,mut nb:u32 ) -> String
@@ -766,6 +955,26 @@ if s == ""
 unsafe{
     if a == 0 {
        insert(1, s.to_string().to_lowercase(), 0, 0,1);
+    }
+}}
+
+/** Add a word in dictionnary with database tf-idf value **/
+fn addWordDatabase(s: &str, i: i32) {
+let mut a = 0;
+for i in s.to_string().to_lowercase().chars()
+{
+    if i<'a' || i>'z'
+    {
+       a = 1;
+    }
+}
+if s == ""
+{
+    a = 1;
+}
+unsafe{
+    if a == 0 {
+       insert(1, s.to_string().to_lowercase(), 0, 0,i as u32);
     }
 }}
 
@@ -1128,7 +1337,8 @@ mut results : &mut Vec<(String,u32)>) { unsafe{
 
 fn main()
 {
-    print!("Crawler's Tests");
+    add_in_data_base("https://login.rosettastone.com/#/login");
+    /*println!("Crawler's Tests");
     crawler_tests();
     //println!();
     //println!("Scraper's Tests");
@@ -1137,10 +1347,11 @@ fn main()
     //println!("Parser's Tests");
     //parser_tests();
     //println!();
-    //println!("Queries's Tests");
-    //query_tests();
-    //println!();
-}
 
+/*
+    println!("Queries's Tests");
+    query_tests();
+    println!();*/
+}
 
 

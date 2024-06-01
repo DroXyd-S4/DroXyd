@@ -11235,7 +11235,6 @@ cfallacy
 cforgive
 cg
 cgs
-ch
 cha-cha
 chablis
 chachalaca
@@ -23051,7 +23050,7 @@ ezochin/
 ezokin/gr
 fte
 fted
-faon
+fa on
 fa
 faber
 fabian

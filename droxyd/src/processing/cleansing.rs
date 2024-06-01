@@ -2,6 +2,7 @@
 
 use std::collections::BTreeMap;
 use crate::processing::extraction::get_sentences;
+use crate::processing::IO_helper::file_to_vec;
 
 //Takes a string containing all the texts as a paramater
 //Returns a BTreeMap<String, usize> containing the keyword and its TF-IDF value.
@@ -54,4 +55,42 @@ pub fn keywords(tf_idf: BTreeMap<String, f64>) -> Vec<String> {
     keywords
 }
 
+//takes a TF-IDF BTreeMap as an entry and returns the keywords that are more relevant to the website (via a threshhold value)
+//as well as 3 relevant words to add in the database.
+pub fn keywords2(tf_idf: BTreeMap<String, f64>, mut threshhold: usize) -> (Vec<String>, String, String, String) {
+    let path = "src/processing/sources/fr-determinants.txt";
+    let fr = file_to_vec(&path);
+    let path = "src/processing/sources/en-determinants.txt";
+    let en = file_to_vec(&path);
 
+    let mut tmp = Vec::new();
+    let mut res = Vec::new();
+    for (w, n) in &tf_idf {
+        if fr.contains(&w) || en.contains(&w) { continue; }
+        else {tmp.push((n, w)); }
+    }
+    tmp.sort_by(|a, b| a.partial_cmp(b).unwrap());
+    //tmp.sort();
+    let (mut word1, mut word2, mut word3) = (String::new(), String::new(), String::new());
+    if threshhold >= tmp.len() { threshhold = tmp.len(); }
+    match tmp.len() {
+        l if l < threshhold => threshhold = tmp.len(),
+        l if threshhold +1 > tmp.len() => {
+            word1 = tmp[tmp.len() -1 - threshhold].1.clone();
+        },
+        l if threshhold + 2 > tmp.len() => {
+            word1 = tmp[tmp.len() -1 - threshhold].1.clone();
+            word2 = tmp[tmp.len() -2 - threshhold].1.clone();
+        },
+        _ => {
+            word1 = tmp[tmp.len() -1 - threshhold].1.clone();
+            word2 = tmp[tmp.len() -2 - threshhold].1.clone();
+            word3 = tmp[tmp.len() -3 - threshhold].1.clone();
+        },
+    };
+    for i in 0..threshhold {
+        //let j = tmp.len() -1 -i;
+        res.push(tmp[i].1.clone());
+    }
+    (res, word1, word2, word3)
+}
