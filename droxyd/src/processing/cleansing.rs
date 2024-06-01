@@ -17,8 +17,7 @@ pub fn TF_IDF(s: String) -> BTreeMap<String, f64> {
         let mut curr_w: String = String::new();
         for c in j..s.chars().count() {
             if (s.as_bytes()[c] < 97 || s.as_bytes()[c] > 122)
-                && (s.as_bytes()[c] < 65 || s.as_bytes()[c] > 90)
-                    && (s.as_bytes()[c] < 48 || s.as_bytes()[c] > 57) 
+                && (s.as_bytes()[c] < 65 || s.as_bytes()[c] > 90) 
                     { break; }
             else { curr_w.push(s.as_bytes()[c] as char); }
             j+=1;

@@ -173,7 +173,7 @@ pub fn add_in_data_base(u: &str)
     let text = URL_to_String(&u).unwrap();
     let lang = get_lang(&text);
     let title = get_title(&text);
-    let (keywords, w1, w2, w3) = keywords2(TF_IDF(text), 10);
+    let (keywords, w1, w2, w3) = keywords2(TF_IDF(text), 25);
     create_post1(&u, &lang, &title, &String::new(), &w1, &w2, &w3);
     let id = search_id(&u);
     if id == -1 { return }
