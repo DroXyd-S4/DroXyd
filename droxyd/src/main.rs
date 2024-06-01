@@ -827,7 +827,9 @@ fn rocket() -> _ {
     Options::Missing | Options::NormalizeDirs))
     // register routes
     .mount("/", routes![root, create, hello,root_fr,root_en,root_home])
-
+   }
+}*/
+/*
 pub fn main()
 {
     add_in_data_base("https://login.rosettastone.com/#/login");
@@ -1341,7 +1343,7 @@ fn main()
     //add_in_data_base("https://login.rosettastone.com/#/login");
     println!("Crawler's Tests");
     crawler_tests();
-    let list = crawler(5);
+    let list = crawler(100000);
     for elt in list
     {
         add_in_data_base(&elt);
