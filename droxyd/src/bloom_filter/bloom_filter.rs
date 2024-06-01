@@ -94,7 +94,7 @@ pub fn add_elt(filter: &mut Vec<u8>, word: &String) -> ()
 
 pub fn bloom_filter(words: &Vec<String>, error_rate: f64) -> Vec<u8>
 {
-    let dimensions = bloom_size_computing((words.len()) as u64, error_rate);
+    let dimensions = bloom_size_computing((words.len()*5) as u64, error_rate);
     let mut filter: Vec<u8> = vec![];
     for _i in 0..(dimensions[0])
     {

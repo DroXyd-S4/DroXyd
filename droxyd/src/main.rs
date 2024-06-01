@@ -97,7 +97,7 @@ fn crawler_tests()
     println!();
 
     //println!("{}", get_content(String::from("https://example.com/")));
-    crawler(5);
+    crawler(2000);
 }
 
 /* TESTS DE JUSTINE */
@@ -621,6 +621,7 @@ fn init_dic(l:u32)
 }
 
 /** ON START FUNCTION **/
+
 /*
 #[launch]
 fn rocket() -> _ {
@@ -1127,7 +1128,7 @@ mut results : &mut Vec<(String,u32)>) { unsafe{
 
 fn main()
 {
-    println!("Crawler's Tests");
+    print!("Crawler's Tests");
     crawler_tests();
     //println!();
     //println!("Scraper's Tests");
@@ -1140,5 +1141,6 @@ fn main()
     //query_tests();
     //println!();
 }
+
 
 
