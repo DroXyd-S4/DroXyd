@@ -6,6 +6,9 @@ CREATE TABLE "posts1" (
         "langue" TEXT NOT NULL,
         "name"  TEXT NOT NULL,
         "date"  TEXT NOT NULL,
+	"word1" TEXT NOT NULL,
+        "word2" TEXT NOT NULL,
+        "word3" TEXT NOT NULL,
         PRIMARY KEY("id")
 );
 
