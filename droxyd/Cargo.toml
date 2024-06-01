@@ -14,6 +14,8 @@ overflow-checks = false
 queues = "1.1.0"
 reqwest = { version = "0.12.3", features = ["blocking"] }
 tokio = { version = "1", features = ["full"] } # Works without this lib
+rand = "0.8"
+num_cpus = "1.0"
 # }
 
 # QUENTIN added the following lines:

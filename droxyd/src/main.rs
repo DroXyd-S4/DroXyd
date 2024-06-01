@@ -105,7 +105,7 @@ fn crawler_tests()
     println!();
 
     //println!("{}", get_content(String::from("https://example.com/")));
-    crawler(5);
+    crawler(2000);
 }
 
 /* TESTS DE JUSTINE */
@@ -806,6 +806,7 @@ fn init_dic(l:u32)
 }
 
 /** ON START FUNCTION **/
+
 /*
 #[launch]
 fn rocket() -> _ {   
@@ -826,9 +827,6 @@ fn rocket() -> _ {
     Options::Missing | Options::NormalizeDirs))
     // register routes
     .mount("/", routes![root, create, hello,root_fr,root_en,root_home])
-   
-    }
-}*/
 
 pub fn main()
 {
@@ -1336,22 +1334,24 @@ mut results : &mut Vec<(String,u32)>) { unsafe{
     }
 }}
 
-/*
+
 fn main()
 {
     add_in_data_base("https://login.rosettastone.com/#/login");
     /*println!("Crawler's Tests");
     crawler_tests();
-    println!();
-    println!("Scraper's Tests");
-    scraper_tests();
-    println!();
+    //println!();
+    //println!("Scraper's Tests");
+    //scraper_tests();
+    //println!();
     //println!("Parser's Tests");
     //parser_tests();
     //println!();
+
+/*
     println!("Queries's Tests");
     query_tests();
     println!();*/
-}*/
+}
 
 
