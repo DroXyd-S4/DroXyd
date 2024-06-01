@@ -8,8 +8,11 @@ pub fn get_content(link: String) -> String
     return match result
     {
         Ok(x) => {
-            let content = x.text();
-            content.unwrap()
+            match x.text()
+            {
+                Ok(y) => y,
+                _ => String::new(),
+            }
         },
         Err(x) => {
             println!("Can't access to: {}", &link);

@@ -295,7 +295,7 @@ pub fn crawler(limit: u64) -> Vec<String>
                     add_elt(&mut filter, &link);
                 }
 
-        let resu = res.clone();
+                let resu = res.clone();
                 let multi = thread::spawn(move || {
                     if presence == false
                     {
@@ -391,7 +391,13 @@ pub fn crawler(limit: u64) -> Vec<String>
 
                             if resulthttp // || resultdoubleslash
                             {
-                                tx0.send(elt).unwrap();
+                                match tx0.send(elt)
+                                {
+                                    Ok(x) => (),
+                                    _ => {
+                                        println!("Problem while sending data to thread");
+                                    },
+                                };
                             }
                             else if resultdoubleslash
                             {
@@ -415,7 +421,13 @@ pub fn crawler(limit: u64) -> Vec<String>
                                     }
                                 }
 
-                                tx0.send(req).unwrap();
+                                match tx0.send(req)
+                                {
+                                    Ok(x) => (),
+                                    _ => {
+                                        println!("Problem while sending data to thread");
+                                    },
+                                };
                             }
                             else
                             {
@@ -424,7 +436,16 @@ pub fn crawler(limit: u64) -> Vec<String>
                                     let mut req = String::from("https://");
                                     req.push_str(&domain);
                                     req.push_str(&elt);
-                                    tx0.send(req).unwrap();
+
+
+                                    match tx0.send(req)
+                                    {
+                                        Ok(x) => (),
+                                        _ => {
+                                            println!("Problem while sending data to thread");
+                                        },
+                                    };
+
                                 }
                             }
                             //}
@@ -545,7 +566,18 @@ pub fn crawler(limit: u64) -> Vec<String>
 
                                 if resulthttp // || resultdoubleslash
                                 {
-                                    tx0.send(elt).unwrap();
+
+
+
+                                    match tx0.send(elt)
+                                    {
+                                        Ok(x) => (),
+                                        _ => {
+                                            println!("Problem while sending data to thread");
+                                        },
+                                    };
+
+                                    //tx0.send(elt).unwrap();
                                 }
                                 else if resultdoubleslash
                                 {
@@ -569,7 +601,16 @@ pub fn crawler(limit: u64) -> Vec<String>
                                         }
                                     }
 
-                                    tx0.send(req).unwrap();
+
+
+                                    match tx0.send(req)
+                                    {
+                                        Ok(x) => (),
+                                        _ => {
+                                            println!("Problem while sending data to thread");
+                                        },
+                                    };
+                                    //tx0.send(req).unwrap();
                                 }
                                 else
                                 {
@@ -578,7 +619,17 @@ pub fn crawler(limit: u64) -> Vec<String>
                                         let mut req = String::from("https://");
                                         req.push_str(&domain);
                                         req.push_str(&elt);
-                                        tx0.send(req).unwrap();
+
+
+                                        match tx0.send(req)
+                                        {
+                                            Ok(x) => (),
+                                            _ => {
+                                                println!("Problem while sending data to thread");
+                                            },
+                                        };
+
+                                        //tx0.send(req).unwrap();
                                     }
                                 }
                                 //}
@@ -618,7 +669,7 @@ pub fn crawler(limit: u64) -> Vec<String>
                     add_elt(&mut filter, &link);
                 }
 
-        let resu = res.clone();
+                let resu = res.clone();
                 let multi = thread::spawn(move || {
                     if presence == false
                     {
@@ -714,7 +765,15 @@ pub fn crawler(limit: u64) -> Vec<String>
 
                             if resulthttp // || resultdoubleslash
                             {
-                                tx0.send(elt).unwrap();
+
+                                match tx0.send(elt)
+                                {
+                                    Ok(x) => (),
+                                    _ => {
+                                        println!("Problem while sending data to thread");
+                                    },
+                                };
+                                //tx0.send(elt).unwrap();
                             }
                             else if resultdoubleslash
                             {
@@ -738,7 +797,15 @@ pub fn crawler(limit: u64) -> Vec<String>
                                     }
                                 }
 
-                                tx0.send(req).unwrap();
+
+                                match tx0.send(req)
+                                {
+                                    Ok(x) => (),
+                                    _ => {
+                                        println!("Problem while sending data to thread");
+                                    },
+                                };
+                                //tx0.send(req).unwrap();
                             }
                             else
                             {
@@ -747,7 +814,16 @@ pub fn crawler(limit: u64) -> Vec<String>
                                     let mut req = String::from("https://");
                                     req.push_str(&domain);
                                     req.push_str(&elt);
-                                    tx0.send(req).unwrap();
+                                    
+
+                                match tx0.send(req)
+                                {
+                                    Ok(x) => (),
+                                    _ => {
+                                        println!("Problem while sending data to thread");
+                                    },
+                                };
+                                    //tx0.send(req).unwrap();
                                 }
                             }
                             //}
@@ -861,7 +937,15 @@ pub fn crawler(limit: u64) -> Vec<String>
 
                                 if resulthttp // || resultdoubleslash
                                 {
-                                    tx0.send(elt).unwrap();
+
+                                match tx0.send(elt)
+                                {
+                                    Ok(x) => (),
+                                    _ => {
+                                        println!("Problem while sending data to thread");
+                                    },
+                                };
+                                    //tx0.send(elt).unwrap();
                                 }
                                 else if resultdoubleslash
                                 {
@@ -885,7 +969,15 @@ pub fn crawler(limit: u64) -> Vec<String>
                                         }
                                     }
 
-                                    tx0.send(req).unwrap();
+
+                                match tx0.send(req)
+                                {
+                                    Ok(x) => (),
+                                    _ => {
+                                        println!("Problem while sending data to thread");
+                                    },
+                                };
+                                    //tx0.send(req).unwrap();
                                 }
                                 else
                                 {
@@ -894,7 +986,16 @@ pub fn crawler(limit: u64) -> Vec<String>
                                         let mut req = String::from("https://");
                                         req.push_str(&domain);
                                         req.push_str(&elt);
-                                        tx0.send(req).unwrap();
+                                       
+
+                                match tx0.send(req)
+                                {
+                                    Ok(x) => (),
+                                    _ => {
+                                        println!("Problem while sending data to thread");
+                                    },
+                                };
+                                        // tx0.send(req).unwrap();
                                     }
                                 }
                                 //}
