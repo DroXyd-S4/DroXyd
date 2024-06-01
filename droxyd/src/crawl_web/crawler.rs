@@ -274,6 +274,7 @@ pub fn crawler(limit: u64) -> Vec<String>
     let mut x = 0;
     while (i as u64) < limit
     {
+        rng = rand::thread_rng();
         let mut thr = vec![];
         if x == 0
         {
