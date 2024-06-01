@@ -274,170 +274,154 @@ pub fn crawler(limit: u64) -> Vec<String>
     let mut x = 0;
     while (i as u64) < limit
     {
-        rng = rand::thread_rng();
         let mut thr = vec![];
         if x == 0
         {
             for k in 0..((limit as usize) % num_cpus::get())
             {
                 let tx0 = tx.clone();
-                let index = rng.gen_range(0..tasks[k].len());
-                let mut link = String::new();
-                for c in tasks[k][index].chars()
+                if tasks[k].len() > 0
                 {
-                    link.push(c);
-                }
-                res.push(link.clone());
-                tasks[k].remove(index);
+                    let index = rng.gen_range(0..tasks[k].len());
+                    let mut link = String::new();
+                    for c in tasks[k][index].chars()
+                    {
+                        link.push(c);
+                    }
+                    res.push(link.clone());
+                    tasks[k].remove(index);
 
-                let presence = is_present(&filter, &hash_functions, &link);
-                if presence == false
-                {
-                    add_elt(&mut filter, &link);
-                }
-
-                let resu = res.clone();
-                let multi = thread::spawn(move || {
+                    let presence = is_present(&filter, &hash_functions, &link);
                     if presence == false
                     {
-                        println!("Added: {}", &link);
+                        add_elt(&mut filter, &link);
+                    }
 
-                        let mut domain = String::new();
-                        let mut start = false;
-                        let mut end = false;
-                        for c in link.chars()
+                    let resu = res.clone();
+                    let multi = thread::spawn(move || {
+                        if presence == false
                         {
-                            if start == false
+                            println!("Added: {}", &link);
+
+                            let mut domain = String::new();
+                            let mut start = false;
+                            let mut end = false;
+                            for c in link.chars()
                             {
-                                if c == '/'
+                                if start == false
                                 {
-                                    start = true;
-                                }
-                            }
-                            else
-                            {
-                                if end == false
-                                {
-                                    if c != '/'
+                                    if c == '/'
                                     {
-                                        domain.push(c);
+                                        start = true;
                                     }
-                                    else
+                                }
+                                else
+                                {
+                                    if end == false
                                     {
-                                        if domain.len() > 0
+                                        if c != '/'
                                         {
-                                            end = true;
+                                            domain.push(c);
+                                        }
+                                        else
+                                        {
+                                            if domain.len() > 0
+                                            {
+                                                end = true;
+                                            }
                                         }
                                     }
                                 }
                             }
-                        }
 
-                        let content = get_content(link);
-                        let urls = get_urls(&content); //Enlever .1 si Justine fix sa fct
+                            let content = get_content(link);
+                            let urls = get_urls(&content); //Enlever .1 si Justine fix sa fct
 
-                        for elt in urls
-                        {
-                            //if is_present(&filter, &hash_functions, &temp) == false
-                            //{
-                            let mut testdoubleslash1 = true;
-                            let mut testdoubleslash2 = false;
-                            let mut resultdoubleslash = false;
-
-                            let mut testhttp1 = true;
-                            let mut testhttp2 = false;
-                            let mut resulthttp = false;
-
-                            let mut treat = true;
-                            for c in elt.chars()
+                            for elt in urls
                             {
-                                if treat && c == '#'
-                                {
-                                    treat = false;
-                                }
-                                if testdoubleslash1
-                                {
-                                    if c == '/'
-                                    {
-                                        testdoubleslash2 = true;
-                                    }
-                                    testdoubleslash1 = false;
-                                }
-                                else if testdoubleslash2
-                                {
-                                    if c == '/'
-                                    {
-                                        resultdoubleslash = true;
-                                    }
-                                    testdoubleslash2 = false;
-                                }
+                                //if is_present(&filter, &hash_functions, &temp) == false
+                                //{
+                                let mut testdoubleslash1 = true;
+                                let mut testdoubleslash2 = false;
+                                let mut resultdoubleslash = false;
 
-                                if testhttp1
-                                {
-                                    if c == 'h'
-                                    {
-                                        testhttp2 = true;
-                                    }
-                                    testhttp1 = false;
-                                }
-                                else if testhttp2
-                                {
-                                    if c == 't'
-                                    {
-                                        resulthttp = true;
-                                    }
-                                    testhttp2 = false;
-                                }
-                            }
+                                let mut testhttp1 = true;
+                                let mut testhttp2 = false;
+                                let mut resulthttp = false;
 
-                            if resulthttp // || resultdoubleslash
-                            {
-                                match tx0.send(elt)
-                                {
-                                    Ok(x) => (),
-                                    _ => {
-                                        println!("Problem while sending data to thread");
-                                    },
-                                };
-                            }
-                            else if resultdoubleslash
-                            {
-                                let mut req = String::from("https://");
-
-                                let mut elt1 = true;
-                                let mut elt2 = true;
+                                let mut treat = true;
                                 for c in elt.chars()
                                 {
-                                    if elt1
+                                    if treat && c == '#'
                                     {
-                                        elt1 = false;
+                                        treat = false;
                                     }
-                                    else if elt2
+                                    if testdoubleslash1
                                     {
-                                        elt2 = false;
+                                        if c == '/'
+                                        {
+                                            testdoubleslash2 = true;
+                                        }
+                                        testdoubleslash1 = false;
                                     }
-                                    else
+                                    else if testdoubleslash2
                                     {
-                                        req.push(c);
+                                        if c == '/'
+                                        {
+                                            resultdoubleslash = true;
+                                        }
+                                        testdoubleslash2 = false;
+                                    }
+
+                                    if testhttp1
+                                    {
+                                        if c == 'h'
+                                        {
+                                            testhttp2 = true;
+                                        }
+                                        testhttp1 = false;
+                                    }
+                                    else if testhttp2
+                                    {
+                                        if c == 't'
+                                        {
+                                            resulthttp = true;
+                                        }
+                                        testhttp2 = false;
                                     }
                                 }
 
-                                match tx0.send(req)
+                                if resulthttp // || resultdoubleslash
                                 {
-                                    Ok(x) => (),
-                                    _ => {
-                                        println!("Problem while sending data to thread");
-                                    },
-                                };
-                            }
-                            else
-                            {
-                                if treat
+                                    match tx0.send(elt)
+                                    {
+                                        Ok(x) => (),
+                                        _ => {
+                                            println!("Problem while sending data to thread");
+                                        },
+                                    };
+                                }
+                                else if resultdoubleslash
                                 {
                                     let mut req = String::from("https://");
-                                    req.push_str(&domain);
-                                    req.push_str(&elt);
 
+                                    let mut elt1 = true;
+                                    let mut elt2 = true;
+                                    for c in elt.chars()
+                                    {
+                                        if elt1
+                                        {
+                                            elt1 = false;
+                                        }
+                                        else if elt2
+                                        {
+                                            elt2 = false;
+                                        }
+                                        else
+                                        {
+                                            req.push(c);
+                                        }
+                                    }
 
                                     match tx0.send(req)
                                     {
@@ -446,36 +430,255 @@ pub fn crawler(limit: u64) -> Vec<String>
                                             println!("Problem while sending data to thread");
                                         },
                                     };
+                                }
+                                else
+                                {
+                                    if treat
+                                    {
+                                        let mut req = String::from("https://");
+                                        req.push_str(&domain);
+                                        req.push_str(&elt);
 
+
+                                        match tx0.send(req)
+                                        {
+                                            Ok(x) => (),
+                                            _ => {
+                                                println!("Problem while sending data to thread");
+                                            },
+                                        };
+
+                                    }
+                                }
+                                //}
+                            }
+                        }
+                        else
+                        {
+
+
+
+
+
+
+
+
+
+                            let mut found = false;
+                            for elt in resu
+                            {
+                                if elt.eq(&link)
+                                {
+                                    println!("Found: {}", &link);
+                                    found = true;
+                                    break;
                                 }
                             }
-                            //}
-                        }
-                    }
-                    else
-                    {
-
-
-
-
-
-
-
-
-
-                        let mut found = false;
-                        for elt in resu
-                        {
-                            if elt.eq(&link)
+                            if found == false
                             {
-                                println!("Found: {}", &link);
-                                found = true;
-                                break;
+                                println!("Add+C: {}", &link);
+
+                                let mut domain = String::new();
+                                let mut start = false;
+                                let mut end = false;
+                                for c in link.chars()
+                                {
+                                    if start == false
+                                    {
+                                        if c == '/'
+                                        {
+                                            start = true;
+                                        }
+                                    }
+                                    else
+                                    {
+                                        if end == false
+                                        {
+                                            if c != '/'
+                                            {
+                                                domain.push(c);
+                                            }
+                                            else
+                                            {
+                                                if domain.len() > 0
+                                                {
+                                                    end = true;
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+
+                                let content = get_content(link);
+                                let urls = get_urls(&content); //Enlever .1 si Justine fix sa fct
+
+                                for elt in urls
+                                {
+                                    //if is_present(&filter, &hash_functions, &temp) == false
+                                    //{
+                                    let mut testdoubleslash1 = true;
+                                    let mut testdoubleslash2 = false;
+                                    let mut resultdoubleslash = false;
+
+                                    let mut testhttp1 = true;
+                                    let mut testhttp2 = false;
+                                    let mut resulthttp = false;
+
+                                    let mut treat = true;
+                                    for c in elt.chars()
+                                    {
+                                        if treat && c == '#'
+                                        {
+                                            treat = false;
+                                        }
+                                        if testdoubleslash1
+                                        {
+                                            if c == '/'
+                                            {
+                                                testdoubleslash2 = true;
+                                            }
+                                            testdoubleslash1 = false;
+                                        }
+                                        else if testdoubleslash2
+                                        {
+                                            if c == '/'
+                                            {
+                                                resultdoubleslash = true;
+                                            }
+                                            testdoubleslash2 = false;
+                                        }
+
+                                        if testhttp1
+                                        {
+                                            if c == 'h'
+                                            {
+                                                testhttp2 = true;
+                                            }
+                                            testhttp1 = false;
+                                        }
+                                        else if testhttp2
+                                        {
+                                            if c == 't'
+                                            {
+                                                resulthttp = true;
+                                            }
+                                            testhttp2 = false;
+                                        }
+                                    }
+
+                                    if resulthttp // || resultdoubleslash
+                                    {
+
+
+
+                                        match tx0.send(elt)
+                                        {
+                                            Ok(x) => (),
+                                            _ => {
+                                                println!("Problem while sending data to thread");
+                                            },
+                                        };
+
+                                        //tx0.send(elt).unwrap();
+                                    }
+                                    else if resultdoubleslash
+                                    {
+                                        let mut req = String::from("https://");
+
+                                        let mut elt1 = true;
+                                        let mut elt2 = true;
+                                        for c in elt.chars()
+                                        {
+                                            if elt1
+                                            {
+                                                elt1 = false;
+                                            }
+                                            else if elt2
+                                            {
+                                                elt2 = false;
+                                            }
+                                            else
+                                            {
+                                                req.push(c);
+                                            }
+                                        }
+
+
+
+                                        match tx0.send(req)
+                                        {
+                                            Ok(x) => (),
+                                            _ => {
+                                                println!("Problem while sending data to thread");
+                                            },
+                                        };
+                                        //tx0.send(req).unwrap();
+                                    }
+                                    else
+                                    {
+                                        if treat
+                                        {
+                                            let mut req = String::from("https://");
+                                            req.push_str(&domain);
+                                            req.push_str(&elt);
+
+
+                                            match tx0.send(req)
+                                            {
+                                                Ok(x) => (),
+                                                _ => {
+                                                    println!("Problem while sending data to thread");
+                                                },
+                                            };
+
+                                            //tx0.send(req).unwrap();
+                                        }
+                                    }
+                                    //}
+                                }
                             }
+
+
+
+
+
                         }
-                        if found == false
+                    });
+
+                    thr.push(multi);
+                }
+            }
+
+            x = 1;
+            i += (limit as usize) % num_cpus::get();
+        }
+        else
+        {
+            for k in 0..num_cpus::get()
+            {
+                let tx0 = tx.clone();
+                if tasks[k].len() > 0
+                {
+                    let index = rng.gen_range(0..tasks[k].len());
+                    let mut link = String::new();
+                    for c in tasks[k][index].chars()
+                    {
+                        link.push(c);
+                    }
+                    res.push(link.clone());
+                    tasks[k].remove(index);
+
+                    let presence = is_present(&filter, &hash_functions, &link);
+                    if presence == false
+                    {
+                        add_elt(&mut filter, &link);
+                    }
+
+                    let resu = res.clone();
+                    let multi = thread::spawn(move || {
+                        if presence == false
                         {
-                            println!("Add+C: {}", &link);
+                            println!("Added: {}", &link);
 
                             let mut domain = String::new();
                             let mut start = false;
@@ -568,8 +771,6 @@ pub fn crawler(limit: u64) -> Vec<String>
                                 if resulthttp // || resultdoubleslash
                                 {
 
-
-
                                     match tx0.send(elt)
                                     {
                                         Ok(x) => (),
@@ -577,7 +778,6 @@ pub fn crawler(limit: u64) -> Vec<String>
                                             println!("Problem while sending data to thread");
                                         },
                                     };
-
                                     //tx0.send(elt).unwrap();
                                 }
                                 else if resultdoubleslash
@@ -601,7 +801,6 @@ pub fn crawler(limit: u64) -> Vec<String>
                                             req.push(c);
                                         }
                                     }
-
 
 
                                     match tx0.send(req)
@@ -629,388 +828,196 @@ pub fn crawler(limit: u64) -> Vec<String>
                                                 println!("Problem while sending data to thread");
                                             },
                                         };
-
                                         //tx0.send(req).unwrap();
                                     }
                                 }
                                 //}
                             }
                         }
-
-
-
-
-
-                    }
-                });
-
-                thr.push(multi);
-            }
-
-            x = 1;
-            i += (limit as usize) % num_cpus::get();
-        }
-        else
-        {
-            for k in 0..num_cpus::get()
-            {
-                let tx0 = tx.clone();
-                let index = rng.gen_range(0..tasks[k].len());
-                let mut link = String::new();
-                for c in tasks[k][index].chars()
-                {
-                    link.push(c);
-                }
-                res.push(link.clone());
-                tasks[k].remove(index);
-
-                let presence = is_present(&filter, &hash_functions, &link);
-                if presence == false
-                {
-                    add_elt(&mut filter, &link);
-                }
-
-                let resu = res.clone();
-                let multi = thread::spawn(move || {
-                    if presence == false
-                    {
-                        println!("Added: {}", &link);
-
-                        let mut domain = String::new();
-                        let mut start = false;
-                        let mut end = false;
-                        for c in link.chars()
+                        else
                         {
-                            if start == false
+
+
+                            let mut found = false;
+                            for elt in resu
                             {
-                                if c == '/'
+                                if elt.eq(&link)
                                 {
-                                    start = true;
+                                    println!("Found: {}", &link);
+                                    found = true;
+                                    break;
                                 }
                             }
-                            else
+                            if found == false
                             {
-                                if end == false
+                                println!("Add+C: {}", &link);
+
+                                let mut domain = String::new();
+                                let mut start = false;
+                                let mut end = false;
+                                for c in link.chars()
                                 {
-                                    if c != '/'
+                                    if start == false
                                     {
-                                        domain.push(c);
+                                        if c == '/'
+                                        {
+                                            start = true;
+                                        }
                                     }
                                     else
                                     {
-                                        if domain.len() > 0
+                                        if end == false
                                         {
-                                            end = true;
-                                        }
-                                    }
-                                }
-                            }
-                        }
-
-                        let content = get_content(link);
-                        let urls = get_urls(&content); //Enlever .1 si Justine fix sa fct
-
-                        for elt in urls
-                        {
-                            //if is_present(&filter, &hash_functions, &temp) == false
-                            //{
-                            let mut testdoubleslash1 = true;
-                            let mut testdoubleslash2 = false;
-                            let mut resultdoubleslash = false;
-
-                            let mut testhttp1 = true;
-                            let mut testhttp2 = false;
-                            let mut resulthttp = false;
-
-                            let mut treat = true;
-                            for c in elt.chars()
-                            {
-                                if treat && c == '#'
-                                {
-                                    treat = false;
-                                }
-                                if testdoubleslash1
-                                {
-                                    if c == '/'
-                                    {
-                                        testdoubleslash2 = true;
-                                    }
-                                    testdoubleslash1 = false;
-                                }
-                                else if testdoubleslash2
-                                {
-                                    if c == '/'
-                                    {
-                                        resultdoubleslash = true;
-                                    }
-                                    testdoubleslash2 = false;
-                                }
-
-                                if testhttp1
-                                {
-                                    if c == 'h'
-                                    {
-                                        testhttp2 = true;
-                                    }
-                                    testhttp1 = false;
-                                }
-                                else if testhttp2
-                                {
-                                    if c == 't'
-                                    {
-                                        resulthttp = true;
-                                    }
-                                    testhttp2 = false;
-                                }
-                            }
-
-                            if resulthttp // || resultdoubleslash
-                            {
-
-                                match tx0.send(elt)
-                                {
-                                    Ok(x) => (),
-                                    _ => {
-                                        println!("Problem while sending data to thread");
-                                    },
-                                };
-                                //tx0.send(elt).unwrap();
-                            }
-                            else if resultdoubleslash
-                            {
-                                let mut req = String::from("https://");
-
-                                let mut elt1 = true;
-                                let mut elt2 = true;
-                                for c in elt.chars()
-                                {
-                                    if elt1
-                                    {
-                                        elt1 = false;
-                                    }
-                                    else if elt2
-                                    {
-                                        elt2 = false;
-                                    }
-                                    else
-                                    {
-                                        req.push(c);
-                                    }
-                                }
-
-
-                                match tx0.send(req)
-                                {
-                                    Ok(x) => (),
-                                    _ => {
-                                        println!("Problem while sending data to thread");
-                                    },
-                                };
-                                //tx0.send(req).unwrap();
-                            }
-                            else
-                            {
-                                if treat
-                                {
-                                    let mut req = String::from("https://");
-                                    req.push_str(&domain);
-                                    req.push_str(&elt);
-                                    
-
-                                match tx0.send(req)
-                                {
-                                    Ok(x) => (),
-                                    _ => {
-                                        println!("Problem while sending data to thread");
-                                    },
-                                };
-                                    //tx0.send(req).unwrap();
-                                }
-                            }
-                            //}
-                        }
-                    }
-                    else
-                    {
-
-
-                        let mut found = false;
-                        for elt in resu
-                        {
-                            if elt.eq(&link)
-                            {
-                                println!("Found: {}", &link);
-                                found = true;
-                                break;
-                            }
-                        }
-                        if found == false
-                        {
-                            println!("Add+C: {}", &link);
-
-                            let mut domain = String::new();
-                            let mut start = false;
-                            let mut end = false;
-                            for c in link.chars()
-                            {
-                                if start == false
-                                {
-                                    if c == '/'
-                                    {
-                                        start = true;
-                                    }
-                                }
-                                else
-                                {
-                                    if end == false
-                                    {
-                                        if c != '/'
-                                        {
-                                            domain.push(c);
-                                        }
-                                        else
-                                        {
-                                            if domain.len() > 0
+                                            if c != '/'
                                             {
-                                                end = true;
+                                                domain.push(c);
+                                            }
+                                            else
+                                            {
+                                                if domain.len() > 0
+                                                {
+                                                    end = true;
+                                                }
                                             }
                                         }
                                     }
                                 }
-                            }
 
-                            let content = get_content(link);
-                            let urls = get_urls(&content); //Enlever .1 si Justine fix sa fct
+                                let content = get_content(link);
+                                let urls = get_urls(&content); //Enlever .1 si Justine fix sa fct
 
-                            for elt in urls
-                            {
-                                //if is_present(&filter, &hash_functions, &temp) == false
-                                //{
-                                let mut testdoubleslash1 = true;
-                                let mut testdoubleslash2 = false;
-                                let mut resultdoubleslash = false;
-
-                                let mut testhttp1 = true;
-                                let mut testhttp2 = false;
-                                let mut resulthttp = false;
-
-                                let mut treat = true;
-                                for c in elt.chars()
+                                for elt in urls
                                 {
-                                    if treat && c == '#'
-                                    {
-                                        treat = false;
-                                    }
-                                    if testdoubleslash1
-                                    {
-                                        if c == '/'
-                                        {
-                                            testdoubleslash2 = true;
-                                        }
-                                        testdoubleslash1 = false;
-                                    }
-                                    else if testdoubleslash2
-                                    {
-                                        if c == '/'
-                                        {
-                                            resultdoubleslash = true;
-                                        }
-                                        testdoubleslash2 = false;
-                                    }
+                                    //if is_present(&filter, &hash_functions, &temp) == false
+                                    //{
+                                    let mut testdoubleslash1 = true;
+                                    let mut testdoubleslash2 = false;
+                                    let mut resultdoubleslash = false;
 
-                                    if testhttp1
-                                    {
-                                        if c == 'h'
-                                        {
-                                            testhttp2 = true;
-                                        }
-                                        testhttp1 = false;
-                                    }
-                                    else if testhttp2
-                                    {
-                                        if c == 't'
-                                        {
-                                            resulthttp = true;
-                                        }
-                                        testhttp2 = false;
-                                    }
-                                }
+                                    let mut testhttp1 = true;
+                                    let mut testhttp2 = false;
+                                    let mut resulthttp = false;
 
-                                if resulthttp // || resultdoubleslash
-                                {
-
-                                match tx0.send(elt)
-                                {
-                                    Ok(x) => (),
-                                    _ => {
-                                        println!("Problem while sending data to thread");
-                                    },
-                                };
-                                    //tx0.send(elt).unwrap();
-                                }
-                                else if resultdoubleslash
-                                {
-                                    let mut req = String::from("https://");
-
-                                    let mut elt1 = true;
-                                    let mut elt2 = true;
+                                    let mut treat = true;
                                     for c in elt.chars()
                                     {
-                                        if elt1
+                                        if treat && c == '#'
                                         {
-                                            elt1 = false;
+                                            treat = false;
                                         }
-                                        else if elt2
+                                        if testdoubleslash1
                                         {
-                                            elt2 = false;
+                                            if c == '/'
+                                            {
+                                                testdoubleslash2 = true;
+                                            }
+                                            testdoubleslash1 = false;
                                         }
-                                        else
+                                        else if testdoubleslash2
                                         {
-                                            req.push(c);
+                                            if c == '/'
+                                            {
+                                                resultdoubleslash = true;
+                                            }
+                                            testdoubleslash2 = false;
+                                        }
+
+                                        if testhttp1
+                                        {
+                                            if c == 'h'
+                                            {
+                                                testhttp2 = true;
+                                            }
+                                            testhttp1 = false;
+                                        }
+                                        else if testhttp2
+                                        {
+                                            if c == 't'
+                                            {
+                                                resulthttp = true;
+                                            }
+                                            testhttp2 = false;
                                         }
                                     }
 
+                                    if resulthttp // || resultdoubleslash
+                                    {
 
-                                match tx0.send(req)
-                                {
-                                    Ok(x) => (),
-                                    _ => {
-                                        println!("Problem while sending data to thread");
-                                    },
-                                };
-                                    //tx0.send(req).unwrap();
-                                }
-                                else
-                                {
-                                    if treat
+                                        match tx0.send(elt)
+                                        {
+                                            Ok(x) => (),
+                                            _ => {
+                                                println!("Problem while sending data to thread");
+                                            },
+                                        };
+                                        //tx0.send(elt).unwrap();
+                                    }
+                                    else if resultdoubleslash
                                     {
                                         let mut req = String::from("https://");
-                                        req.push_str(&domain);
-                                        req.push_str(&elt);
-                                       
 
-                                match tx0.send(req)
-                                {
-                                    Ok(x) => (),
-                                    _ => {
-                                        println!("Problem while sending data to thread");
-                                    },
-                                };
-                                        // tx0.send(req).unwrap();
+                                        let mut elt1 = true;
+                                        let mut elt2 = true;
+                                        for c in elt.chars()
+                                        {
+                                            if elt1
+                                            {
+                                                elt1 = false;
+                                            }
+                                            else if elt2
+                                            {
+                                                elt2 = false;
+                                            }
+                                            else
+                                            {
+                                                req.push(c);
+                                            }
+                                        }
+
+
+                                        match tx0.send(req)
+                                        {
+                                            Ok(x) => (),
+                                            _ => {
+                                                println!("Problem while sending data to thread");
+                                            },
+                                        };
+                                        //tx0.send(req).unwrap();
                                     }
+                                    else
+                                    {
+                                        if treat
+                                        {
+                                            let mut req = String::from("https://");
+                                            req.push_str(&domain);
+                                            req.push_str(&elt);
+
+
+                                            match tx0.send(req)
+                                            {
+                                                Ok(x) => (),
+                                                _ => {
+                                                    println!("Problem while sending data to thread");
+                                                },
+                                            };
+                                            // tx0.send(req).unwrap();
+                                        }
+                                    }
+                                    //}
                                 }
-                                //}
                             }
+
+
+
                         }
+                        thread::sleep(Duration::from_millis(1));
+                    });
 
+                    thr.push(multi);
+                }
 
-
-                    }
-                    thread::sleep(Duration::from_millis(1));
-                });
-
-                i += num_cpus::get();
-                thr.push(multi);
+                    i += num_cpus::get();
+                
             }
         }
 
