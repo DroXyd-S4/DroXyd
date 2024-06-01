@@ -105,7 +105,7 @@ fn crawler_tests()
     println!();
 
     //println!("{}", get_content(String::from("https://example.com/")));
-    crawler(2000);
+    //crawler(2000);
 }
 
 /* TESTS DE JUSTINE */
@@ -832,6 +832,7 @@ pub fn main()
 {
     add_in_data_base("https://login.rosettastone.com/#/login");
 }
+*/
 
 /** GENERATE RESULTS FOR A SINGLE WORD QUERY **/
 fn manageQuery(s : &str,mut results : &mut Vec<(String,u32)>,debug:bool,mut nb:u32 ) -> String
@@ -1337,9 +1338,14 @@ mut results : &mut Vec<(String,u32)>) { unsafe{
 
 fn main()
 {
-    add_in_data_base("https://login.rosettastone.com/#/login");
-    /*println!("Crawler's Tests");
+    //add_in_data_base("https://login.rosettastone.com/#/login");
+    println!("Crawler's Tests");
     crawler_tests();
+    let list = crawler(5);
+    for elt in list
+    {
+        add_in_data_base(&elt);
+    }
     //println!();
     //println!("Scraper's Tests");
     //scraper_tests();
@@ -1348,7 +1354,7 @@ fn main()
     //parser_tests();
     //println!();
 
-/*
+    /*
     println!("Queries's Tests");
     query_tests();
     println!();*/
