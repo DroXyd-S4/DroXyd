@@ -174,11 +174,11 @@ pub fn add_in_data_base(u: &str)
     let lang = get_lang(&text);
     let title = get_title(&text);
     let (keywords, w1, w2, w3) = keywords2(TF_IDF(text), 25);
-    create_post1(&u, &lang, &title, &String::new(), &w1, &w2, &w3);
+    create_post1(&u, &lang, &title, &String::new(), &(w1.to_lowercase()), &(w2.to_lowercase()), &(w3.to_lowercase()));
     let id = search_id(&u);
     if id == -1 { return }
     for i in keywords {
-        create_post2(&i, &id);
+        create_post2(&(i.to_lowercase()), &id);
     }
 
     //create_post1("https://www.youtube.com/watch?v=oQaHPZ4c1QE&ab_channel=Kolanii","USA","bob","29/02/-5000","chat","poils","teste");
@@ -483,9 +483,9 @@ async fn hello(request: String, flash: Option<FlashMessage<'_>>) -> Template {
     /** PARSE REQUEST **/
     let message2 = flash.map_or_else(|| String::default(), |msg| msg.message().to_string());
     let parts: Vec<_> = message2.split("#").collect();
-    let bRequest = parts[0]; // Base Request
-    let sRequest = parts[1]; // Suggestion of correction
-    let qResults = parts[2]; // All results
+    let bRequest = parts[0].to_lowercase(); // Base Request
+    let sRequest = parts[1].to_lowercase(); // Suggestion of correction
+    let qResults = parts[2].to_lowercase(); // All results
     let mut nb = "0".to_string(); // N°page
     let mut currentPage = "0".to_string();
     let mut currentPagePlus = "1".to_string();
@@ -522,7 +522,7 @@ async fn hello(request: String, flash: Option<FlashMessage<'_>>) -> Template {
     let mut SUGG_E = String::new();
 
     /** LAUNCH QUERY **/
-    let v = query(bRequest);
+    let v = query(&bRequest);
     nbResults = v.len() as i32;
     if nbResults == 0
     {
@@ -807,7 +807,7 @@ fn init_dic(l:u32)
 
 /** ON START FUNCTION **/
 
-/*
+
 #[launch]
 fn rocket() -> _ {   
    unsafe{
@@ -828,7 +828,7 @@ fn rocket() -> _ {
     // register routes
     .mount("/", routes![root, create, hello,root_fr,root_en,root_home])
    }
-}*/
+}
 /*
 pub fn main()
 {
@@ -1337,7 +1337,7 @@ mut results : &mut Vec<(String,u32)>) { unsafe{
     }
 }}
 
-
+/*
 fn main()
 {
     //add_in_data_base("https://login.rosettastone.com/#/login");
@@ -1360,6 +1360,6 @@ fn main()
     println!("Queries's Tests");
     query_tests();
     println!();*/
-}
+}*/
 
 
