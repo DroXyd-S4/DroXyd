@@ -22,7 +22,7 @@ pub fn TF_IDF(s: String) -> BTreeMap<String, f64> {
             else { curr_w.push(s.as_bytes()[c] as char); }
             j+=1;
         }
-        if !(curr_w == " " || curr_w == "") {
+        if !(curr_w == " " || curr_w == "" || curr_w.len() < 3) {
             let tf_res = (s.matches(&curr_w).count() as f64)/(s.chars().count() as f64);
             //tf.entry(curr_w).or_insert(tf_res);
             let mut in_nb_sent: f64 = 0.0;
