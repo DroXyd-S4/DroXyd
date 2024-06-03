@@ -1,0 +1,164 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f2f2f2;
+}
+
+.container {
+    width: 80%;
+    margin: 0 auto;
+}
+
+header {
+    background-color: #333;
+    color: #c0c;
+    padding: 0 0;
+}
+
+header h1 {
+    margin: 0;
+}
+
+header nav ul {
+    list-style: none;
+    padding: 0;
+}
+
+header nav ul li {
+    display: inline;
+    margin-right: 20px;
+}
+
+header nav ul li a {
+    color: #c0c;
+    text-decoration: none;
+}
+
+.logo{
+	background-image: url('img/logoDroxyd.png');
+	background-size: contain;
+	background-repeat : no-repeat;
+	text-align: center;
+    color: #000;
+    padding: 5% 0;
+}
+
+.page{
+	background-color : #555;
+	width : 100%;
+	height: 100%;
+	
+}
+
+.banner {
+    
+    text-align: center;
+    color: #000;
+    padding: 200px 0;
+}
+
+.banner h2 {
+    font-size: 36px;
+}
+
+.btn {
+    display: inline-block;
+    background-color: #333;
+    color: #fff;
+    padding: 10px 20px;
+    text-decoration: none;
+    border-radius: 5px;
+    margin-top: 20px;
+}
+
+.services {
+    padding: 50px 0;
+    text-align: center;
+}
+
+.service {
+    margin-bottom: 40px;
+}
+
+footer {
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    padding: 20px 0;
+}
+
+.image-with-text {
+    display: flex;
+    align-items: left;
+	text-align : center;
+    margin: 20px;
+	background-color : #777;
+}
+
+.image-with-text img {
+    width: 25%;
+    height: 25%;
+    margin-right: 20px;
+}
+
+.image-with-text .text {
+    flex-grow: 1;
+	margin-left : 0;
+	color : #000;
+}
+
+.image-with-text h2 {
+    font-size: 24px;
+    margin-top: 0;
+    margin-bottom: 100px;
+	
+}
+
+.image-with-text p {
+    font-size: 16px;
+    color : #000;
+    margin-top: 50px;
+}
+
+
+.text-zone {
+    background-color: #eee;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    max-width: 500px;
+    margin: 0 auto;
+	margin-bottom : 50px;
+}
+
+.text-zone h2 {
+    color: #333;
+    font-size: 24px;
+    margin-top: 0;
+}
+
+.text-zone p {
+    color: #666;
+    font-size: 16px;
+}
+
+.text-zone .btn {
+    display: inline-block;
+    background-color: #007bff;
+    color: #fff;
+    padding: 10px 20px;
+    text-decoration: none;
+    border-radius: 5px;
+    margin-top: 20px;
+    transition: background-color 0.3s ease;
+}
+
+.text-zone .btn:hover {
+    background-color: #0056b3;
+}
+
+.img{
+	width : 100%;
+	height : 100%;
+}
