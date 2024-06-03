@@ -807,7 +807,7 @@ fn init_dic(l:u32)
 
 /** ON START FUNCTION **/
 
-/*
+
 #[launch]
 fn rocket() -> _ {   
    unsafe{
@@ -829,7 +829,7 @@ fn rocket() -> _ {
     .mount("/", routes![root, create, hello,root_fr,root_en,root_home])
    }
 }
-*/
+
 /*
 pub fn main()
 {
@@ -1338,7 +1338,7 @@ mut results : &mut Vec<(String,u32)>) { unsafe{
     }
 }}
 
-
+/*
 fn main()
 {
     //add_in_data_base("https://login.rosettastone.com/#/login");
@@ -1361,6 +1361,6 @@ fn main()
     println!("Queries's Tests");
     query_tests();
     println!();*/
-}
+}*/
 
 
